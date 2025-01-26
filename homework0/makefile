@@ -9,7 +9,7 @@ $(PDF): $(TEXFILE)
 	xelatex -shell-escape $(TEXFILE)
 
 clean:
-	rm -f *.aux *.log *.bbl *.blg *.toc *.out *.lof *.lot
+	rm -f *.aux *.log *.bbl *.blg *.toc *.out *.lof *.lot *fls *.fdb_latexmk *.synctex.gz
 	rm -rf _minted
 
 distclean: clean
