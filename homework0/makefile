@@ -1,4 +1,4 @@
-TEXFILE = main.tex
+TEXFILE = *.tex
 PDF = $(TEXFILE:.tex=.pdf)
 
 all: $(PDF)
