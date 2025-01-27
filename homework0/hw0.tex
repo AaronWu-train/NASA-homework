@@ -14,7 +14,9 @@
 \usepackage[AutoFakeBold,AutoFakeSlant]{xeCJK} % 中文支援
 \usepackage{fancyhdr} % 頁首頁尾設置
 \usepackage{xcolor,changepage,mdframed} % 顏色與框線相關
+\usepackage{svg}
 \usepackage{titlesec} % 標題格式
+\usepackage{setspace} % 行距
 \usepackage{minted} % 程式碼高亮（需安裝 Python 套件 pygments）
 \usepackage[shortlabels]{enumitem} % 列表格式
 \usepackage[colorlinks=true,linkcolor=black,urlcolor=blue,citecolor=blue]{hyperref} % 超連結
@@ -70,7 +72,7 @@
   \begin{myquote}
 }{\end{myquote}}
 
-% Code highlighting
+\linespread{1.1}
 \usemintedstyle{xcode}
 
 % tex-fmt: on
@@ -100,16 +102,12 @@
 %                   Network Administration
 %------------------------------------------------------------
 \section*{Network Administration}
+
+% Problem 1
 \subsection{Short Answer (10pt)}
 \vspace{0.5em}
-\begin{enumerate}
-  \item Answer 1
-  \item Answer
-    \begin{enumerate}
-      \item Answer
-    \end{enumerate}
-\end{enumerate}
 
+% Problem 2
 \subsection{Command Line Utilities (14pt)}
 \begin{myquote}
   \footnotesize
@@ -117,6 +115,7 @@
   \begin{itemize}
     \item 作業系統：macOS Sequoia 15.2
     \item Command Line Tools: 16.2.0
+    \item
   \end{itemize}
 \end{myquote}
 
@@ -124,10 +123,17 @@
 \subsubsection{Trace Route}
 \begin{mycolorbox}[teal]
   \footnotesize
-  \textbf{Reference：}
+  \textbf{Reference:}
   \begin{itemize}
     \item \href{https://en.wikipedia.org/wiki/Traceroute}{Traceroute - Wikipedia} (Problem a)
-    \item \href{https://stackoverflow.com/questions/3963085/linux-command-to-translate-domain-name-to-ip}{Linux Command to Translate Domain Name to IP (Stack Overflow)} (Problem b)
+    \item \href{https://www.varonis.com/blog/what-is-traceroute/}{What is Traceroute? - Varonis} (Problem a, d)
+    \item \href{https://www.geeksforgeeks.org/traceroute-command-in-linux-with-examples/}{Traceroute Command in Linux with Examples - GeeksforGeeks} (Problem a, d)
+    \item \href{https://kadiska.com/using-traceroute-to-measure-network-latency-and-packet-loss/}{Using traceroute to measure network latency and packet loss - Kadiska} (Problem a, d)
+    \item \href{https://stackoverflow.com/questions/3963085/linux-command-to-translate-domain-name-to-ip}{Linux Command to Translate Domain Name to IP - Stack Overflow} (Problem b)
+    \item \href{https://en.wikipedia.org/wiki/Private_network}{Private Network - Wikipedia} (Problem c)
+    \item \href{https://www.inmotionhosting.com/support/server/ssh/read-traceroute/}{How to Read a Traceroute - Inmotion Hosting} (Problem d)
+    \item \href{https://serverfault.com/questions/434211/what-does-z-and-x-mean-in-a-traceroute}{What does !Z and !X mean in a traceroute? - Server Fault} (Problem e)
+    \item \href{https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol}{Internet Control Message Protocol - Wikipedia} (Problem e)
   \end{itemize}
 \end{mycolorbox}
 
@@ -135,30 +141,30 @@
 \begin{problem}{2.1 (a)}
   我使用 \texttt{traceroute} 指令來追蹤封包的路徑，如以下所示：
   \begin{center}
-        \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{text}
+    \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{text}
 |{\color{gray}\$}| |\color{blue}traceroute| speed.ntu.edu.tw
 traceroute to speed.ntu.edu.tw (140.112.5.178), 64 hops max, 40 byte packets
 1  10.200.200.200 (10.200.200.200)  8.739 ms  8.330 ms  8.086 ms
 2  ip4-126.vpn.ntu.edu.tw (140.112.4.126)  6.536 ms  6.328 ms  6.970 ms
 3  140.112.5.178 (140.112.5.178)  8.289 ms !Z  7.341 ms !Z  7.224 ms !Z
-        \end{minted}
+    \end{minted}
   \end{center}
   \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{2-1-a.png} % 請將 example.png 放在同資料夾
     \caption{Traceroute to speed.ntu.edu.tw}
-    \label{fig:example}
+    \label{fig:2-1-a}
   \end{figure}
 \end{problem}
 
 % Problem 2-1-b
 \begin{problem}{2.1 (b)}
-  可以使用 \texttt{ping}、\texttt{dig}、\texttt{host} 或是 \texttt{nslookup} 指令。
+  可以使用 \texttt{ping}、\texttt{dig}、\texttt{host} 或是 \texttt{nslookup} 指令，如 \autoref{fig:2-1-b} 所示：
   \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{2-1-b.png} % 請將 example.png 放在同資料夾
     \caption{Domain to IP Address Commands}
-    \label{fig:example}
+    \label{fig:2-1-b}
   \end{figure}
 \end{problem}
 
@@ -177,19 +183,36 @@ traceroute to speed.ntu.edu.tw (140.112.5.178), 64 hops max, 40 byte packets
     \item Class B: \texttt{172.16.0.0 -- 172.31.255.255}
     \item Class C: \texttt{192.168.0.0 -- 192.168.255.255}
   \end{itemize}
-
   因此，\texttt{10.200.200.200} 是一個 Private Network 的 IP 位址。
 
-  另外，若我在瀏覽器當中輸入 \texttt{10.200.200.200}，則會出現台大 sslvpn 登入頁面的畫面（如下圖所示），但若關閉 VPN 連線後，則無法連線至該 IP 位址。有此可以推知該 IP 位址為位於台大內網的 sslvpn 的伺服器 IP 位址，屬於 Private Network。
+  另外，若我在瀏覽器當中輸入 \texttt{10.200.200.200}，則會出現台大 sslvpn 登入頁面的畫面（如 \autoref{fig:2-1-c} 所示），但若關閉 VPN 連線後，則無法連線至該 IP 位址。有此可以推知該 IP 位址為位於台大內網的 sslvpn 的伺服器 IP 位址，屬於 Private Network。
 
   \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{2-1-c.png}
     \caption{\texttt{10.200.200.200} 連線後頁面}
+    \label{fig:2-1-c}
   \end{figure}
 
   至於另外兩個 IP 位址，皆不在私有 IP 地址範圍內，因此可以認定為公有 IP 地址。
 \end{problem}
+
+% Problem 2-1-d
+\begin{problem}{2.1 (d)}
+  在 \texttt{traceroute} 的回傳結果當中 (\autoref{fig:2-1-a})，同一列的三個時間代表的是針對網路當中每一個節點進行三次測試所得到的結果 (3 tests per TTL value)。透過多次的測量，可以檢查網路的穩定性，以及路徑是否具有一制性。
+  而在不同列當中，越底下的時間並不一定比較大。因為每一個節點處理這種封包的 Priority 不同，可能會因為網路負載的不同而有所差異。因此，TTL 值越大，所需的時間不一定會越長。
+\end{problem}
+
+% Problem 2-1-e
+\begin{problem}{2.1 (e)} 以下為 \texttt{traceroute} 的路徑圖 (\autoref{fig:2-1-e})：
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{2-1-e-sequence.pdf}
+    \caption{Traceroute Sequence Graph}
+    \label{fig:2-1-e}
+  \end{figure}
+\end{problem}
+
 \subsection{Basic Wireshark (11pt)}
 \subsection{Cryptography (5pt)}
 \subsection{為什麼簽不了憑證??? (10pt)}
