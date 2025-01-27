@@ -207,10 +207,41 @@ traceroute to speed.ntu.edu.tw (140.112.5.178), 64 hops max, 40 byte packets
 \begin{problem}{2.1 (e)} 以下為 \texttt{traceroute} 的路徑圖 (\autoref{fig:2-1-e})：
   \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{2-1-e-sequence.pdf}
+    \includegraphics[width=\textwidth]{2-1-e-sequence.pdf}
     \caption{Traceroute Sequence Graph}
     \label{fig:2-1-e}
   \end{figure}
+\end{problem}
+
+% Problem 2-2
+\subsubsection{伺服器 \texttt{140.112.91.2}}
+
+\begin{mycolorbox}[teal]
+  \footnotesize
+  \textbf{Reference:}
+  \begin{itemize}
+    \item \href{https://en.wikipedia.org/wiki/Ping_(networking_utility)}{Ping (networking utility) - Wikipedia} (Problem a)
+    \item \href{https://ithelp.ithome.com.tw/articles/10301220}{ICMP協定是什麼? 如何應用Ping命令 - iThome} (Problem a)
+  \end{itemize}
+\end{mycolorbox}
+
+% Problem 2-2-a
+\begin{problem}{2.2 (a)} ping
+  \begin{enumerate}
+    \item 在使用 ping 指令時，發送的訊息為 ICMP 的 echo-request 封包，而接收的訊息為 ICMP 的 echo-reply 封包。當伺服器無法回應時，則會出現 Request timeout 的訊息。
+    \item 下圖 (\autoref{fig:2-2-a}) 為指令 \texttt{ping 140.112.91.2} 的回傳。
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{2-2-a.png}
+        \caption{Screenshot of \texttt{ping 140.112.91.2}}
+        \label{fig:2-2-a}
+      \end{figure}
+  \end{enumerate}
+\end{problem}
+
+% Problem 2-2-b
+\begin{problem}{2.2 (b)} nmap
+
 \end{problem}
 
 \subsection{Basic Wireshark (11pt)}
