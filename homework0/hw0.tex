@@ -115,7 +115,7 @@
   \begin{itemize}
     \item 作業系統：macOS Sequoia 15.2
     \item Command Line Tools: 16.2.0
-    \item
+    \item Shell: zsh 5.9 (arm64-apple-darwin24.0)
   \end{itemize}
 \end{myquote}
 
@@ -255,18 +255,291 @@ traceroute to speed.ntu.edu.tw (140.112.5.178), 64 hops max, 40 byte packets
 \section*{System Administration}
 
 \subsection{btw I use arch (15pt)}
-\setcounter{subsubsection}{-1}
 
-\subsubsection{安裝流程}
-\subsubsection{host name}
-\subsubsection{uuid 與磁碟空間分配}
-\subsubsection{Linux Distribution 與 kernel 版本}
+\begin{mycolorbox}[teal]
+  \footnotesize
+  \textbf{Reference:}
+  \begin{itemize}
+    \item \href{https://wiki.archlinux.org/title/Installation_guide_(正體中文)}{Arch Linux Installation Guide (正體中文)- ArchWiki}
+    \item \href{https://wiki.archlinux.org/title/VirtualBox/Install_Arch_Linux_as_a_guest}{VirtualBox/Install Arch Linux as a guest - ArchWiki}
+    \item \href{https://www.youtube.com/watch?v=mWl4P6DOt9M}{How to Dual Boot Arch Linux and Windows 11 (2025) - Ksk Royal (youtube)}
+    \item \href{https://www.youtube.com/watch?v=NxqU1G8hKWk&t=385s}{How to Dual Boot Arch Linux and Windows 11 (2024) - Ksk Royal (youtube)}
+    \item \href{https://wiki.archlinux.org/title/Swap}{Swap - ArchWiki}
+    \item \href{https://www.cyberciti.biz/faq/find-my-linux-machine-name/}{Linux Find Out My Machine Name/Hostname - nixCraft}
+    \item 討論對象：chatGPT、喻慈恩
+  \end{itemize}
+\end{mycolorbox}
+
+% Problem 6.0
+\begin{problem}{6.0}
+  \textbf{安裝流程}
+  \vspace{0.8em}
+
+  我使用虛擬機器 VirtualBox 來安裝 Arch Linux，操作環境為 Windows 11，安裝過程如下：
+  \begin{enumerate}
+    \item 下載 Arch Linux 的 ISO 檔案，並且在 \texttt{wsl (ubuntu)} 環境下使用 \texttt{sha256sum} 檢查 \texttt{iso} 檔案的 hash 值。
+      % TODO: Add a screenshot
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{arch/1-sha256sum.png}
+        \caption{Screenshot of \texttt{sha256sum}}
+        \label{fig:6-0-1}
+      \end{figure}
+    \item 下載並安裝 VirtualBox
+    \item 建立一個新的虛擬機器，配置如下：
+      \begin{itemize}
+        \item 名稱：archlinux
+        \item ISO 映像：選擇剛剛下載的 Arch Linux 的 ISO 檔案
+        \item 類型：Linux
+        \item 版本：Arch Linux (64-bit)
+        \item 記憶體大小：2 GB
+        \item 處理器：2 CPUs
+        \item 啟用 EFI
+        \item 硬碟：建立新的硬碟，大小 32 GB
+          \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.49\textwidth]{arch/2.png}
+            \includegraphics[width=0.49\textwidth]{arch/3.png}
+            \caption{VM Configuration}
+            \label{fig:6-0-2}
+          \end{figure}
+      \end{itemize}
+    \item 啟動虛擬機器，選擇 \texttt{Arch Linux install medium (x86\_64, UEFI)} 並按下 \texttt{Enter} 進入安裝 Live 環境。
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{arch/4.png}
+        \caption{進入 Live 環境}
+        \label{fig:6-0-4}
+      \end{figure}
+    \item 調整字體大小：\texttt{setfont ter-122n}
+    \item 確認網路連線：\texttt{ping -c 5 google.com}
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{arch/5.png}
+        \caption{確認網路連線}
+        \label{fig:6-0-5}
+      \end{figure}
+    \item 確認系統時間同部：\texttt{timedatectl}
+    \item 安裝必要套件，執行以下指令更新 Pacman 並安裝套件：
+      \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{zsh}
+pacman -Sy
+pacman -S archlinux-keyring
+pacman -S archinstall
+      \end{minted}
+    \item 建立硬碟分割表，並建立分割區：
+      \begin{enumerate}
+        \item 使用 \texttt{lsblk} 查看目前磁碟分割情況
+          \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.8\textwidth]{arch/6.png}
+            \caption{查看目前磁碟分割情況: \texttt{/dev/sda} 為主要硬碟區}
+            \label{fig:6-0-6}
+          \end{figure}
+        \item 使用 \texttt{cfdisk} 進行分割，並建立以下分割區： \\
+          \begin{tabular}{|c|c|c|c|}
+            \hline
+            \textbf{Partition} & \textbf{Type} & \textbf{Size} & \textbf{Mount Point} \\
+            \hline
+            /dev/sda1 & EFI System & 1G & /boot \\
+            /dev/sda2 & Linux filesystem & 15G & / \\
+            /dev/sda3 & Linux filesystem & 5G & /home \\
+            /dev/sda4 & Linux swap & 2G & swap \\
+            \hline
+          \end{tabular}
+          \clearpage
+          詳細步驟如下：
+          \begin{enumerate}
+            \item \texttt{cfdisk /dev/sda}
+            \item 選擇 \texttt{gpt} 作為分割表格式
+            \item 建立 \texttt{/dev/sda1}：移動到 \texttt{Free Space} $\rightarrow$ 按 \texttt{New} $\rightarrow$ 按 \texttt{Enter} $\rightarrow$ 輸入 \texttt{1G} $\rightarrow$ 再按 \texttt{Enter} $\rightarrow$ 選擇 \texttt{Type} $\rightarrow$ 設為 \texttt{EFI System}。
+            \item 建立 \texttt{/dev/sda2}：移動到 \texttt{Free Space} $\rightarrow$ 按 \texttt{New} $\rightarrow$ 按 \texttt{Enter} $\rightarrow$ 輸入 \texttt{15G} $\rightarrow$ 再按 \texttt{Enter} $\rightarrow$ 選擇 \texttt{Type} $\rightarrow$ 設為 \texttt{Linux filesystem}。
+            \item 建立 \texttt{/dev/sda3}：移動到 \texttt{Free Space} $\rightarrow$ 按 \texttt{New} $\rightarrow$ 按 \texttt{Enter} $\rightarrow$ 輸入 \texttt{5G} $\rightarrow$ 再按 \texttt{Enter} $\rightarrow$ 選擇 \texttt{Type} $\rightarrow$ 設為 \texttt{Linux filesystem}。
+            \item 建立 \texttt{/dev/sda4}：移動到 \texttt{Free Space} $\rightarrow$ 按 \texttt{New} $\rightarrow$ 按 \texttt{Enter} $\rightarrow$ 輸入 \texttt{2G} $\rightarrow$ 再按 \texttt{Enter} $\rightarrow$ 選擇 \texttt{Type} $\rightarrow$ 設為 \texttt{Linux swap}。
+              \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.7\textwidth]{arch/7.png}
+                \caption{\texttt{cfdisk} 分割區設定}
+                \label{fig:6-0-7}
+              \end{figure}
+            \item 按 \texttt{Write} 並確認，再按 \texttt{Quit} 離開。
+          \end{enumerate}
+        \item 使用 \texttt{lsblk} 確認分割區是否正確
+          \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.7\textwidth]{arch/8.png}
+            \caption{確認分割區是否正確}
+            \label{fig:6-0-8}
+          \end{figure}
+      \end{enumerate}
+    \item 格式化分割區：
+    \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{zsh}
+mkfs.fat -F32 /dev/sda1
+mkfs.ext4 /dev/sda2
+mkfs.ext4 /dev/sda3
+mkswap /dev/sda4
+      \end{minted}
+    \item 掛載分割區：
+      \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{zsh}
+mount /dev/sda2 /mnt
+mkdir /mnt/boot
+mount /dev/sda1 /mnt/boot
+mkdir /mnt/home
+mount /dev/sda3 /mnt/home
+swapon /dev/sda4
+      \end{minted}
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{arch/9.png}
+        \caption{掛載分割區}
+        \label{fig:6-0-9}
+      \end{figure}
+    \item 安裝基本系統：輸入 \texttt{archinstall}，各個選項如下：
+      \begin{itemize}
+        \item Archinstall language: English (100\%) (預設)
+        \item Locales:
+          \begin{itemize}
+            \item Keyboard layout: us (預設)
+            \item Locale language: en\_US (預設)
+            \item Locale encoding: UTF-8 (預設)
+          \end{itemize}
+        \item Mirrors: 選擇臺灣或其他東亞鄰境國家
+        \item Disk configuration:
+          \begin{itemize}
+            \item Partitioning: Pre-mounted configuration
+            \item Root mount directory: \texttt{/mnt}
+          \end{itemize}
+          \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{arch/10.png}
+            \caption{Disk Configuration}
+            \label{fig:6-0-10}
+          \end{figure}
+        \item Swap: 可以開啟 swap on zram，這樣除了我們配置的 swap 分割區外，還會開啟一個 swap on zram，可以提高系統的效能。
+        \item Bootloader: 選擇 \texttt{Grub}
+        \item Hostname: 學號
+        \item Root password、User account: 設定 root 密碼、新增使用者
+        \item Profile: 選擇 \texttt{Server}，我選擇裡面的 \texttt{sshd}
+        \item Network configuration: 選擇 \texttt{NetworkManager}
+        \item Timezone: Asia/Taipei
+        \item Automatic time sync (NTP): enable
+      \end{itemize}
+    \item 選擇完成後，按下 \texttt{Install} 開始安裝 (\autoref{fig:6-0-11})
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{arch/11.png}
+        \caption{按下 Install 之後，確認各項設定，之後點選 Yes 進行安裝}
+        \label{fig:6-0-11}
+      \end{figure}
+
+    \item 安裝完成後，選擇 yes， 來 chroot 進入新安裝的系統
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{arch/12.png}
+        \caption{chroot 進入新安裝的系統}
+        \label{fig:6-0-12}
+      \end{figure}
+    \item 安裝必要套件 \texttt{sudo}：
+    \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{zsh}
+pacman -Syu
+pacman -S wget curl git vim gcc neofetch htop
+    \end{minted}
+    \item 安裝 Grub：Archinstall 所安裝的 Grub 有時會有問題，因此我們需要重新安裝 Grub：
+    \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{zsh}
+pacman -S grub efibootmgr dosfstools mtools
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+grub-mkconfig -o /boot/grub/grub.cfg
+    \end{minted}
+    \item 輸入 \texttt{exit} 離開 chroot
+    \item 輸入 \texttt{shutdown now} 關機，並移除 \texttt{iso} 檔案，重新啟動虛擬機器
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{arch/13.png}
+        \caption{移除 \texttt{iso} 檔案，重新啟動虛擬機器}
+        \label{fig:6-0-13}
+      \end{figure}
+    \item 開機，使用 Grub 選擇 Arch Linux 進入系統
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{arch/grub.png}
+        \caption{使用 Grub 選擇 Arch Linux 進入系統}
+        \label{fig:6-0-15}
+      \end{figure}
+    \item 輸入 \texttt{nasa / nasa} 登入
+    \item 確認網路連線: \texttt{ping -c 3 google.com}
+    \item 完成安裝。
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{arch/14.png}
+        \caption{完成安裝}
+        \label{fig:6-0-14}
+      \end{figure}
+  \end{enumerate}
+\end{problem}
+
+% Problem 6.1
+\begin{problem}{6.1}
+  \textbf{host name}
+  \begin{itemize}
+    \item 在使用 \texttt{archinstall} 安裝 Arch Linux 時，我已經將主機名稱設定為學號 \texttt{B13901011}
+    \item 可使用以下指令更改主機名稱: \texttt{sudo hostnamectl set-hostname <hostname>}
+    \item 可以使用以下指令查看主機名稱: \texttt{sudo hostnamectl}
+  \end{itemize}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{arch/hostname.png}
+    \caption{Screenshot of \texttt{hostnamectl}}
+    \label{fig:6-1}
+  \end{figure}
+\end{problem}
+
+% Problem 6.2
+\begin{problem}{6.2}
+  \textbf{uuid 與磁碟空間分配}
+  \begin{itemize}
+    \item 使用指令 \texttt{lablk} 搭配 \texttt{-o} 選項可以查看磁碟分割區以及個字的 UUID
+      \begin{center}
+        \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{bash}
+sudo lsblk -o NAME,FSTYPE,FSVER,LABEL,UUID,SIZE,FSAVAIL,FSUSE%,MOUNTPOINT
+        \end{minted}
+      \end{center}
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=\textwidth]{arch/lsblk.png}
+        \caption{Screenshot of \texttt{lablk}}
+        \label{fig:6-2-1}
+      \end{figure}
+    \item 另外，使用指令 \texttt{df -h} 也可以查看磁碟的空間分配
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{arch/df.png}
+        \caption{Screenshot of \texttt{sudo df -h}}
+        \label{fig:6-2-2}
+      \end{figure}
+  \end{itemize}
+
+\end{problem}
+
+% Problem 6.3
+\begin{problem}{6.3}
+  \textbf{Linux Distribution 與 kernel 版本}
+  \begin{itemize}
+    \item 使用指令 \texttt{neofetch} 可以查看 Linux Distribution 與 kernel 版本
+    \item 另外，也可以使用 \texttt{sudo cat /etc/os-release} 查看 Distribution
+    \item 或是使用 \texttt{uname -r} 查看 kernel 版本
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{arch/neofetch.png}
+        \caption{Screenshot of \texttt{neofetch}}
+        \label{fig:6-3}
+      \end{figure}
+  \end{itemize}
+\end{problem}
 
 \subsection{Flag Hunting (25pt)}
 \subsubsection{history (6pt)}
 \subsubsection{寶藏箱 (/home/nasa/treasure)(5pt)}
-\subsubsection{魔物 (/home/nasa/boss)(5pt):}
-\subsubsection{通關密語 (/home/nasa/chal)(5pt):}
+\subsubsection{魔物 (/home/nasa/boss)(5pt)}
+\subsubsection{通關密語 (/home/nasa/chal)(5pt)}
 
 \subsection{NASA 國的大危機 (10pt)}
 \subsubsection{解讀古老卷軸 (3pt)}
