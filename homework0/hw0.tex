@@ -73,7 +73,7 @@
 }{\end{myquote}}
 
 \linespread{1.1}
-\usemintedstyle{xcode}
+% \usemintedstyle{xcode}
 
 % tex-fmt: on
 \begin{document}
@@ -372,14 +372,14 @@ pacman -S archinstall
           \end{figure}
       \end{enumerate}
     \item 格式化分割區：
-    \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{zsh}
+    \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{bash}
 mkfs.fat -F32 /dev/sda1
 mkfs.ext4 /dev/sda2
 mkfs.ext4 /dev/sda3
 mkswap /dev/sda4
       \end{minted}
     \item 掛載分割區：
-      \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{zsh}
+      \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{bash}
 mount /dev/sda2 /mnt
 mkdir /mnt/boot
 mount /dev/sda1 /mnt/boot
@@ -439,12 +439,12 @@ swapon /dev/sda4
         \label{fig:6-0-12}
       \end{figure}
     \item 安裝必要套件 \texttt{sudo}：
-    \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{zsh}
+    \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{bash}
 pacman -Syu
 pacman -S wget curl git vim gcc neofetch htop
     \end{minted}
     \item 安裝 Grub：Archinstall 所安裝的 Grub 有時會有問題，因此我們需要重新安裝 Grub：
-    \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{zsh}
+    \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{bash}
 pacman -S grub efibootmgr dosfstools mtools
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
@@ -475,7 +475,6 @@ grub-mkconfig -o /boot/grub/grub.cfg
       \end{figure}
   \end{enumerate}
 \end{problem}
-
 % Problem 6.1
 \begin{problem}{6.1}
   \textbf{host name}
@@ -523,7 +522,7 @@ sudo lsblk -o NAME,FSTYPE,FSVER,LABEL,UUID,SIZE,FSAVAIL,FSUSE%,MOUNTPOINT
 \begin{problem}{6.3}
   \textbf{Linux Distribution 與 kernel 版本}
   \begin{itemize}
-    \item 使用指令 \texttt{neofetch} 可以查看 Linux Distribution 與 kernel 版本
+    \item 使用指令 \texttt{neofetch} 可以查看 Linux Distribution 與 kernel 版本 (\autoref{fig:6-3})
     \item 另外，也可以使用 \texttt{sudo cat /etc/os-release} 查看 Distribution
     \item 或是使用 \texttt{uname -r} 查看 kernel 版本
       \begin{figure}[H]
@@ -540,11 +539,151 @@ sudo lsblk -o NAME,FSTYPE,FSVER,LABEL,UUID,SIZE,FSAVAIL,FSUSE%,MOUNTPOINT
 \subsubsection{寶藏箱 (/home/nasa/treasure)(5pt)}
 \subsubsection{魔物 (/home/nasa/boss)(5pt)}
 \subsubsection{通關密語 (/home/nasa/chal)(5pt)}
-
+\clearpage
 \subsection{NASA 國的大危機 (10pt)}
-\subsubsection{解讀古老卷軸 (3pt)}
-\subsubsection{啟動聖杯 (3pt)}
-\subsubsection{神秘訊息 (4pt)}
+\begin{mycolorbox}[teal]
+  \footnotesize
+  \textbf{Reference:}
+  \begin{itemize}
+    \item \href{https://ithelp.ithome.com.tw/articles/10199339}{Docker 基本教學 - iThome}
+    \item \href{https://docs.docker.com/build/concepts/dockerfile/}{Dockerfile Overview - Docker 官方文件}
+    \item \href{https://pjchender.dev/devops/docker-command-line/}{Docker 指令大全 - Pjchender}
+    \item \href{https://www.jinnsblog.com/2020/09/linux-tcpdump-network-traffic-tutorial.html}{Tcpdump 擷取封包指令範例教學 - Jinn's Blog}
+  \end{itemize}
+\end{mycolorbox}
+\begin{problem}{8.1} \textbf{解讀古老卷軸 (3pt)}
+  \begin{itemize}
+    \item Dockerfile 內容如以下以及 \autoref{fig:8-1} 所示
+      \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{Dockerfile}
+FROM python:3.9-slim
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libssl-dev \
+    net-tools \
+    iproute2 \
+    tcpdump \
+    tshark \
+    nano \
+    curl \
+    wget \
+    vim \
+    less \
+    procps \
+    lsof \
+    iputils-ping \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /usr/libexec/run
+
+COPY usr/libexec/run/dist/transfer /usr/libexec/run/transfer
+COPY usr/libexec/run/run.sh /usr/libexec/run/run.sh
+
+RUN chmod +x /usr/libexec/run/transfer
+RUN chmod +x /usr/libexec/run/run.sh
+
+CMD ["/usr/libexec/run/run.sh"]
+      \end{minted}
+
+    \item 第 1 行：\texttt{FROM python:3.9-slim} 指令表示這個 Dockerfile 是基於 \texttt{python:3.9-slim} 映像建立的。
+      這是一個精簡版的 Python 3.9 映像，基於 Debian，保留 Python 及必要的系統元件，但刪除了部分工具來減少映像大小。
+
+    \item 第 2 - 16 行：\texttt{RUN} 代表在 Docker 映像建構（build）時 執行的指令。這裡透過 \texttt{apt-get} 安裝了一些必要的 Linux 套件：
+      \begin{itemize}
+        \item \texttt{build-essential}：編譯 C/C++ 必備的工具（如 \texttt{gcc}）。
+        \item \texttt{libssl-dev}：SSL 加密函式庫。
+        \item \texttt{net-tools}：網路工具（包含 \texttt{ifconfig}, \texttt{netstat}）。
+        \item \texttt{iproute2}：網路工具（包含 \texttt{ip}, \texttt{ss}）。
+        \item \texttt{tcpdump}、\texttt{tshark}：網路封包擷取與分析
+        \item \texttt{nano}、\texttt{vim}：文字編輯器。
+        \item \texttt{curl}、\texttt{wget}：HTTP 下載工具。
+        \item \texttt{less}：文字檢視工具，適合瀏覽長文件。
+        \item \texttt{procps}：包含 \texttt{ps}, \texttt{top}, \texttt{kill} 等指令，用於系統進程管理。
+        \item \texttt{lsof}：列出開啟的檔案，適合偵測哪些程序正在存取特定檔案或網路連線。
+        \item \texttt{iputils-ping}：提供 \texttt{ping} 指令，測試網路連線。
+      \end{itemize}
+
+    \item 第 17 行：\texttt{rm -rf /var/lib/apt/lists/*} 這行指令清除 \texttt{apt} 快取，以減少 Docker 映像的大小。
+
+    \item 第 19 行：\texttt{mkdir -p /usr/libexec/run} 確保 \texttt{/usr/libexec/run} 目錄存在，用於存放後續執行的腳本或工具。
+
+    \item 第 21 - 22 行：\texttt{COPY} 指令將檔案從 Host 複製到容器內相對應的位置。
+
+    \item 第 24 - 25 行：\texttt{chmod +x} 指令賦予\texttt{transfer} 和 \texttt{run.sh} 執行權限：
+    \item 第 27 行：\texttt{CMD} 可以指定容器啟動時的預設指令。當容器啟動時，會執行 \texttt{run.sh} 腳本。
+  \end{itemize}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.555\textwidth]{8-1.png}
+    \caption{Dockerfile 內容截圖}
+    \label{fig:8-1}
+  \end{figure}
+\end{problem}
+
+\begin{problem}{8.2}
+  \textbf{啟動聖杯 (3pt)}
+  \begin{itemize}
+    \item 首先我嘗試了使用指令直接啟動 docker 容器，但是發現無法成功啟動，如 \autoref{label:8-2-1} 所示。
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{8-2-1.png}
+        \caption{直接啟動 docker 容器}
+        \label{label:8-2-1}
+      \end{figure}
+    \item 分析 Dockerfile 內容，可以知道在啟動容器時，會執行 \texttt{/usr/libexec/run/run.sh} 腳本。因此，我直接分析未被複製進去前的 \texttt{run.sh} 腳本，得知其內容如下：
+
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.88\textwidth]{8-2-2.png}
+        \caption{run.sh 腳本內容}
+        \label{label:8-2-2}
+      \end{figure}
+    \item 可以發現執行後，他會先檢查環境變數 \texttt{MAGIC\_SPELL} 的內容是否為 \texttt{hahahaiLoveNASA}，若是則執行 \texttt{transfer} 檔案，否則印出 \texttt{FAILED}。
+    \item 我使用以下指令在啟動 docker images 時，設定環境變數 \texttt{MAGIC\_SPELL} 的值為 \texttt{hahahaiLoveNASA}，成功啟動容器。
+      \begin{center}
+        \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{bash}
+docker run -e MAGIC_SPELL='hahahaiLoveNASA' my-magic-cup
+        \end{minted}
+      \end{center}
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{8-2-3.png}
+        \caption{成功啟動 docker 容器}
+        \label{label:8-2-3}
+      \end{figure}
+  \end{itemize}
+\end{problem}
+
+\begin{problem}{8.3}
+  \textbf{神秘訊息 (4pt)}
+  \begin{itemize}
+    \item 啟動 Docker container 並且 detach 之後，我使用指令 \texttt{docker ps -a} 查看開啟的 container
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=\textwidth]{8-3-1.png}
+        \caption{Screenshot of \texttt{docker ps -a}}
+        \label{fig:8-3-1}
+      \end{figure}
+    \item 可以看到 container 的名稱為 \texttt{adoring\_easley}，接著使用指令進入 container 內部
+      \begin{center}
+      \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{text}
+docker exec -it adoring_easley /bin/bash
+      \end{minted}
+      \end{center}
+    \item 在 docker 環境當中，我使用 \texttt{tcpdump} 指令來分析並且擷取封包。其中 \texttt{-i any} 參數表示監聽所有網路介面，\texttt{-A} 參數代表 Print each packet in ASCII，並成功找到 flag
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=\textwidth]{8-3-2.png}
+        \caption{Find the flag by using \texttt{tcpdump}}
+        \label{fig:8-3-2}
+      \end{figure}
+  \end{itemize}
+  \begin{mycolorbox}[green]
+    \textbf{Flag:}
+        \begin{minted}{text}
+flag[I'll send our killer on 3948/02/22]
+        \end{minted}
+  \end{mycolorbox}
+\end{problem}
 
 % -----------------------------------------------------------
 %    You don't have to mess with anything below this line.
