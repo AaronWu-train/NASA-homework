@@ -533,12 +533,161 @@ sudo lsblk -o NAME,FSTYPE,FSVER,LABEL,UUID,SIZE,FSAVAIL,FSUSE%,MOUNTPOINT
   \end{itemize}
 \end{problem}
 
+% Problem 7
 \subsection{Flag Hunting (25pt)}
+
+% Problem 7.1
 \subsubsection{history (6pt)}
+
+\begin{mycolorbox}[teal]
+  \footnotesize
+  \textbf{Reference:}
+  \begin{itemize}
+    \item \url{https://www.redhat.com/en/blog/history-command}
+    \item 討論對象：chatGPT
+  \end{itemize}
+\end{mycolorbox}
+
+\begin{problem}{7.1 (a)} 尋找 bash history 存放位置
+  \begin{itemize}
+    \item 進到虛擬機後，可以查看環境變數 \texttt{HISTFILE} 來查看歷史紀錄在哪一個檔案，指令如下：
+    \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{bash}
+echo $HISTFILE
+      \end{minted}
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{7-1-a.png}
+        \caption{Screenshot of \texttt{echo \$HISTFILE}}
+        \label{fig:7-1-a}
+      \end{figure}
+    \item 根據此指令回傳結果，可以知道 bash history 被存放在以下位置: \\
+      \texttt{/home/nasa/kickstart.nvim/.git/logs/refs/remotes/origin/HEAD}
+  \end{itemize}
+\end{problem}
+
+\clearpage
+% Problem 7.1-b
+\begin{problem}{7.1 (b)} bash session 可暫存指令數
+  \begin{itemize}
+    \item 可以查看環境變數 \texttt{HISTSIZE} 來查看 bash session 可暫存指令數的上限，結果如下：
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{7-1-b-0.png}
+        \caption{Screenshot of \texttt{echo \$HISTSIZE}}
+        \label{fig:7-1-b-0}
+      \end{figure}
+    \item 一般來說，環境變數的設定都是記載在 \texttt{.bashrc} 檔案中，查看檔案後發現第 19 行的確有 \texttt{HISTSIZE} 的設定。
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{7-1-b-2.png}
+        \caption{\texttt{.bashrc}，可以看到第 19 行宣告了環境變數 \texttt{HISTSIZE} 的值}
+        \label{fig:7-1-b-2}
+      \end{figure}
+    \item 若修改 \texttt{.bashrc} 當中 \texttt{HISTSIZE} 的值，再重新開啟一個 bash session，可以發現 \texttt{HISTSIZE} 的值已經被修改。因此，可以確認 \texttt{HISTSIZE} 的確是記錄在 \texttt{/home/nasa/.bashrc} 檔案中。
+  \end{itemize}
+\end{problem}
+\vspace{1em}
+% Problem 7.1-c
+\begin{problem}{7.1 (c)} history file 歷史指令數上限
+  \begin{itemize}
+    \item 可以查看環境變數 \texttt{HISTFILESIZE} 來查看 history file 歷史指令數的上限，結果如下：
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{7-1-c-0.png}
+        \caption{Screenshot of \texttt{echo \$HISTFILESIZE}}
+        \label{fig:7-1-c-0}
+      \end{figure}
+    \item 同上題，可以在 \texttt{.bashrc} 的第 20 行找到 \texttt{HISTFILESIZE} 的設定。
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{7-1-c-1.png}
+        \caption{\texttt{.bashrc}，可以看到第 20 行宣告了環境變數 \texttt{HISTFILESIZE} 的值}
+        \label{fig:7-1-c-1}
+      \end{figure}
+    \item 因此，可以確認 \texttt{HISTFILESIZE} 的確是記錄在 \texttt{/home/nasa/.bashrc} 檔案中。
+  \end{itemize}
+\end{problem}
+\begin{problem}{7.1 (d)} flag
+  \begin{itemize}
+    \item 首先，查看預設的 history file (\texttt{/home/nasa/.bash\_history}) 的內容，發現裡面有記載將 flag 輸出到新的 history file 第 104 行的內容：
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{7-1-d-1.png}
+        \caption{Screenshot of \texttt{~/.bash\_history}}
+        \label{fig:7-1-d-1}
+      \end{figure}
+    \item 結合 (a) 小題的內容，前往 \texttt{~/kickstart.nvim/.git/logs/refs/remotes/origin/HEAD} 查看第 104 行的內容，即可找到 flag。
+    \item 我使用 vim 來查看該檔案，並設定開啟行號（\texttt{:set nu}），跳到第 104 行找到內容如下：
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{7-1-d-2.png}
+        \caption{Find the flag in new history file}
+        \label{fig:7-1-d-2}
+      \end{figure}
+  \end{itemize}
+  \begin{mycolorbox}[green]
+    \textbf{Flag of Problem 7.1 (d):}
+    \begin{minted}{text}
+NASA{y0UF1nd+heCoRr3tFL4G}
+    \end{minted}
+  \end{mycolorbox}
+
+\end{problem}
+
+% Problem 7.2
+
 \subsubsection{寶藏箱 (/home/nasa/treasure)(5pt)}
+\begin{mycolorbox}[teal]
+  \footnotesize
+  \textbf{Reference:}
+  \begin{itemize}
+    \item \url{https://www.cyberciti.biz/faq/linux-ls-command-sort-by-file-size/}
+  \end{itemize}
+\end{mycolorbox}
+
+\begin{problem}{7.2} 　
+  \begin{itemize}
+    \item 首先，執行 \texttt{/home/nasa/treasure}，得到以下結果
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.85\textwidth]{7-2-1.png}
+        \caption{\texttt{/home/nasa/treasure} 執行結果}
+        \label{fig:7-2-1}
+      \end{figure}
+    \item 根據要求進到目錄中，找到大量 \texttt{flag-xxx} 的檔案。我使用以下指令使 \texttt{ls -l} 指令依據檔案大小排序(\texttt{-S})，並存到 \texttt{temp.txt} 當中，方便檢視。
+    \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{bash}
+ls -lS > temp.txt
+      \end{minted}
+    \item 在 \texttt{vim} 當中檢視 \texttt{temp.txt}，可以看到 \texttt{flag-xxx} 檔案的大小依序遞減，並找到最小的檔案 \texttt{flag-109}。
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.85\textwidth]{7-2-2.png}
+        \caption{檢視 \texttt{temp.txt}，找到最小的檔案 \texttt{flag-109}}
+        \label{fig:7-2-2}
+      \end{figure}
+    \item 最後，查看 \texttt{flag-109} 的第 134 行，即可找到 flag。
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{7-2-3.png}
+        \caption{查看 \texttt{flag-109} 的內容}
+        \label{fig:7-2-3}
+      \end{figure}
+  \end{itemize}
+
+\end{problem}
+
+\begin{mycolorbox}[green]
+  \textbf{Flag of Problem 7.2:}
+  \begin{minted}{text}
+NASA{EZ_TrEa$Ur3_HunT!}
+  \end{minted}
+\end{mycolorbox}
+
 \subsubsection{魔物 (/home/nasa/boss)(5pt)}
 \subsubsection{通關密語 (/home/nasa/chal)(5pt)}
+
 \clearpage
+% Problem 8
 \subsection{NASA 國的大危機 (10pt)}
 \begin{mycolorbox}[teal]
   \footnotesize
