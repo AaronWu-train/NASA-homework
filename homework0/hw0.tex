@@ -265,6 +265,7 @@ traceroute to speed.ntu.edu.tw (140.112.5.178), 64 hops max, 40 byte packets
     \item \href{https://www.youtube.com/watch?v=NxqU1G8hKWk&t=385s}{How to Dual Boot Arch Linux and Windows 11 (2024) - Ksk Royal (youtube)}
     \item \href{https://wiki.archlinux.org/title/Swap}{Swap - ArchWiki}
     \item \href{https://www.cyberciti.biz/faq/find-my-linux-machine-name/}{Linux Find Out My Machine Name/Hostname - nixCraft}
+    \item \href{https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/managing_storage_devices/getting-started-with-swap_managing-storage-devices#recommended-system-swap-space_getting-started-with-swap}{Recommended System Swap Space - Red Hat}
     \item 討論對象：chatGPT、喻慈恩
   \end{itemize}
 \end{mycolorbox}
@@ -318,7 +319,8 @@ traceroute to speed.ntu.edu.tw (140.112.5.178), 64 hops max, 40 byte packets
         \caption{確認網路連線}
         \label{fig:6-0-5}
       \end{figure}
-    \item 確認系統時間同部：\texttt{timedatectl}
+      \vspace{-1.5em}
+    \item 確認系統時間同步：\texttt{timedatectl}
     \item 安裝必要套件，執行以下指令更新 Pacman 並安裝套件：
       \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{zsh}
 pacman -Sy
@@ -334,6 +336,7 @@ pacman -S archinstall
             \caption{查看目前磁碟分割情況: \texttt{/dev/sda} 為主要硬碟區}
             \label{fig:6-0-6}
           \end{figure}
+          \vspace{-1em}
         \item 使用 \texttt{cfdisk} 進行分割，並建立以下分割區： \\
           \begin{tabular}{|c|c|c|c|}
             \hline
@@ -345,6 +348,13 @@ pacman -S archinstall
             /dev/sda4 & Linux swap & 2G & swap \\
             \hline
           \end{tabular}
+          \vspace{1em}
+          \begin{adjustwidth}{-3em}{0cm}
+            \begin{myquote}
+              \footnotesize
+              註：我虛擬機記憶體為 2 GB， swap 應該配置 2 到 4 GB，考量 Loading 應該不重，因此配置 2 GB。
+            \end{myquote}
+          \end{adjustwidth}
           \clearpage
           詳細步驟如下：
           \begin{enumerate}
