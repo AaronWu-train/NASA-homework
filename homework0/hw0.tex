@@ -645,36 +645,33 @@ NASA{y0UF1nd+heCoRr3tFL4G}
   \end{itemize}
 \end{mycolorbox}
 
-\begin{problem}{7.2} 　
-  \begin{itemize}
-    \item 首先，執行 \texttt{/home/nasa/treasure}，得到以下結果
-      \begin{figure}[H]
-        \centering
-        \includegraphics[width=0.85\textwidth]{7-2-1.png}
-        \caption{\texttt{/home/nasa/treasure} 執行結果}
-        \label{fig:7-2-1}
-      \end{figure}
-    \item 根據要求進到目錄中，找到大量 \texttt{flag-xxx} 的檔案。我使用以下指令使 \texttt{ls -l} 指令依據檔案大小排序(\texttt{-S})，並存到 \texttt{temp.txt} 當中，方便檢視。
+\begin{itemize}
+  \item 首先，執行 \texttt{/home/nasa/treasure}，得到以下結果
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.9\textwidth]{7-2-1.png}
+      \caption{\texttt{/home/nasa/treasure} 執行結果}
+      \label{fig:7-2-1}
+    \end{figure}
+  \item 根據要求進到目錄中，找到大量 \texttt{flag-xxx} 的檔案。我使用以下指令使 \texttt{ls -l} 指令依據檔案大小排序(\texttt{-S})，並存到 \texttt{temp.txt} 當中，方便檢視。
     \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{bash}
 ls -lS > temp.txt
       \end{minted}
-    \item 在 \texttt{vim} 當中檢視 \texttt{temp.txt}，可以看到 \texttt{flag-xxx} 檔案的大小依序遞減，並找到最小的檔案 \texttt{flag-109}。
-      \begin{figure}[H]
-        \centering
-        \includegraphics[width=0.85\textwidth]{7-2-2.png}
-        \caption{檢視 \texttt{temp.txt}，找到最小的檔案 \texttt{flag-109}}
-        \label{fig:7-2-2}
-      \end{figure}
-    \item 最後，查看 \texttt{flag-109} 的第 134 行，即可找到 flag。
-      \begin{figure}[H]
-        \centering
-        \includegraphics[width=0.7\textwidth]{7-2-3.png}
-        \caption{查看 \texttt{flag-109} 的內容}
-        \label{fig:7-2-3}
-      \end{figure}
-  \end{itemize}
-
-\end{problem}
+  \item 在 \texttt{vim} 當中檢視 \texttt{temp.txt}，可以看到 \texttt{flag-xxx} 檔案的大小依序遞減，並找到最小的檔案 \texttt{flag-109}。
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.9\textwidth]{7-2-2.png}
+      \caption{檢視 \texttt{temp.txt}，找到最小的檔案 \texttt{flag-109}}
+      \label{fig:7-2-2}
+    \end{figure}
+  \item 最後，查看 \texttt{flag-109} 的第 134 行，即可找到 flag。
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.9\textwidth]{7-2-3.png}
+      \caption{查看 \texttt{flag-109} 的內容}
+      \label{fig:7-2-3}
+    \end{figure}
+\end{itemize}
 
 \begin{mycolorbox}[green]
   \textbf{Flag of Problem 7.2:}
@@ -684,8 +681,124 @@ NASA{EZ_TrEa$Ur3_HunT!}
 \end{mycolorbox}
 
 \subsubsection{魔物 (/home/nasa/boss)(5pt)}
+\begin{mycolorbox}[teal]
+  \footnotesize
+  \textbf{Reference:}
+  \begin{itemize}
+    \item \url{https://stackoverflow.com/questions/13671750/what-does-mean-or-in-bash}
+    \item \url{https://www.runoob.com/linux/linux-comm-pkill.html}
+  \end{itemize}
+\end{mycolorbox}
+\begin{itemize}
+  \item 首先，執行 \texttt{/home/nasa/boss}，得到以下結果
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=\textwidth]{7-3-1.png}
+      \caption{\texttt{/home/nasa/boss} 執行結果}
+      \label{fig:7-3-1}
+    \end{figure}
+  \item 我使用以下指令成功在三秒內 kill 掉 \texttt{boss} 的所有 subprocess，得到 flag。
+      \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{bash}
+./boss & pkill -P $!  　
+      \end{minted}
+  \item 這裡 \texttt{\$!} 代表最後一個背景執行的程序的 PID，因此 \texttt{pkill -P \$!} 會 kill 掉所有 \texttt{boss} 的 subprocess。
+\end{itemize}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{7-3-2.png}
+  \caption{得到 flag}
+  \label{fig:7-3-2}
+  \begin{mycolorbox}[green]
+    \textbf{Flag of Problem 7.3:}
+      \begin{minted}{text}
+NASA{m0dERn_Pr0B1em$_reQU1r3_m0dERn_SOluT10N5}
+      \end{minted}
+  \end{mycolorbox}
+\end{figure}
+
+\clearpage
 \subsubsection{通關密語 (/home/nasa/chal)(5pt)}
+\begin{mycolorbox}[teal]
+  \footnotesize
+  \textbf{Reference:}
+  \begin{itemize}
+    \item \url{https://eecsmt.com/linux/linux-strings/}
+    \item \url{https://blog.gtwang.org/linux/linux-grep-command-tutorial-examples/}
+    \item \href{https://stackoverflow.com/questions/33431842/how-to-pass-command-output-as-multiple-arguments-to-another-command}{How to pass command output as multiple arguments to another command - Stack Overflow}
+  \end{itemize}
+\end{mycolorbox}
+
+\begin{itemize}
+  \item 首先，執行 \texttt{/home/nasa/chal}，得到以下結果
+
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.8\textwidth]{7-4-1.png}
+      \caption{\texttt{/home/nasa/chal} 執行結果}
+      \label{fig:7-4-1}
+    \end{figure}
+
+  \item 根據題目提示，我們可以使用 \texttt{strings} 指令來將二進位檔 \texttt{chal} 的可閱讀部份輸出，並使用 \texttt{grep} 找到含有特定字串的通關密語。
+    \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{bash}
+strings chal | grep 486 | grep re02
+    \end{minted}
+  \item 最後，利用 \texttt{\$(...)} 的語法，將 \texttt{strings chal | grep 486 | grep re02} 的輸出作為參數傳入 \texttt{./chal}，即可得到 flag。
+    \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{bash}
+./chal $(strings chal | grep 486 | grep re02)
+    \end{minted}
+\end{itemize}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{7-4-2.png}
+  \caption{得到 flag}
+  \label{fig:7-4-2}
+\end{figure}
+\begin{mycolorbox}[green]
+  \textbf{Flag of Problem 7.4:}
+    \begin{minted}{text}
+NASA2025{n4ndeharuh1ka93yatt4n0}
+    \end{minted}
+\end{mycolorbox}
+
+\clearpage
 \subsubsection{tmux (4pt)}
+\begin{mycolorbox}[teal]
+  \footnotesize
+  \textbf{Reference:}
+  \begin{itemize}
+    \item \url{https://blog.gtwang.org/linux/linux-tmux-terminal-multiplexer-tutorial/}
+    \item \url{https://github.com/jbranchaud/til/blob/master/tmux/change-the-default-prefix-key.md}
+  \end{itemize}
+\end{mycolorbox}
+
+\begin{itemize}
+  \item 首先，檢視 \texttt{.tmux.conf} 檔案，發現裡面將 \texttt{prefix} 改為 \texttt{Ctrl-a}。
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.6\textwidth]{7-5-1.png}
+      \caption{Screenshot of \texttt{.tmux.conf}}
+      \label{fig:7-5-1}
+    \end{figure}
+    \vspace{-0.5em}
+
+  \item 我輸入 \texttt{tmux} 開啟一個新的 tmux session，並且開始切割畫面。
+  \item 在 tmux 當中，將畫面切成左右兩塊的指令是 \texttt{prefix} 再輸入 \texttt{\%}，將畫面切成上下兩塊的指令是 \texttt{prefix} 再輸入 \texttt{"}。以下為我的切分步驟：
+    \vspace{-1em}
+      \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{text}
+Ctrl-a "
+Ctrl-a %
+Ctrl-a "
+Ctrl-a %
+Ctrl-a "
+Ctrl-a %
+      \end{minted}
+\end{itemize}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.83\textwidth]{7-5-2.png}
+  \caption{Screenshot of tmux panes}
+  \label{fig:7-5-2}
+\end{figure}
 
 \clearpage
 % Problem 8
