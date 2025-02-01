@@ -73,6 +73,7 @@
 
 \linespread{1.1}
 % \usemintedstyle{xcode}
+\setminted{breaklines=true, breakanywhere=true, autogobble=true, frame=lines, linenos, framesep=2mm}
 
 % tex-fmt: on
 \begin{document}
@@ -523,7 +524,7 @@ traceroute to speed.ntu.edu.tw (140.112.5.178), 64 hops max, 40 byte packets
     \item 下圖 (\autoref{fig:2-2-a}) 為指令 \texttt{ping 140.112.91.2} 的回傳，可得知無法獲得伺服器回應。
       \begin{figure}[H]
         \centering
-        \setlength{\abovecaptionskip}{-2pt}
+        \setlength{\abovecaptionskip}{-1pt}
         \setlength{\belowcaptionskip}{-10pt}
         \includegraphics[width=0.75\textwidth]{2-2-a.png}
         \caption{Screenshot of \texttt{ping 140.112.91.2}}
@@ -589,12 +590,6 @@ curl -X POST http://140.112.91.2/
 nmap -p 48000-49000 140.112.91.2
 nc 140.112.91.2 48763
 \end{minted}
-      \begin{figure}[h]
-        \centering
-        \includegraphics[width=0.9\textwidth]{2-2-d.png}
-        \caption{Screenshot of command responses}
-        \label{fig:2-2-d}
-      \end{figure}
     \item 指令解釋：
       \begin{enumerate}
         \item 我先使用 \texttt{curl} 指令可以發送 HTTP 請求。因為要發送 POST 請求，需加上 \texttt{-X POST} 參數。並且得到伺服器回應的要搜尋 port 48000 到 49000 的訊息。
@@ -602,9 +597,218 @@ nc 140.112.91.2 48763
         \item 最後使用 \texttt{nc} 以 TCP 方式連線至 port 48763，並且得到伺服器回應的訊息。
       \end{enumerate}
   \end{itemize}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{2-2-d.png}
+    \caption{Screenshot of command responses}
+    \label{fig:2-2-d}
+  \end{figure}
+\end{problem}
+
+% Problem 2-3
+\subsubsection{DNS record}
+\begin{mycolorbox}[teal]
+  \footnotesize
+  \textbf{Reference:}
+  \begin{itemize}
+    \item \href{https://stackoverflow.com/questions/3963085/linux-command-to-translate-domain-name-to-ip}{Linux Command to Translate Domain Name to IP - Stack Overflow} (Problem a)
+    \item \href{https://stackoverflow.com/questions/3621682/reverse-ip-find-domain-names-on-ip-address}{Reverse IP, Find Domain Names on IP Address - Stack Overflow} (Problem b)
+    \item \href{https://code.yidas.com/nslookup/}{nslookup 查詢 DNS, TXT} (Problem c)
+    \item \href{https://www.2daygeek.com/nslookup-command-check-find-dns-records-lookup-linux/}{How to Find DNS Records on Linux Using the nslookup Command - 2daygeek} (Problem d)
+  \end{itemize}
+\end{mycolorbox}
+
+% Problem 2-3-a
+\begin{problem}{2.3 (a)} 使用 \texttt{dig} 指令可以得到 \texttt{bocchi-tracker.csie.ntu.edu.tw} 的 ip 位址，如下所示：
+\begin{minted}[frame=lines, linenos, framesep=2mm]{bash}
+dig +short Bocchi-Tracker.csie.ntu.edu.tw
+\end{minted}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{2-3-a.png}
+    \caption{Screenshot of \texttt{dig Bocchi-Tracker.csie.ntu.edu.tw}}
+    \label{fig:2-3-a}
+  \end{figure}
+  \begin{mycolorbox}[green]
+    \begin{answer}
+      Bocchi 所在的 IP 位址為 \texttt{140.112.30.131}
+    \end{answer}
+  \end{mycolorbox}
+\end{problem}
+
+% Problem 2-3-b
+\clearpage
+\begin{problem}{2.3 (b)}
+  使用指令 \texttt{nslookup} 可以從 ip 反向獲得 domain name，如下所示：
+\begin{minted}[frame=lines, linenos, framesep=2mm]{bash}
+nslookup 140.112.30.131
+\end{minted}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{2-3-b.png}
+    \caption{IP to Domain Name using \texttt{nslookup}}
+    \label{fig:2-3-b}
+  \end{figure}
+  \begin{mycolorbox}[green]
+    \begin{answer}
+      Domain Name 為 \texttt{Starry.csie.ntu.edu.tw}
+    \end{answer}
+  \end{mycolorbox}
+\end{problem}
+
+% Problem 2-3-c
+\begin{problem}{2.3 (c)}
+  使用 \texttt{nslookup} 指令搭配 \texttt{type=txt} 參數可以查詢 DNS 的 TXT 記錄，如下所示：
+\begin{minted}[frame=lines, linenos, framesep=2mm]{bash}
+nslookup -type=txt Starry.csie.ntu.edu.tw
+\end{minted}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{2-3-c.png}
+    \caption{DNS TXT Record using \texttt{nslookup}}
+    \label{fig:2-3-c}
+  \end{figure}
+  \begin{mycolorbox}[green]
+    \begin{answer}
+      \texttt{"Your guitar is in the box"}
+    \end{answer}
+  \end{mycolorbox}
+\end{problem}
+
+% Problem 2-3-d
+\vspace{0.5em}
+\begin{problem}{2.3 (d)}
+  使用 \texttt{nslookup} 指令搭配 \texttt{type=cname} 參數可以查詢 DNS 的 cname 記錄，如下所示：
+  \vspace{-0.5em}
+\begin{minted}[frame=lines, linenos, framesep=2mm]{bash}
+nslookup -type=cname Bocchi.csie.ntu.edu.tw
+\end{minted}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{2-3-d.png}
+    \caption{DNS CNAME Record using \texttt{nslookup}}
+    \label{fig:2-3-d}
+  \end{figure}
+  \begin{mycolorbox}[green]
+    \begin{answer}
+      CNAME 記錄為 \texttt{Gu1tArHer0.csie.ntu.edu.tw}
+    \end{answer}
+  \end{mycolorbox}
 \end{problem}
 
 \subsection{Basic Wireshark (11pt)}
+\begin{mycolorbox}[teal]
+  \footnotesize
+  \textbf{Reference:}
+  \begin{itemize}
+    \item \href{https://www.wireshark.org/docs/}{Wireshark User's Guide}
+    \item \url{https://ithelp.ithome.com.tw/articles/10300987}
+    \item \url{https://blog.csdn.net/maimang1001/article/details/123237909} (Problem 3.1 (c))
+    \item \href{https://stackoverflow.com/questions/9641440/convert-from-ascii-string-encoded-in-hex-to-plain-ascii}{Convert from ASCII string encoded in Hex to plain ASCII - Stack Overflow} (Problem 3.1 (f))
+    \item 討論對象：chatGPT
+  \end{itemize}
+\end{mycolorbox}
+
+% Problem 3-1
+\subsubsection{p1.pcapng}
+
+% Problem 3-1-a
+\begin{problem}{3.1 (a)}
+  我認為伺服器為 \texttt{::1}（本機回環地址），所使用的 Port 為 3000。
+\end{problem}
+
+% Problem 3-1-b
+\begin{problem}{3.1 (b)}
+  我根據封包內容推斷的理由如下：
+  \begin{enumerate}
+    \item 由於 \texttt{::1} 是本機回環地址，因此可以推測是本機的伺服器，所有的封包都是在本機上進行傳輸。
+    \item 封包紀錄當中多次出現 TCP 三次交握，可以看到是由不同的 Port (5xxxx) 針對 Port 3000 傳送 SYN 封包，再由 Port 3000 回傳 SYN-ACK 封包，最後再由 Port (5xxxx) 回傳 ACK 封包，因此可以推測是 TCP 三次交握的過程，並且伺服器位於 Port 3000。
+    \item 同時，封包當中也有出現 HTTP GET 請求，Destination 也是 Port 3000，而 HTTP responses 則由 Port 3000 回傳，因此也可以推測伺服器端為 Port 3000。
+  \end{enumerate}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{3-1-b-1.png}
+    \caption{多次的 TCP 三次交握，可推斷 Port 3000 為伺服器}
+    \label{fig:3-1-b}
+  \end{figure}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.49\textwidth]{3-1-b-2.png}
+    \includegraphics[width=0.49\textwidth]{3-1-b-3.png}
+    \caption{HTTP GET（左圖，Destination 為 3000）與 Response（右圖，Source 為 3000）}
+    \label{fig:3-1-b-2}
+  \end{figure}
+\end{problem}
+
+% Problem 3-1-c
+\begin{problem}{3.1 (c)}
+  以下為 Wireshark 製作的流量表（Y 軸為 Bytes/1 sec，採用對數尺度）：
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{3-1-c.png}
+    \caption{Wireshark I/O throughput Graphs: p1.pcapng}
+    \label{fig:3-1-c}
+  \end{figure}
+\end{problem}
+
+% Problem 3-1-d
+\begin{problem}{3.1 (d)}
+  最高傳輸速度約為 $1.268 \times 10^6$ Bytes/s ，發生在第二秒時（見上圖橘線處）。
+\end{problem}
+
+% Problem 3-1-e
+\begin{problem}{3.1 (e)}
+  以下為我計算 HTTP GET Request 的數量的流程：
+  \begin{enumerate}
+    \item 在工具列當中點選 \texttt{Statistics}，選擇 \texttt{HTTP}，並且選擇 \texttt{Requests}。
+    \item 在下方 Display Filter 欄位中，輸入 \texttt{http.request.method == "GET"}
+    \item 即可看到 HTTP GET Request 的數量為 29 個。
+  \end{enumerate}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{3-1-e.png}
+    \caption{Statistics of HTTP GET Requests}
+    \label{fig:3-1-e}
+  \end{figure}
+\end{problem}
+
+% Problem 3-1-f
+\begin{problem}{3.1 (f)} 以下為我找到 Customer-ID 的過程：
+  \begin{enumerate}
+    \item 在 Filters 當中輸入 \texttt{http contains "invoice"}，在列表中找到唯一一筆 POST 請求，推測即為用戶端新增一筆發票資訊的請求。(\autoref{fig:3-1-f-1})
+    \item 點選該封包，並且在下方的 Packet Details 中找到看起來像 \texttt{Customer ID} 的資訊。(\autoref{fig:3-1-f-2})
+    \item 從中可以看到 Customer ID 的 Data 欄位為: \\ \texttt{33393538646339652d373132662d343337372d383565392d666563346236613634343261}
+    \item 使用以下 python 程式碼可以將其解碼，得到一個 UUID形式的字串: \\ \texttt{3958dc9e-712f-4377-85e9-fec4b6a6442a}
+  \end{enumerate}
+  \begin{minted}{python3}
+hex_data = "33393538646339652d373132662d343337372d383565392d666563346236613634343261"
+ascii_string = bytes.fromhex(hex_data).decode()
+print(ascii_string)
+  \end{minted}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{3-1-f-1.png}
+    \caption{Filtering HTTP Requests contains "invoice"}
+    \label{fig:3-1-f-1}
+  \end{figure}
+  \vspace{-1em}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{3-1-f-2.png}
+    \caption{Packer Details of POST Request}
+    \label{fig:3-1-f-2}
+  \end{figure}
+  \vspace{-1em}
+  \begin{mycolorbox}[green]
+    \begin{answer}
+      Customer ID 為 \texttt{3958dc9e-712f-4377-85e9-fec4b6a6442a}
+    \end{answer}
+  \end{mycolorbox}
+\end{problem}
+
+% Problem 3-2
+\subsubsection{p2.cap}
+
 \subsection{Cryptography (5pt)}
 \subsection{為什麼簽不了憑證??? (10pt)}
 
