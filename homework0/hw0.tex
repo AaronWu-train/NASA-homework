@@ -654,7 +654,7 @@ swapon /dev/sda4
         \caption{chroot 進入新安裝的系統}
         \label{fig:6-0-12}
       \end{figure}
-    \item 安裝必要套件 \texttt{sudo}：
+    \item 安裝常用套件：
     \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{bash}
 pacman -Syu
 pacman -S wget curl git vim gcc neofetch htop
@@ -831,10 +831,10 @@ echo $HISTFILE
       \begin{figure}[H]
         \centering
         \includegraphics[width=0.8\textwidth]{7-1-d-1.png}
-        \caption{Screenshot of \texttt{~/.bash\_history}}
+        \caption{Screenshot of \texttt{\textasciitilde/.bash\_history}}
         \label{fig:7-1-d-1}
       \end{figure}
-    \item 結合 (a) 小題的內容，前往 \texttt{~/kickstart.nvim/.git/logs/refs/remotes/origin/HEAD} 查看第 104 行的內容，即可找到 flag。
+    \item 結合 (a) 小題的內容，前往 \texttt{\textasciitilde/kickstart.nvim/.git/logs/refs/remotes/origin/HEAD} 查看第 104 行的內容，即可找到 flag。
     \item 我使用 vim 來查看該檔案，並設定開啟行號（\texttt{:set nu}），跳到第 104 行找到內容如下：
       \begin{figure}[H]
         \centering
