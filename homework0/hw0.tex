@@ -309,7 +309,83 @@ TCP / IP 模型總共分為五層，依照由下而上的順序分別是：
 \end{enumerate}
 
 % Problem 1-5
-\subsubsection{HTTP 與 HTTPS}
+\subsubsection{EFK}
+\begin{mycolorbox}[teal]
+  \footnotesize
+  \textbf{Reference:}
+  \begin{itemize}
+    \item \url{https://www.webcomm.com.tw/blog/efk/}
+    \item \url{https://www.linktech.com.tw/post/efk-elasticsearch-fluentd-kibana}
+    \item 討論對象：chatGPT、喻慈恩
+  \end{itemize}
+\end{mycolorbox}
+\begin{enumerate}
+  \item EFK 是什麼？
+    \begin{itemize}
+      \item EFK 是一套由三個開源工具組成的日誌管理以及分析工具系統，分別是 Elasticsearch、Fluentd、Kibana。他可以將伺服器的日誌資料進行收集、分析、儲存、查詢等等，並且可以用來監視伺服器性能、追蹤應用程式錯誤、分析使用者行為等等。
+      \item EFK 由以下三個工具組成：
+        \begin{enumerate}
+          \item \textbf{Elasticsearch}：一個分散式的搜尋與分析引擎，可以用來快速的查詢日記資料。
+          \item \textbf{Fluentd}：一個開源的資料收集器，用於標準化的搜集以及轉發日誌資料。
+          \item \textbf{Kibana}：一個開源的資料視覺化工具，通常跟 Elasticsearch 一同使用，用於查詢、分析、視覺化日誌資料。
+        \end{enumerate}
+      \item 一般來說，會直接使用 Fluentd 監聽每個容器的 Log，並將 Log 資料送到 Elasticsearch 進行儲存，最後透過 Kibana 來進行分析、視覺化。
+    \end{itemize}
+  \item 優點：
+    \begin{itemize}
+      \item 集中管理 log：EFK 系統可以將眾多節點與應用程式的 log 整合到一個地方，方便管理和檢視，並且可以進行視覺化的分析。
+      \item 永久保存 log：EFK 可以將 log 資料永久儲存，並且可以進行搜尋、查詢、分析等等，避免系統自動覆蓋掉舊的 log 資料。
+      \item 高效率地搜尋：Elasticsearch 是一個高效率的搜尋引擎，可以快速的搜尋大量的 log 資料，而不需要透過文字編輯器緩慢的檢視。
+      \item 可擴展性：可以再結合其他的插件或是工具，來擴展 EFK 的功能。
+      \item 因此，若以資工系上來說，在要管理大量的伺服器、網站以及 WS 時，使用 EFK 來管理眾多不同的 log 是一個較有效率的方式。
+    \end{itemize}
+  \item 缺點與可能的問題：
+    \begin{itemize}
+      \item 資源消耗：Elasticsearch 會佔用大量的記憶體和硬碟空間，因此需要有足夠的硬體資源來支援，否則會影響到效能。
+      \item 設定和維護的複雜性：EFK 系統的設定與管理相對複雜，Fluentd 需要針對不同的應用程式進行設定，並且需要不斷的維護。Elasticsearch 也要定時的清理並設定儲存策略，否則會佔用過多的硬碟空間並且降低搜尋效率。
+      \item 因此，若要使用 EFK 系統，需要有足夠的硬體資源來支援，並且需要有專門的人員不斷地來進行設定和維護。
+    \end{itemize}
+\end{enumerate}
+
+% Problem 1-6
+\subsubsection{Multiplexing}
+\begin{mycolorbox}[teal]
+  \footnotesize
+  \textbf{Reference:}
+  \begin{itemize}
+    \item \url{https://en.wikipedia.org/wiki/Multiplexing}
+    \item \url{https://www.asus.com/tw/support/faq/1042759/}
+    \item \url{https://wslab.csie.ntu.edu.tw/service/WiFi.html}
+    \item \url{https://en.wikipedia.org/wiki/Code-division_multiple_access}
+    \item \url{https://en.wikipedia.org/wiki/Orthogonal_frequency-division_multiple_access}
+    \item 討論對象：chatGPT、喻慈恩
+  \end{itemize}
+\end{mycolorbox}
+\begin{itemize}
+  \item Multiplexing 是一種將多個訊號或數據流合併成一個訊號或數據流的技術，以便在單個通道上進行傳輸。主要目標為將多個低速頻道的信號整合到高速頻道上，並且以高速頻道進行傳輸，以提高傳輸的效率並且有效利用高速頻道的頻寬。
+  \item 多個低速頻道的信號會先經過 MUX 裝置進行整合，以高速頻道傳輸後，再經過 DEMUX 裝置進行分離，以便在接收端進行解碼。
+    \clearpage
+  \item Multiplexing 可以分為以下幾種類型：
+    \begin{enumerate}
+      \item \textbf{Time-Division Multiplexing (TDM)}：將不同的訊號分配到不同的時間片段上，讓每個訊號在特定時間當中獨佔整個線路進行傳輸。
+        \begin{itemize}
+          \item 例子：電話系統
+        \end{itemize}
+      \item \textbf{Frequency-Division Multiplexing (FDM)}：將不同的訊號分配到高速頻道的不同頻率上，並且疊加在一起進行傳輸。接收端再透過濾波器來分離不同的訊號。
+        \begin{itemize}
+          \item 例子：無線電視、無線電波廣播等。
+        \end{itemize}
+      \item \textbf{Code-Division Multiplexing (CDM)}：將所有訊號用不同的方式編碼後，在同一個頻率上進行傳輸，接收端再透過解碼器來分離不同的訊號。
+        \begin{itemize}
+          \item 例子：3G 手機通訊系統
+        \end{itemize}
+    \end{enumerate}
+  \item 在資工系上的 Wi-Fi 系統當中，應該用到了 FDM 的技術。
+    \begin{itemize}
+      \item 資工系的 Wi-Fi 分為 \texttt{csie} 和 \texttt{csie-5G}，其中 \texttt{csie} 使用 2.4GHz 或 5GHz 頻段（由設備自行選擇），\texttt{csie-5G} 使用 5GHz 頻段，使用了不同的頻率進行傳輸以分流。
+      \item OFDMA: 許多 Wi-Fi 系統使用了 OFDMA（Orthogonal Frequency Division Multiple Access）技術，將頻寬切成多個有正交性的子載波，以便在同一個頻段上進行多個用戶的傳輸。
+    \end{itemize}
+\end{itemize}
 
 %------------------------------------------------------------
 
@@ -357,7 +433,7 @@ traceroute to speed.ntu.edu.tw (140.112.5.178), 64 hops max, 40 byte packets
   \end{center}
   \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{2-1-a.png} % 請將 example.png 放在同資料夾
+    \includegraphics[width=\textwidth]{2-1-a.png} % 請將 example.png 放在同資料夾
     \caption{Traceroute to speed.ntu.edu.tw}
     \label{fig:2-1-a}
   \end{figure}
@@ -368,13 +444,14 @@ traceroute to speed.ntu.edu.tw (140.112.5.178), 64 hops max, 40 byte packets
   可以使用 \texttt{ping}、\texttt{dig}、\texttt{host} 或是 \texttt{nslookup} 指令，如 \autoref{fig:2-1-b} 所示：
   \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{2-1-b.png} % 請將 example.png 放在同資料夾
+    \includegraphics[width=\textwidth]{2-1-b.png} % 請將 example.png 放在同資料夾
     \caption{Domain to IP Address Commands}
     \label{fig:2-1-b}
   \end{figure}
 \end{problem}
 
 % Problem 2-1-c
+\clearpage
 \begin{problem}{2.1 (c)}
   在 (a) 小題當中，總共解析出三個 IP 位址，分別是：
   \begin{itemize}
@@ -395,7 +472,7 @@ traceroute to speed.ntu.edu.tw (140.112.5.178), 64 hops max, 40 byte packets
 
   \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{2-1-c.png}
+    \includegraphics[width=\textwidth]{2-1-c.png}
     \caption{\texttt{10.200.200.200} 連線後頁面}
     \label{fig:2-1-c}
   \end{figure}
@@ -410,9 +487,13 @@ traceroute to speed.ntu.edu.tw (140.112.5.178), 64 hops max, 40 byte packets
 \end{problem}
 
 % Problem 2-1-e
-\begin{problem}{2.1 (e)} 以下為 \texttt{traceroute} 的路徑圖 (\autoref{fig:2-1-e})：
+\clearpage
+\begin{problem}{2.1 (e)} 以下為 \texttt{traceroute} 的路徑圖 (見下頁 \autoref{fig:2-1-e})：
+  \vspace{-1em}
   \begin{figure}[H]
     \centering
+    \setlength{\abovecaptionskip}{-2pt}
+    \setlength{\belowcaptionskip}{-2.5pt}
     \includegraphics[width=\textwidth]{2-1-e-sequence.pdf}
     \caption{Traceroute Sequence Graph}
     \label{fig:2-1-e}
@@ -421,24 +502,30 @@ traceroute to speed.ntu.edu.tw (140.112.5.178), 64 hops max, 40 byte packets
 
 % Problem 2-2
 \subsubsection{伺服器 \texttt{140.112.91.2}}
-
 \begin{mycolorbox}[teal]
   \footnotesize
   \textbf{Reference:}
   \begin{itemize}
     \item \href{https://en.wikipedia.org/wiki/Ping_(networking_utility)}{Ping (networking utility) - Wikipedia} (Problem a)
     \item \href{https://ithelp.ithome.com.tw/articles/10301220}{ICMP協定是什麼? 如何應用Ping命令 - iThome} (Problem a)
+    \item \href{https://hack543.com/nmap-tutorial/}{9 個常見的 Nmap 通訊埠掃描情境} (Problem b, c)
+    \item \href{https://nmap.org/man/zh/index.html}{Nmap 参考指南(Man Page)} (Problem b, c)
+    \item \href{https://medium.com/starbugs/web-server-nginx-2-bc41c6268646 }{Web Server \& Nginx - Medium} (Problem c)
+    \item \href{https://blog.csdn.net/m0_37886429/article/details/104399554}{使用 curl 發送 POST 請求} (Problem d)
+    \item \href{https://blog.gtwang.org/linux/linux-utility-netcat-examples/}{Netcat 網路管理者工具實用範例} (Problem d)
   \end{itemize}
 \end{mycolorbox}
 
 % Problem 2-2-a
-\begin{problem}{2.2 (a)} ping
+\begin{problem}{2.2 (a)} \textbf{ping}
   \begin{enumerate}
     \item 在使用 ping 指令時，發送的訊息為 ICMP 的 echo-request 封包，而接收的訊息為 ICMP 的 echo-reply 封包。當伺服器無法回應時，則會出現 Request timeout 的訊息。
-    \item 下圖 (\autoref{fig:2-2-a}) 為指令 \texttt{ping 140.112.91.2} 的回傳。
+    \item 下圖 (\autoref{fig:2-2-a}) 為指令 \texttt{ping 140.112.91.2} 的回傳，可得知無法獲得伺服器回應。
       \begin{figure}[H]
         \centering
-        \includegraphics[width=0.9\textwidth]{2-2-a.png}
+        \setlength{\abovecaptionskip}{-2pt}
+        \setlength{\belowcaptionskip}{-10pt}
+        \includegraphics[width=0.75\textwidth]{2-2-a.png}
         \caption{Screenshot of \texttt{ping 140.112.91.2}}
         \label{fig:2-2-a}
       \end{figure}
@@ -446,8 +533,75 @@ traceroute to speed.ntu.edu.tw (140.112.5.178), 64 hops max, 40 byte packets
 \end{problem}
 
 % Problem 2-2-b
-\begin{problem}{2.2 (b)} nmap
+\begin{problem}{2.2 (b)} \textbf{nmap ping scan}
+  \begin{itemize}
+    \item 使用以下指令可以進行 ping scan，並且得到伺服器有開機的結果：
+\begin{minted}[frame=lines, linenos, framesep=2mm]{bash}
+nmap -sn 140.112.91.2
+\end{minted}
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{2-2-b-1.png}
+        \caption{Screenshot of ping scan using \texttt{nmap}}
+        \label{fig:2-2-b-1}
+      \end{figure}
+    \item 如果要看出跟上一題比較之下，為何只有 nmap 才能看出伺服器有開機，而 ping 無法看出，我們可以增加 \texttt{-vv} 參數，以顯示更多的資訊：
+\begin{minted}[frame=lines, linenos, framesep=2mm]{bash}
+nmap -sn -vv 140.112.91.2
+\end{minted}
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{2-2-b-2.png}
+        \caption{Screenshot of ping scan using \texttt{nmap -vv}}
+        \label{fig:2-2-b-2}
+      \end{figure}
+    \item 可以從圖中看到 \texttt{nmap} 收到了一個 \texttt{syn-ack} 封包，代表使用 TCP 請求的方式會讓伺服器有回應。
+    \item 由此可以推知，可能是這台伺服器阻擋了使用 ICMP 協定的 ping 封包，但是允許 TCP 的封包通過。由於 \texttt{nmap} 在沒有收到 ICMP echo 回應時會再使用 TCP 的方式進行掃描，送出了 \texttt{syn} 封包，因此可以看到伺服器有回應。
+  \end{itemize}
+\end{problem}
 
+% Problem 2-2-c
+\clearpage
+\begin{problem}{2.2 (c)} \textbf{nmap port scan}
+  \begin{itemize}
+    \item 使用 \texttt{nmap} 當中的 \texttt{-sv} 參數可以進行 port scan，並且得到運行的軟體與版本。
+    \item 若要提升掃描速度，也可以加上 \texttt{-p 80} 指定掃描 port 80，但是不用加上也可以得到題目所要求的結果。
+\begin{minted}[frame=lines, linenos, framesep=2mm]{bash}
+nmap -sv 140.112.91.2
+\end{minted}
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.88\textwidth]{2-2-c.png}
+        \caption{Screenshot of port scan using \texttt{nmap -sv}}
+        \label{fig:2-2-c}
+      \end{figure}
+    \item 可以從圖中判讀出運行在 Port 80 的軟體為 \texttt{nginx}，版本為 \texttt{1.26.2}
+    \item nginx 為一個 Web server 以及反向代理軟體，可以用來部署網頁、反向代理不同網址到伺服器上的不同容器、提供 SSL 加密、處理 HTTP Cache、以及提供負載平衡等等功能。
+  \end{itemize}
+\end{problem}
+
+% Problem 2-2-d
+\begin{problem}{2.2 (d)} \textbf{curl}
+  \begin{itemize}
+    \item 以下為我使用的指令與回傳結果（\autoref{fig:2-2-d}）：
+  \begin{minted}[frame=lines, linenos, framesep=2mm]{bash}
+curl -X POST http://140.112.91.2/
+nmap -p 48000-49000 140.112.91.2
+nc 140.112.91.2 48763
+\end{minted}
+      \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.9\textwidth]{2-2-d.png}
+        \caption{Screenshot of command responses}
+        \label{fig:2-2-d}
+      \end{figure}
+    \item 指令解釋：
+      \begin{enumerate}
+        \item 我先使用 \texttt{curl} 指令可以發送 HTTP 請求。因為要發送 POST 請求，需加上 \texttt{-X POST} 參數。並且得到伺服器回應的要搜尋 port 48000 到 49000 的訊息。
+        \item 接著使用 \texttt{nmap} 針對 port 48000 到 49000 進行 port scan（使用 \texttt{-p} 參數），發現伺服器開啟了 port 48763。
+        \item 最後使用 \texttt{nc} 以 TCP 方式連線至 port 48763，並且得到伺服器回應的訊息。
+      \end{enumerate}
+  \end{itemize}
 \end{problem}
 
 \subsection{Basic Wireshark (11pt)}
