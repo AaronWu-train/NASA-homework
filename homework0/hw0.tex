@@ -104,7 +104,214 @@
 
 % Problem 1
 \subsection{Short Answer (10pt)}
-\vspace{0.5em}
+
+% Problem 1-1
+\subsubsection{TCP / IP 模型}
+\begin{mycolorbox}[teal]
+  \footnotesize
+  \textbf{Reference:}
+  \begin{itemize}
+    \item \href{https://blog.zhenghui.idv.tw/2020/07/27/教你如何快速看懂-TCP-IP五層-網路封包/}{教你如何快速看懂 TCP/IP 五層 - 鄭輝的部落格}
+    \item \href{https://en.wikipedia.org/wiki/Internet_protocol_suite}{Internet Protocol Suite - Wikipedia}
+    \item \href{https://www.ibm.com/docs/en/aix/7.3?topic=protocols-network-interface-packet-headers}{Network interface and packet headers - IBM}
+    \item \href{https://ithelp.ithome.com.tw/m/articles/10236217}{TCP/IP 五層結構 - iThome}
+    \item 討論對象：chatGPT、喻慈恩
+  \end{itemize}
+\end{mycolorbox}
+
+TCP / IP 模型總共分為五層，依照由下而上的順序分別是：
+\begin{enumerate}
+  \item \textbf{Physical Layer}（實體層）：
+    \begin{itemize}
+      \item 功能：負責網路當中物理上的實體連接，為資料端裝置提供傳送資料的通路，並將數據轉換為電信號或無線電波進行傳輸。
+      \item 範例：網路線、無線電波、光纖等。
+    \end{itemize}
+  \item \textbf{Link Layer}（鏈結層）：
+    \begin{itemize}
+      \item 功能：定義了在區域網路連結範圍內的設備之間的直接連線的通信方法，會將資料分成 Frame 進行傳輸。主要協議包含 Ethernet、Wi-Fi、PPP 等。這一層具有數據糾錯的功能，可以檢測數據傳輸中的錯誤。
+      \item 範例：MAC 位址、交換機（Switch）等。
+    \end{itemize}
+  \item \textbf{Internet Layer}（網路層）：
+    \begin{itemize}
+      \item 功能：負責跨網路的數據傳輸，確保數據能夠從來源設備傳送到目標設備。此層會將數據封包透過路由器來決定最佳的傳輸路徑。主要協議包括 IPv4、IPv6、ICMP、ARP 等。
+      \item 範例：路由器、IP 位址等。
+    \end{itemize}
+  \item \textbf{Transport Layer}（傳輸層）：
+    \begin{itemize}
+      \item 功能：用於不同設備或環境間傳輸訊息，說明如何溝通以及傳遞資料。
+      \item 範例：TCP、UDP 等。
+    \end{itemize}
+  \item \textbf{Application Layer}（應用層）：
+    \begin{itemize}
+      \item 功能：提供應用程式與網路之間的介面，使應用程式能夠連接網路。
+      \item 範例：HTTP（網頁瀏覽）、FTP（檔案傳輸）、SMTP（電子郵件）等。
+    \end{itemize}
+\end{enumerate}
+
+% Problem 1-2
+\subsubsection{網路設備與常見問題解析}
+\begin{mycolorbox}[teal]
+  \footnotesize
+  \textbf{Reference:}
+  \begin{itemize}
+    \item \href{https://en.wikipedia.org/wiki/VLAN}{VLAN - Wikipedia} (Problem a)
+    \item \href{https://www.etherwan.com/tw/support/featured-articles/brief-introduction-vlans}{虛擬區域網路（VLAN）- EtherWAN} (Problem a)
+    \item \href{https://www.cloudflare.com/zh-tw/learning/network-layer/what-is-a-network-switch/}{交換器與路由器 - Cloudflare} (Problem b)
+    \item \href{https://www.geeksforgeeks.org/difference-between-router-and-switch/}{Difference between Router and Switch - GeeksforGeeks} (Problem b)
+    \item \href{https://en.wikipedia.org/wiki/Broadcast_storm}{Broadcast storm - Wikipedia} (Problem c)
+    \item \href{https://en.wikipedia.org/wiki/Switching_loop}{Switching loop - Wikipedia} (Problem c)
+    \item 討論對象：喻慈恩、林妤娟、chatGPT
+  \end{itemize}
+\end{mycolorbox}
+
+% Problem 1-2 (a)
+\begin{problem}{1-2 (a)} \textbf{虛擬區域網路 (Virtual Local Area Network, VLAN)}
+  \begin{itemize}
+    \item 功能：VLAN 是一種將網路裝置分割成多個虛擬網段的技術，可以以藉由路由器或是交換器建置，將硬體上在同一個區域網路內的裝置以軟體隔離成不同網段，以達成更有效的管理和資源劃分。
+    \item 用途：用來區隔裝置、避免廣播風暴或其他資安危機。
+  \end{itemize}
+\end{problem}
+
+% Problem 1-2 (b)
+\begin{problem}{1-2 (b)} \textbf{Switch v.s. Router}
+  \begin{itemize}
+    \item 功能與用途：
+      \vspace{-0.5em}
+      \begin{itemize}
+        \item \textbf{Switch}：用於連接多個區域網路（LAN）內的裝置，並且可以根據 MAC 位址來轉發數據，以達到將數據封包傳送到正確的目的地的目的，並減少不必要的流量傳輸。
+        \item \textbf{Router}：負責連接不同的網路之間（如 LAN 與 Internet），並且根據 IP 位址決定封包傳輸的最佳路徑，讓設備能夠連接至網際網路或其他網段。同時，支援 NAT 以及 DHCP 等功能，可以將內部網路的私有 IP 位址映射到公共 IP 位址、自動分配內網 IP 位址、管理網路流量等。
+      \end{itemize}
+    \item 五層架構中扮演的角色：
+      \vspace{-0.5em}
+      \begin{itemize}
+        \item \textbf{Switch}：大部分為第 2 層，在 Link Layer（鏈結層）透過設備 MAC Address 轉發數據。少部分交換器也支援第 3 層交換，可以在網路層根據目的地 IP 位址轉發數據。
+        \item \textbf{Router}：屬於第 3 層，在 Internet Layer（網路層）根據 IP 位址轉發數據。
+      \end{itemize}
+  \end{itemize}
+\end{problem}
+
+% Problem 1-2 (c)
+\begin{problem}{1-2 (c)} \textbf{Broadcast Storm 和 Switching Loop}
+  \begin{enumerate}
+    \item \textbf{Broadcast Storm}: Broadcast Storm 指的是在網路當中， Broadcast 跟 Multicast 的封包在網路中不斷的傳播和累積，導致網路流量過大，使得網路效能下降，甚至導致網路癱瘓。Broadcast Storm 的原因可能是因為網路中的裝置不斷的轉發 Broadcast 封包，導致封包在網路中不斷的傳播。
+
+    \item \textbf{Switching Loop}: Switching Loop 是指在網路當中具有大於一條的 layer-2 路徑，例如交換機之間形成一個環。因為在 layer-2 當中是不具有 TTL 機制的，因此封包會在網路中不斷的循環、廣播、擴大，導致 Broadcast Storm 的發生。
+
+    \item 兩者比較：
+      \begin{itemize}
+        \item Broadcast Storm 是一種網路現象，而 Switching Loop 則是造成 Broadcast Storm 的原因之一。
+        \item 除了 Switching Loop 之外，Broadcast Storm 也可能是因為受到 DOS 攻擊、病毒或是錯誤的網路設定等原因導致。
+      \end{itemize}
+    \item 解決方法：
+      \begin{itemize}
+        \item \textbf{Broadcast Storm (主要靠流量控制)}:
+          \begin{itemize}
+            \item 使用 LAN 或是使用 VLAN 來隔離 Broadcast Domain 可以降低 Broadcast Storm 的發生的大小。
+            \item 設定 Router 或是防火牆來阻隔攻擊
+          \end{itemize}
+        \item \textbf{Switching Loop (主要靠網路拓撲規劃與 STP 防範)}:
+          \begin{itemize}
+            \item 可以啟用 Spanning Tree Protocol（STP）來避免發生：STP 會動態的偵測網路當中是否有 loop 存在，並且自動關閉造成 loop 的連線，將拓樸結構轉為樹狀結構，以避免 Broadcast Storm 的發生。
+            \item 妥善配置交換機的連接，避免形成 loop。
+          \end{itemize}
+      \end{itemize}
+  \end{enumerate}
+\end{problem}
+
+% Problem 1-3
+\subsubsection{IPv4 與 IPv6}
+\begin{mycolorbox}[teal]
+  \footnotesize
+  \textbf{Reference:}
+  \begin{itemize}
+    \item \href{https://www.ithome.com.tw/tech/92046}{認識IPv4與IPv6的差異 - iThome}
+    \item \href{https://aws.amazon.com/tw/compare/the-difference-between-ipv4-and-ipv6/}{IPv4 與 IPv6 有何差異    - AWS}
+    \item \href{https://www.koc.com.tw/archives/499314}{IPv4 與 IPv6 兩種網路協定有什麼區別？ - 電腦王阿達}
+  \end{itemize}
+\end{mycolorbox}
+\begin{enumerate}
+  \item 為什麼 IPv4 要換成 IPv6？
+    \begin{itemize}
+      \item 主要原因為 IP 位址不足：IPv4 的 IP 位址總共只有 $2^{32}$ 個，而隨著網路的發展，IP 位址的需求量不斷增加，導致 IP 位址目前已經幾乎用完。IPv6 則有 $2^{128}$ 個 IP 位址，可以解決 IP 位址不足的問題。
+    \end{itemize}
+  \item 以後有機會從 IPv6 換成其他的嗎？
+    \begin{itemize}
+      \item IPv6 的位址數量非常大，基本上足以應付未來上百年內的需求了，因此短時間內不太可能會再換成其他的 IP 協議。另外，IPv6 設計時也有保留一定的擴展性，可以應對未來的需求。
+    \end{itemize}
+  \item IPv4 與 IPv6 的差異？
+    \begin{itemize}
+      \item IPv4 的 IP 為四個 0 到 255 的數字組成，以小數點隔開。而 IPv6 的 IP 位址則是由八組四位十六進位數字組成，中間以冒號隔開。
+      \item 表頭格式：IPv6 的表頭格式有大幅度的修改，讓表頭格式更簡潔並且具有擴充性。
+      \item 自動配置：IPv4 需要透過 DHCP 伺服器來分配 IP 位址，不然就要手動分配位址。而 IPv6 使用無狀態地址自動配置 (SLAAC)，讓裝置本身可以在沒有其他設備的情況下自動配置 IP 位址，因此不再需要透過 DHCP 來分配 IP 位址，可以降低網路流量。
+      \item 路由效率：IPv6 不需要經由 NAT 來連接網路，因此可以提高路由效率。
+      \item 安全性：IPv6 在設計上考量了安全性，例如預設支援 IPsec，以及使用隱私性更強的協議等等，可以提供更好的安全性。
+    \end{itemize}
+  \item 為什麼還要用 IPv4？
+    \begin{itemize}
+      \item 目前網路上仍有許多的裝置在使用 IPv4 並且不支援 IPv6，因此全面轉換到 IPv6 需要不少的時間以及大量的成本。因此，現在仍然在使用 IPv4。
+    \end{itemize}
+\end{enumerate}
+
+% Problem 1-4
+\subsubsection{UDP 與 TCP}
+\begin{mycolorbox}[teal]
+  \footnotesize
+  \textbf{Reference:}
+  \begin{itemize}
+    \item \url{https://ithelp.ithome.com.tw/articles/10205476}
+    \item \url{https://www.explainthis.io/zh-hant/swe/tcp-udp}
+    \item \url{https://nordvpn.com/zh-tw/blog/tcp-udp-bijiao/}
+    \item 討論對象：chatGPT、喻慈恩
+  \end{itemize}
+\end{mycolorbox}
+
+\begin{enumerate}
+  \item \textbf{UDP:}
+    \begin{itemize}
+      \item 全名：使用者資料包協定 (User Datagram Protocol)
+      \item 運作原理：UDP 是一種較簡單的傳輸層協定，傳輸方（Server）不需確認接收方（Client）是否有收到封包，只需要將資料封包傳送出去，而接受端在收到封包之後，也不用回覆回應封包 (ACK) 給發送端。
+    \end{itemize}
+  \item \textbf{TCP:}
+    \begin{itemize}
+      \item 全名：傳輸控制協定 (Transmission Control Protocol)
+      \item 運作原理：TCP 是一種較為複雜且可靠的傳輸層協定，傳輸方（Server）會透過三次交握確認接收方（Client）是否有收到封包，並且會將封包按照順序傳輸，以確保資料的正確性。
+      \item 三次交握：一種確保資料正確性的機制，流程如下：
+        \begin{enumerate}
+          \item Client 向 Server 主動傳送一個要求連線封包 (SYN)。
+          \item Server 收到封包後，回傳一個確認封包 (SYN-ACK)。
+          \item Client 收到確認封包後，再回傳一個確認封包 (ACK)，完成三次交握。
+        \end{enumerate}
+    \end{itemize}
+  \item 相同之處：皆為在傳輸層 (layer-4) 的協定，用於在網路上傳輸資料。
+  \item 相異之處：
+
+    \vspace{0.5em}
+    \renewcommand{\arraystretch}{1.2} % 增加行距，提高可讀性
+    \begin{tabular}{|c|c c|}
+      \hline
+      & \textbf{TCP} & \textbf{UDP} \\
+      \hline
+      可靠性 & 可靠 & 不可靠 \\
+      速度 & 慢，較省資源 & 快，較耗資源 \\
+      傳輸方式 & 封包按順序傳輸 & 無法保證順序 \\
+      錯誤檢查與修正 & 有 & 無 \\
+      壅塞控制 & 有 & 無 \\
+      確認 & 有 & 只有檢查碼 \\
+      \hline
+    \end{tabular}
+    \vspace{0.5em}
+
+  \item 何時使用 UDP？何時使用 TCP？：
+    \begin{itemize}
+      \item UDP：適合用於即時性要求高、傳輸量大、傳輸過程中不需要確認的應用，例如：串流服務、網路遊戲、視訊會議、DNS 查詢、DHCP 等等。
+      \item TCP：適合用於需要確認接收方是否有收到封包、傳輸過程中需要保證資料正確性的應用，例如：HTTP (網頁)、FTP (檔案傳輸)、SMTP (電子郵件)、SSH、VPN、線上銀行等等。
+    \end{itemize}
+\end{enumerate}
+
+% Problem 1-5
+\subsubsection{HTTP 與 HTTPS}
+
+%------------------------------------------------------------
 
 % Problem 2
 \subsection{Command Line Utilities (14pt)}
@@ -504,7 +711,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 \begin{problem}{6.2}
   \textbf{uuid 與磁碟空間分配}
   \begin{itemize}
-    \item 使用指令 \texttt{lablk} 搭配 \texttt{-o} 選項可以查看磁碟分割區以及個字的 UUID
+    \item 使用指令 \texttt{lsblk} 搭配 \texttt{-o} 選項可以查看磁碟分割區以及個字的 UUID
       \begin{center}
         \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{bash}
 sudo lsblk -o NAME,FSTYPE,FSVER,LABEL,UUID,SIZE,FSAVAIL,FSUSE%,MOUNTPOINT
@@ -513,7 +720,7 @@ sudo lsblk -o NAME,FSTYPE,FSVER,LABEL,UUID,SIZE,FSAVAIL,FSUSE%,MOUNTPOINT
       \begin{figure}[H]
         \centering
         \includegraphics[width=\textwidth]{arch/lsblk.png}
-        \caption{Screenshot of \texttt{lablk}}
+        \caption{Screenshot of \texttt{lsblk}}
         \label{fig:6-2-1}
       \end{figure}
     \item 另外，使用指令 \texttt{df -h} 也可以查看磁碟的空間分配
@@ -532,12 +739,13 @@ sudo lsblk -o NAME,FSTYPE,FSVER,LABEL,UUID,SIZE,FSAVAIL,FSUSE%,MOUNTPOINT
   \textbf{Linux Distribution 與 kernel 版本}
   \begin{itemize}
     \item 使用指令 \texttt{neofetch} 可以查看 Linux Distribution 與 kernel 版本 (\autoref{fig:6-3})
+    \item 安裝 \texttt{neofetch}：\texttt{sudo pacman -S neofetch}
     \item 另外，也可以使用 \texttt{sudo cat /etc/os-release} 查看 Distribution
     \item 或是使用 \texttt{uname -r} 查看 kernel 版本
       \begin{figure}[H]
         \centering
         \includegraphics[width=0.9\textwidth]{arch/neofetch.png}
-        \caption{Screenshot of \texttt{neofetch}}
+        \caption{Screenshot of \texttt{neofetch} and \texttt{uname -r}}
         \label{fig:6-3}
       \end{figure}
   \end{itemize}
@@ -749,11 +957,11 @@ NASA{m0dERn_Pr0B1em$_reQU1r3_m0dERn_SOluT10N5}
     \end{figure}
 
   \item 根據題目提示，我們可以使用 \texttt{strings} 指令來將二進位檔 \texttt{chal} 的可閱讀部份輸出，並使用 \texttt{grep} 找到含有特定字串的通關密語。
-    \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{bash}
+    \begin{minted}[frame=lines, linenos, framesep=2mm]{bash}
 strings chal | grep 486 | grep re02
     \end{minted}
   \item 最後，利用 \texttt{\$(...)} 的語法，將 \texttt{strings chal | grep 486 | grep re02} 的輸出作為參數傳入 \texttt{./chal}，即可得到 flag。
-    \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{bash}
+    \begin{minted}[frame=lines, linenos, framesep=2mm]{bash}
 ./chal $(strings chal | grep 486 | grep re02)
     \end{minted}
 \end{itemize}
@@ -918,7 +1126,7 @@ docker run -e MAGIC_SPELL='hahahaiLoveNASA' my-magic-cup
       \end{center}
       \begin{figure}[H]
         \centering
-        \includegraphics[width=0.9\textwidth]{8-2-3.png}
+        \includegraphics[width=\textwidth]{8-2-3.png}
         \caption{成功啟動 docker 容器}
         \label{label:8-2-3}
       \end{figure}
