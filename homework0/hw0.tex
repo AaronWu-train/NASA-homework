@@ -696,6 +696,7 @@ nslookup -type=cname Bocchi.csie.ntu.edu.tw
   \end{mycolorbox}
 \end{problem}
 
+%------------------------------------------------------------
 \subsection{Basic Wireshark (11pt)}
 \begin{mycolorbox}[teal]
   \footnotesize
@@ -781,7 +782,7 @@ nslookup -type=cname Bocchi.csie.ntu.edu.tw
     \item 從中可以看到 Customer ID 的 Data 欄位為: \\ \texttt{33393538646339652d373132662d343337372d383565392d666563346236613634343261}
     \item 使用以下 python 程式碼可以將其解碼，得到一個 UUID形式的字串: \\ \texttt{3958dc9e-712f-4377-85e9-fec4b6a6442a}
   \end{enumerate}
-  \begin{minted}{python3}
+  \begin{minted}[frame=lines, linenos,framesep=2mm]{python3}
 hex_data = "33393538646339652d373132662d343337372d383565392d666563346236613634343261"
 ascii_string = bytes.fromhex(hex_data).decode()
 print(ascii_string)
@@ -856,7 +857,7 @@ print(ascii_string)
       \end{figure}
   \end{enumerate}
   \begin{mycolorbox}[green]
-    \textsl{Ans.} Apache 官方圖片在第 32 個封包當中，檔名為 \texttt{apache\_pb.png}。\\
+    \textsl{Ans.} Apache 官方圖片在第 32 個封包當中，檔名為 \texttt{apache\_pb.png}。
     \begin{figure}[H]
       \centering
       \includegraphics[width=0.7\textwidth]{3-2-b-apache_pb.png}
@@ -866,7 +867,97 @@ print(ascii_string)
   \end{mycolorbox}
 \end{problem}
 
+%------------------------------------------------------------
+
+% Problem 4
 \subsection{Cryptography (5pt)}
+\begin{mycolorbox}[teal]
+  \footnotesize
+  \textbf{Reference:}
+  \begin{itemize}
+    \item \href{https://zh.wikipedia.org/wiki/RSA加密演算法}{RSA加密演算法 - 維基百科}
+    \item \url{https://ithelp.ithome.com.tw/m/articles/10344236}
+    \item 討論對象：chatGPT
+  \end{itemize}
+\end{mycolorbox}
+以下為我的解題過程：
+\begin{enumerate}
+  \item 首先，我 \texttt{nc 140.112.91.1 48763}，連線到 140.112.91.1:48763，得到以下回覆：
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=\textwidth]{4-1.png}
+      \caption{Instruction from the server}
+      label{fig:4-1}
+    \end{figure}
+  \item 我使用 chatGPT 協助我撰寫出生成 RSA Key 的 python 程式碼，如以下所示：
+\begin{minted}[frame=lines, linenos, framesep=2mm]{python}
+from Crypto.Util.number import getPrime, inverse, long_to_bytes
+
+p = getPrime(2048)
+q = getPrime(2048)
+n = p * q
+phi_n = (p - 1) * (q - 1)
+
+e = 65537
+d = inverse(e, phi_n) # Compute d = e^(-1) (mod φ(n))
+
+with open("new_rsa_key_n.txt", "w") as file:
+    file.write(str(n))
+with open("new_rsa_key_d.txt", "w") as file:
+    file.write(str(d))
+
+# Should be 4096 bits, if not, re-run the code
+print(f"n bit length: {n.bit_length()}")
+\end{minted}
+  \item 以上這組程式碼當中，p, q 兩個 2048-bit 的質數相乘得到的 n 有時只有 4095 bits，因此不斷重複執行該 python 程式，直到找到一組 n 為 4096 bits 的 RSA Key。
+  \item 以下為我生成的 RSA Key：
+  \begin{minted}[frame=lines, linenos,framesep=2mm, breakanywheresymbolpre={}, fontsize=\scriptsize]{text}
+n = 532624368705902006559613338989002987419775185014225264723002837874133312646613064462847344220599095094265066112543542975794420903669366285307949218031886410399081466064946232706581952212740934495032552928382218164763768333830672973700965964652210861471296808726343981729177502795246782402485996695477002546687684669682813061271185152245485936205346653987403685971029398973594102116084796901283314823501905367473819680796281718039928975317273708337681246720995907942791124446747581369651373295665771609415525884497679645335166764858353117206388339666908249554650722543561775785625709586787709019500037842205352964473543243339029424483197444388906785262086398737776158829685072238461148774314423094056523442955625064786666952540141997476547694562783422486360956163718176521108436269497015957102900376268978888328412711479988715332301475897734991510094289606981318297237022961920446522710035103444020772112732526104334769686433076310272085236423800249855964442681023399859087993748000320339619117745615289137030987377936895577849812096695354277663229019293951664317462273326598123172661751644195211602593728439271176659456983212300082698784143405763304762339852242754884846028701616747062402752395842111389754773187876647900044455571129
+d = 249728879893723497529087365617194619793930938021531561322740302458097997024659753190020495189138486565704517318556509888463172948532161789751478761183511689865922689308995954019986423357692653541714760919531391424185743524451056947005253248727179079776157107260678668089387160014836552324085473953013066424380413728581007366018294663445066021449225505954269198506458815198446672411356236006876019620925073594026817387910770170009779781704215733246872291213249954365718383081307653391620724150162775684180238329170464014859682383242557251407874954625398731896719523358081179277975903751816725250640053142732900283692289595225539916172609316300259553899101702168632841590434573921608128130763322686876688560174095810274102762534421702814911846626754241848525232355124558018288203188373554116110422858647502768199536417356593418708577381374424619678771480802342692972545127309043972730762003645389467267463946808994539702820687417831113220115440576711538043620899330797162802199838508450775320159327698279491442922999444384518005328489834229818257604637974671481722802886060157201289589078839691307888092243932928231784014706707887496679769745398788524528419202022205524452745615155095212807910095265050919151033521016759740519959421569
+e = 65537
+  \end{minted}
+  \item 最後，我將 RSA Key 的 n 和 e 貼到 \texttt{nc} 的終端機當中，得到以下加密過後的文字。我將它存在 \texttt{message.txt} 裏：
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=\textwidth]{4-2.png}
+      \caption{encrypted message response}
+      \label{fig:4-2}
+    \end{figure}
+    \clearpage
+  \item 我使用以下 python 程式碼將密文 (\texttt{message.txt}) 解密：
+\begin{minted}[frame=lines, linenos, framesep=2mm]{python}
+from Crypto.Util.number import long_to_bytes
+
+e = 65537
+with open("rsa_key_n.txt", "r") as file:
+    n = int(file.read())
+with open("rsa_key_d.txt", "r") as file:
+    d = int(file.read())
+with open("message.txt", "r") as file:
+    message = int(file.read())
+
+# Perform RSA decryption: plaintext = (ciphertext^d) mod n
+plaintext_int = pow(message, d, n)
+
+# Convert decrypted integer to readable text
+plaintext = long_to_bytes(plaintext_int).decode(errors="ignore")
+print(plaintext)
+\end{minted}
+  \item 最後，在解密得到的明文當中，找到了 Flag。以下為解密出來的明文內容：
+  \begin{minted}[frame=lines, linenos,framesep=2mm]{text}
+Someone purposely gave Anon wrong information about RSA, making her use a bad RSA public key to encrypt her private data! The clues about the identity of the perp are hidden in Anon's secret diary. To curb the spread of this misinformation ASAP, please decrypt Anon's diary and send it to me. I'll figure out who the perp is. Oh, by the way, here is the flag for you: NASA_HW0{1_10V3_r54}
+  \end{minted}
+\end{enumerate}
+\begin{mycolorbox}[green]
+  \textbf{Flag of Problem 4:}
+  \begin{minted}{text}
+NASA_HW0{1_10V3_r54}
+  \end{minted}
+\end{mycolorbox}
+
+%------------------------------------------------------------
+% Problem 5
+\clearpage
 \subsection{為什麼簽不了憑證??? (10pt)}
 
 \clearpage
