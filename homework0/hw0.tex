@@ -73,7 +73,7 @@
 
 \linespread{1.1}
 % \usemintedstyle{xcode}
-\setminted{breaklines=true, breakanywhere=true, autogobble=true, frame=lines, linenos, framesep=2mm}
+\setminted{breaklines=true, breakanywhere=true, autogobble=true}
 
 % tex-fmt: on
 \begin{document}
@@ -705,6 +705,7 @@ nslookup -type=cname Bocchi.csie.ntu.edu.tw
     \item \url{https://ithelp.ithome.com.tw/articles/10300987}
     \item \url{https://blog.csdn.net/maimang1001/article/details/123237909} (Problem 3.1 (c))
     \item \href{https://stackoverflow.com/questions/9641440/convert-from-ascii-string-encoded-in-hex-to-plain-ascii}{Convert from ASCII string encoded in Hex to plain ASCII - Stack Overflow} (Problem 3.1 (f))
+    \item \url{https://help.salesforce.com/s/articleView?id=001115271&type=1} (Problem 3.2 (a))
     \item 討論對象：chatGPT
   \end{itemize}
 \end{mycolorbox}
@@ -808,6 +809,62 @@ print(ascii_string)
 
 % Problem 3-2
 \subsubsection{p2.cap}
+
+\begin{problem}{3.2 (a)} 以下為我使用 Private Key 解密封包的步驟：
+  \begin{enumerate}
+    \item 在 Wireshark 中進入 \texttt{Preferences}，並且在 \texttt{Protocols} 中找到 \texttt{TLS}。
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.65\textwidth]{3-2-a-1.png}
+        \caption{Preferences}
+        \label{fig:3-2-a-1}
+      \end{figure}
+    \item 在 \texttt{RSA keys list} 中點選新增，並在 Key File 欄位選擇題目給的 \texttt{p2\_private.key} 檔案，IP Address 欄位填入 \texttt{127.0.0.1}，Port 欄位填入 \texttt{443}，Protocol 欄位填入 \texttt{http}。
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{3-2-a-2.png}
+        \caption{Add Private Keys}
+        \label{fig:3-2-a-2}
+      \end{figure}
+    \item 回到封包列表當中，可以看到多出了許多筆解密後的 HTTP 封包（綠色橫列）。
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{3-2-a-3.png}
+        \caption{Decrypted Packets}
+        \label{fig:3-2-a-3}
+      \end{figure}
+  \end{enumerate}
+\end{problem}
+
+\begin{problem}{3.2 (b)} 以下為我尋找 Apache 的官方圖片的過程：
+  \begin{enumerate}
+    \item 在封包列表當中，使用 Filter 欄位輸入 \texttt{http contains "image"}
+    \item 在第 31 個封包，找到一筆 \texttt{GET /icons/apache\_pb.png}，推測是用戶端向伺服器請求 Apache 的官方圖片，而接續他的第 32 個封包則是伺服器回傳圖片，裡面發現 PNG 的檔頭資訊，因此可以確定是圖片。
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=\textwidth]{3-2-b-1.png}
+        \caption{Frame 32 contains the response of Frame 31's \texttt{GET /icons/apache\_pb.png}}
+        \label{fig:3-2-b-1}
+      \end{figure}
+    \item 在工具列當中點選 \texttt{Files}，並且選擇 \texttt{Export Objects}，選擇 \texttt{HTTP}。
+    \item 在列表當中找到第 32 個封包，發現裡面果然包含一個 \texttt{apache\_pb.png} 的圖片檔案。點選 \texttt{Save} 即可下載圖片。
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{3-2-b-2.png}
+        \caption{Exporting Objects}
+        \label{fig:3-2-b-2}
+      \end{figure}
+  \end{enumerate}
+  \begin{mycolorbox}[green]
+    \textsl{Ans.} Apache 官方圖片在第 32 個封包當中，檔名為 \texttt{apache\_pb.png}。\\
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.7\textwidth]{3-2-b-apache_pb.png}
+      \caption{擷取出來的 Apache 官方圖片}
+      \label{fig:3-2-b-3}
+    \end{figure}
+  \end{mycolorbox}
+\end{problem}
 
 \subsection{Cryptography (5pt)}
 \subsection{為什麼簽不了憑證??? (10pt)}
