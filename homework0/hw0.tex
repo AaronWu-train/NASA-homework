@@ -923,18 +923,17 @@ e = 65537
       \caption{encrypted message response}
       \label{fig:4-2}
     \end{figure}
-    \clearpage
   \item 我使用以下 python 程式碼將密文 (\texttt{message.txt}) 解密：
 \begin{minted}[frame=lines, linenos, framesep=2mm]{python}
 from Crypto.Util.number import long_to_bytes
 
-e = 65537
 with open("rsa_key_n.txt", "r") as file:
     n = int(file.read())
 with open("rsa_key_d.txt", "r") as file:
     d = int(file.read())
 with open("message.txt", "r") as file:
     message = int(file.read())
+e = 65537
 
 # Perform RSA decryption: plaintext = (ciphertext^d) mod n
 plaintext_int = pow(message, d, n)
@@ -957,7 +956,6 @@ NASA_HW0{1_10V3_r54}
 
 %------------------------------------------------------------
 % Problem 5
-\clearpage
 \subsection{為什麼簽不了憑證??? (10pt)}
 
 \clearpage
