@@ -11,6 +11,7 @@
 \usepackage[margin=2cm]{geometry} % 頁面邊距設置
 \usepackage{amsmath,amssymb,amsthm} % 數學相關套件
 \usepackage{graphicx} % 圖形插入
+\usepackage{booktabs}
 \usepackage[AutoFakeBold,AutoFakeSlant]{xeCJK} % 中文支援
 \usepackage{fancyhdr} % 頁首頁尾設置
 \usepackage{xcolor,changepage,mdframed} % 顏色與框線相關
@@ -958,6 +959,115 @@ NASA_HW0{1_10V3_r54}
 %------------------------------------------------------------
 % Problem 5
 \subsection{為什麼簽不了憑證??? (10pt)}
+
+\begin{mycolorbox}[teal]
+  \footnotesize
+  \textbf{Reference:}
+  \begin{itemize}
+    \item \href{https://www.cloudflare.com/zh-tw/learning/network-layer/what-is-a-subnet/}{什麼是子網路？ - Cloudflare} (Problem 5.1)
+    \item \href{https://nordvpn.com/zh-tw/blog/ziwanglu-zhezhao/}{子網路遮罩是什麼？ - NordVPN} (Problem 5.1)
+    \item \url{https://ithelp.ithome.com.tw/articles/10272208} (Problem 5.1, 5.2)
+    \item \href{https://en.wikipedia.org/wiki/Gateway_(telecommunications)}{Gateway (telecommunications) - Wikipedia} (Problem 5.2)
+    \item \url{https://ithelp.ithome.com.tw/m/articles/10240715} (Problem 5.8)
+    \item 討論對象：chatGPT
+  \end{itemize}
+\end{mycolorbox}
+
+% Problem 5.1
+\begin{problem}{5.1}
+  subnet，即子網路，指的是網路內的網路，可以讓網路管理更方便，且更有效率。subnet透過子網遮罩（subnet mask）來區分網段，確保同一個子網內的設備可以直接通訊，而不同子網之間的設備則需要透過路由器進行通訊。
+\end{problem}
+
+% Problem 5.2
+\begin{problem}{5.2}
+  閘道（gateway）是負責在不同子網或網路之間轉發資料的網路設備（通常是路由器）。設備若要與不同子網的設備通訊，必須將資料傳送到指定的 gateway，讓其進行路由轉發。
+\end{problem}
+
+% Problem 5.3
+\begin{problem}{5.3}
+  X 可以直接經由 WAN 傳送封包到 A1 的 IP，即 X -> WAN -> A1
+\end{problem}
+
+% Problem 5.4
+\begin{problem}{5.4}
+  因為 A 的 default gateway 是 172.16.0.1 (B2)，因此會將封包傳送到 B2，再從 B1 經由 WAN 傳送到 A1。
+  路徑如下：
+  \begin{itemize}
+    \item 第一步：A2 -> LAN -> B2
+    \item 第二步：B1 -> WAN-> A1
+  \end{itemize}
+\end{problem}
+
+% Problem 5.5
+\begin{problem}{5.5} 防火牆
+  \begin{enumerate}
+    \item Stateful 防火牆會記錄並追蹤連線的狀態，根據封包是否屬於已建立的連線來決定是否允許通過。而 Stateless 防火牆則不會追蹤連線狀態，而是單純依據靜態的存取控制規則，透過來源 IP、目的地 IP、Port 等條件來篩選封包。
+    \item 較可能擋住 TCP ACK without SYN 的是 stateful 防火牆，因為 ACK without SYN 代表這個 ACK 封包沒有對應的 TCP 連線（尚未完成三次交握），可能是異常封包或攻擊行為，因此 stateful 防火牆會擋住它。
+  \end{enumerate}
+\end{problem}
+
+% Problem 5.6
+\begin{problem}{5.6}
+  根據我使用 Wireshark 截取的封包顯示，X 透過 WAN 直接傳送 SYN 封包至 A1 (\autoref{fig:5-6-1})，然而，A 在收到該 SYN 後，回應的 SYN-ACK 封包卻並未沿原路徑返回，而是經由 A2 走 default gateway 至 B2，然後再經由 WAN 送回 X(\autoref{fig:5-6-2})。
+
+  由於 B 為 stateful 防火牆，會檢查 TCP 連線狀態表，但因 SYN-ACK 封包未從與 SYN 相同的介面返回，而防火牆並沒有先前的 SYN 記錄，所以將其視為異常封包並丟棄，導致 TCP 連線無法成功建立。因此，簽發憑證第二步驟的 HTTP Request 會失敗。
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{5-6-1.png}
+    \caption{SYN packets from X to A1 in \texttt{capture\_A1.pcap}}
+    \label{fig:5-6-1}
+  \end{figure}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{5-6-2.png}
+    \caption{SYN-ACK packets in \texttt{capture\_A2.pcap}}
+    \label{fig:5-6-2}
+  \end{figure}
+
+\end{problem}
+
+% Problem 5.7
+\begin{problem}{5.7} 我預估需要 1.5 到 2 小時的停機時間：
+
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{lp{3cm}p{8cm}}
+      \toprule
+      \textbf{步驟} & \textbf{估計時間}\\
+      \midrule
+      備份現有憑證與設定 (系統仍在線) & 10 - 15分鐘 \\
+      系統下線、更換憑證 & 10 - 20 分鐘 \\
+      排除故障、修復錯誤 & 20 - 40 分鐘 \\
+      測試新憑證是否正常 & 10 - 15 分鐘 \\
+      重新啟動伺服器、上線 & 10 - 15 分鐘 \\
+      預留緩衝時間 & 30 分鐘 \\
+      \bottomrule
+    \end{tabular}
+    \caption{更換憑證步驟與時間估算}
+    \label{tab:cert_replacement}
+  \end{table}
+\end{problem}
+
+% Problem 5.8
+\begin{problem}{5.8} 我認為可以使用新增一條靜態路由規則的方式解決這問題，讓目的地為 X 的封包全部走 A1 管道，繞過防火牆 B。以下為可以使用的指令，其中，\texttt{<A1 gateway>}要替換成 A1 的 gateway IP，例如 \texttt{140.112.28.254} 或 \texttt{140.112.28.1}。
+  \begin{minted}[frame=lines, linenos, framesep=2mm]{bash}
+ip route add 66.133.109.36 via <A1 gateway> dev A1
+    \end{minted}
+\end{problem}
+
+% Problem 5.9
+\begin{problem}{5.9} 我準備好
+  \footnote{本聲明僅代表回應者精神層面的準備狀態，並不保證技術能力、心理素質或學業表現能夠同步達標。}
+  \footnote{本回應不對任何「平衡作業、考試、社交生活與睡眠」的行為提供任何保證，因為這在 NASA 作業內部邏輯上不可能成立。}
+  \footnote{本人已充分了解，參與 NASA 作業可能導致嚴重的時間管理失衡，包括但不限於：因長時間 Debug 而錯過其他課程的作業 Deadline，或因過度使用 Arch linux 而錯過人生重要時刻。}
+  \footnote{若因 NASA 作業導致爆肝、熬夜、懷疑人生，本人不對 TA 或課程進行任何求償或抱怨（但可能會在 Dcard 或交流版上匿名發洩情緒）。}
+  \footnote{本人已知悉，NASA 作業可能會讓 \texttt{rm -rf /*} 等指令變得極度誘人，為個人電腦帶來不可逆的破壞。}
+  \footnote{本人已經準備好迎接所有可能發生的災難，但仍無法保證學業成績能夠倖存。}加入 NASA 了！
+  \begin{center}
+    \includegraphics[width=0.3\textwidth]{5-9.jpg}
+  \end{center}
+\end{problem}
 
 \clearpage
 %------------------------------------------------------------
