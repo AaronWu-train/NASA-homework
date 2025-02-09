@@ -131,16 +131,16 @@ TCP/IP 模型總共分為五層，依照由下而上的順序分別是：
   \item \textbf{Link Layer}（鏈結層）：
     \begin{itemize}
       \item 功能：定義了在區域網路連結範圍內的設備之間的直接連線的通信方法，會將資料分成 Frame 進行傳輸。主要協議包含 Ethernet、Wi-Fi、PPP 等。這一層具有數據糾錯的功能，可以檢測數據傳輸中的錯誤。
-      \item 範例：MAC 位址、交換機（Switch）等。
+      \item 範例：乙太網 (ethernet)、交換機（Switch）等。
     \end{itemize}
   \item \textbf{Internet Layer}（網路層）：
     \begin{itemize}
-      \item 功能：負責跨網路的數據傳輸，確保數據能夠從來源設備傳送到目標設備。此層會將數據封包透過路由器來決定最佳的傳輸路徑。主要協議包括 IPv4、IPv6、ICMP、ARP 等。
+      \item 功能：負責跨網路的數據傳輸，確保數據能夠從來源設備傳送到目標設備。此層會將數據構成封包，並透過路由器來決定最佳的傳輸路徑。主要協議包括 IPv4、IPv6、ICMP、ARP 等。
       \item 範例：路由器、IP 位址等。
     \end{itemize}
   \item \textbf{Transport Layer}（傳輸層）：
     \begin{itemize}
-      \item 功能：用於不同設備或環境間傳輸訊息，說明如何溝通以及傳遞資料。
+      \item 功能：用於不同設備或環境間傳輸訊息，說明如何溝通以及傳遞資料。確保網路的可靠性和效率，並且提供了錯誤檢測和恢復的功能。
       \item 範例：TCP、UDP 等。
     \end{itemize}
   \item \textbf{Application Layer}（應用層）：
@@ -169,7 +169,7 @@ TCP/IP 模型總共分為五層，依照由下而上的順序分別是：
 % Problem 1-2 (a)
 \begin{problem}{1-2 (a)} \textbf{虛擬區域網路 (Virtual Local Area Network, VLAN)}
   \begin{itemize}
-    \item 功能：VLAN 是一種將網路裝置分割成多個虛擬網段的技術，可以藉由路由器或是交換器建置，將硬體上在同一個區域網路內的裝置以軟體隔離成不同網段，以達成更有效的管理和資源劃分。
+    \item 功能：VLAN 是一種將網路裝置分割成多個虛擬網段的技術，可以藉由路由器或是交換器建置，將硬體上在相同區域網路內的裝置以軟體隔離成不同網段，以達成更有效的管理。
     \item 用途：用來區隔裝置、避免廣播風暴或其他資安危機。
   \end{itemize}
 \end{problem}
@@ -181,7 +181,7 @@ TCP/IP 模型總共分為五層，依照由下而上的順序分別是：
       \vspace{-0.5em}
       \begin{itemize}
         \item \textbf{Switch}：用於連接多個區域網路（LAN）內的裝置，並且可以根據 MAC 位址來轉發數據，以達到將數據封包傳送到正確的目的地的目的，並減少不必要的流量傳輸。
-        \item \textbf{Router}：負責連接不同的網路之間（如 LAN 與 Internet），並且根據 IP 位址決定封包傳輸的最佳路徑，讓設備能夠連接至網際網路或其他網段。同時，支援 NAT 以及 DHCP 等功能，可以將內部網路的私有 IP 位址映射到公共 IP 位址、自動分配內網 IP 位址、管理網路流量等。
+        \item \textbf{Router}：負責連接不同的網路之間（如 LAN 與 WAN），並且根據 IP 位址決定封包傳輸的最佳路徑，讓設備能夠連接至網際網路或其他網段。同時，支援 NAT 以及 DHCP 等功能，可以將內部網路的私有 IP 位址映射到公共 IP 位址、自動分配內網 IP 位址、管理網路流量等。
       \end{itemize}
     \item 五層架構中扮演的角色：
       \vspace{-0.5em}
@@ -470,14 +470,14 @@ traceroute to speed.ntu.edu.tw (140.112.5.178), 64 hops max, 40 byte packets
   \end{itemize}
   因此，\texttt{10.200.200.200} 是一個 Private Network 的 IP 位址。
 
-  另外，若我在瀏覽器當中輸入 \texttt{10.200.200.200}，則會出現台大 sslvpn 登入頁面的畫面（如 \autoref{fig:2-1-c} 所示），但若關閉 VPN 連線後，則無法連線至該 IP 位址。有此可以推知該 IP 位址為位於台大內網的 sslvpn 的伺服器 IP 位址，屬於 Private Network。
+  % 另外，若我在瀏覽器當中輸入 \texttt{10.200.200.200}，則會出現台大 sslvpn 登入頁面的畫面（如 \autoref{fig:2-1-c} 所示），但若關閉 VPN 連線後，則無法連線至該 IP 位址。有此可以推知該 IP 位址為位於台大內網的 sslvpn 的伺服器 IP 位址，屬於 Private Network。
 
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{2-1-c.png}
-    \caption{\texttt{10.200.200.200} 連線後頁面}
-    \label{fig:2-1-c}
-  \end{figure}
+  % \begin{figure}[H]
+  %   \centering
+  %   \includegraphics[width=\textwidth]{2-1-c.png}
+  %   \caption{\texttt{10.200.200.200} 連線後頁面}
+  %   \label{fig:2-1-c}
+  % \end{figure}
 
   至於另外兩個 IP 位址，皆不在私有 IP 地址範圍內，因此可以認定為公有 IP 地址。
 \end{problem}
@@ -489,13 +489,10 @@ traceroute to speed.ntu.edu.tw (140.112.5.178), 64 hops max, 40 byte packets
 \end{problem}
 
 % Problem 2-1-e
-\clearpage
 \begin{problem}{2.1 (e)} 以下為 \texttt{traceroute} 的路徑圖 (\autoref{fig:2-1-e})：
   \vspace{-1em}
   \begin{figure}[H]
     \centering
-    \setlength{\abovecaptionskip}{-2pt}
-    \setlength{\belowcaptionskip}{-2.5pt}
     \includegraphics[width=\textwidth]{2-1-e-sequence.pdf}
     \caption{Traceroute Sequence Graph}
     \label{fig:2-1-e}
@@ -503,6 +500,7 @@ traceroute to speed.ntu.edu.tw (140.112.5.178), 64 hops max, 40 byte packets
 \end{problem}
 
 % Problem 2-2
+\clearpage
 \subsubsection{伺服器 \texttt{140.112.91.2}}
 \begin{mycolorbox}[teal]
   \footnotesize
@@ -563,18 +561,17 @@ nmap -sn -vv 140.112.91.2
 \end{problem}
 
 % Problem 2-2-c
-\clearpage
 \begin{problem}{2.2 (c)} \textbf{nmap port scan}
   \begin{itemize}
-    \item 使用 \texttt{nmap} 當中的 \texttt{-sv} 參數可以進行 port scan，並且得到運行的軟體與版本。
+    \item 使用 \texttt{nmap} 當中的 \texttt{-sV} 參數可以進行 port scan，並且得到運行的軟體與版本。
     \item 若要提升掃描速度，也可以加上 \texttt{-p 80} 指定掃描 port 80，但是不用加上也可以得到題目所要求的結果。
 \begin{minted}[frame=lines, linenos, framesep=2mm]{bash}
-nmap -sv 140.112.91.2
+nmap -sV 140.112.91.2
 \end{minted}
       \begin{figure}[H]
         \centering
         \includegraphics[width=0.88\textwidth]{2-2-c.png}
-        \caption{Screenshot of port scan using \texttt{nmap -sv}}
+        \caption{Screenshot of port scan using \texttt{nmap -sV}}
         \label{fig:2-2-c}
       \end{figure}
     \item 可以從圖中判讀出運行在 Port 80 的軟體為 \texttt{nginx}，版本為 \texttt{1.26.2}
@@ -607,6 +604,7 @@ nc 140.112.91.2 48763
 \end{problem}
 
 % Problem 2-3
+\clearpage
 \subsubsection{DNS record}
 \begin{mycolorbox}[teal]
   \footnotesize
@@ -638,7 +636,6 @@ dig +short Bocchi-Tracker.csie.ntu.edu.tw
 \end{problem}
 
 % Problem 2-3-b
-\clearpage
 \begin{problem}{2.3 (b)}
   使用指令 \texttt{nslookup} 可以從 ip 反向獲得 domain name，如下所示：
 \begin{minted}[frame=lines, linenos, framesep=2mm]{bash}
@@ -658,6 +655,7 @@ nslookup 140.112.30.131
 \end{problem}
 
 % Problem 2-3-c
+\clearpage
 \begin{problem}{2.3 (c)}
   使用 \texttt{nslookup} 指令搭配 \texttt{type=txt} 參數可以查詢 DNS 的 TXT 記錄，如下所示：
 \begin{minted}[frame=lines, linenos, framesep=2mm]{bash}
@@ -677,7 +675,6 @@ nslookup -type=txt Starry.csie.ntu.edu.tw
 \end{problem}
 
 % Problem 2-3-d
-\clearpage
 \begin{problem}{2.3 (d)}
   使用 \texttt{nslookup} 指令搭配 \texttt{type=cname} 參數可以查詢 DNS 的 cname 記錄，如下所示：
   \vspace{-0.5em}
@@ -698,6 +695,7 @@ nslookup -type=cname Bocchi.csie.ntu.edu.tw
 \end{problem}
 
 %------------------------------------------------------------
+\clearpage
 \subsection{Basic Wireshark (11pt)}
 \begin{mycolorbox}[teal]
   \footnotesize
@@ -717,15 +715,15 @@ nslookup -type=cname Bocchi.csie.ntu.edu.tw
 
 % Problem 3-1-a
 \begin{problem}{3.1 (a)}
-  我認為伺服器為 \texttt{::1}（本機回環地址），所使用的 Port 為 3000。
+  我認為伺服器為 \texttt{::1} (\texttt{localhost})，所使用的 Port 為 3000。
 \end{problem}
 
 % Problem 3-1-b
 \begin{problem}{3.1 (b)}
   我根據封包內容推斷的理由如下：
   \begin{enumerate}
-    \item 由於 \texttt{::1} 是本機回環地址，因此可以推測是本機的伺服器，所有的封包都是在本機上進行傳輸。
-    \item 封包紀錄當中多次出現 TCP 三次交握，可以看到是由不同的 Port (5xxxx) 針對 Port 3000 傳送 SYN 封包，再由 Port 3000 回傳 SYN-ACK 封包，最後再由 Port (5xxxx) 回傳 ACK 封包，因此可以推測是 TCP 三次交握的過程，並且伺服器位於 Port 3000。
+    \item 由於 \texttt{::1} 是本機回環地址，因此可以推測是本機的伺服器 (\texttt{localhost})，所有的封包都是在本機上進行傳輸。
+    \item 封包紀錄當中多次出現 TCP 三次交握，可以看到是由不同的 Port 5xxxx 針對 Port 3000 傳送 SYN 封包，再由 Port 3000 回傳 SYN-ACK 封包，最後再由 Port 5xxxx 回傳 ACK 封包，因此可以推測是 TCP 三次交握的過程，並且伺服器位於 Port 3000。
     \item 同時，封包當中也有出現 HTTP GET 請求，Destination 也是 Port 3000，而 HTTP responses 則由 Port 3000 回傳，因此也可以推測伺服器端為 Port 3000。
   \end{enumerate}
   \begin{figure}[H]
@@ -748,7 +746,7 @@ nslookup -type=cname Bocchi.csie.ntu.edu.tw
   以下為我使用 Wireshark 製作的流量表（Y 軸為 Bytes/1 sec）：
   \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{3-1-c.png}
+    \includegraphics[width=0.95\textwidth]{3-1-c.png}
     \caption{Wireshark I/O throughput Graphs: p1.pcapng}
     \label{fig:3-1-c}
   \end{figure}
@@ -756,7 +754,7 @@ nslookup -type=cname Bocchi.csie.ntu.edu.tw
 
 % Problem 3-1-d
 \begin{problem}{3.1 (d)}
-  最高傳輸速度約為 $1.268 \times 10^6$ Bytes/s ，發生在第二秒時（見上圖橘線處）。
+  最高傳輸速度約為 $1.2679 \times 10^6$ Bytes/s ，發生在第二秒時。
 \end{problem}
 
 % Problem 3-1-e
@@ -769,7 +767,7 @@ nslookup -type=cname Bocchi.csie.ntu.edu.tw
   \end{enumerate}
   \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{3-1-e.png}
+    \includegraphics[width=0.85\textwidth]{3-1-e.png}
     \caption{Statistics of HTTP GET Requests}
     \label{fig:3-1-e}
   \end{figure}
@@ -817,7 +815,7 @@ print(ascii_string)
     \item 在 Wireshark 中進入 \texttt{Preferences}，並且在 \texttt{Protocols} 中找到 \texttt{TLS}。
       \begin{figure}[H]
         \centering
-        \includegraphics[width=0.65\textwidth]{3-2-a-1.png}
+        \includegraphics[width=0.8\textwidth]{3-2-a-1.png}
         \caption{Preferences}
         \label{fig:3-2-a-1}
       \end{figure}
@@ -871,6 +869,7 @@ print(ascii_string)
 %------------------------------------------------------------
 
 % Problem 4
+\clearpage
 \subsection{Cryptography (5pt)}
 \begin{mycolorbox}[teal]
   \footnotesize
@@ -1325,7 +1324,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 \begin{problem}{6.2}
   \textbf{uuid 與磁碟空間分配}
   \begin{itemize}
-    \item 使用指令 \texttt{lsblk} 搭配 \texttt{-o} 選項可以查看磁碟分割區以及個字的 UUID
+    \item 使用指令 \texttt{lsblk} 搭配 \texttt{-o} 選項可以查看磁碟分割區、各自的 UUID、以及其他資料。
       \begin{center}
         \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{bash}
 sudo lsblk -o NAME,FSTYPE,FSVER,LABEL,UUID,SIZE,FSAVAIL,FSUSE%,MOUNTPOINT
@@ -1678,7 +1677,7 @@ RUN chmod +x /usr/libexec/run/run.sh
 CMD ["/usr/libexec/run/run.sh"]
       \end{minted}
 
-    \item 第 1 行：\texttt{FROM python:3.9-slim} 指令表示這個 Dockerfile 是基於 \texttt{python:3.9-slim} 映像建立的。
+    \item 第 1 行：\texttt{FROM python:3.9-slim} 指令表示這個 Docker image 是基於 \texttt{python:3.9-slim} 映像建立的。
       這是一個精簡版的 Python 3.9 映像，基於 Debian，保留 Python 及必要的系統元件，但刪除了部分工具來減少映像大小。
 
     \item 第 2 - 16 行：\texttt{RUN} 代表在 Docker 映像建構（build）時 執行的指令。這裡透過 \texttt{apt-get} 安裝了一些必要的 Linux 套件：
@@ -1698,7 +1697,7 @@ CMD ["/usr/libexec/run/run.sh"]
 
     \item 第 17 行：\texttt{rm -rf /var/lib/apt/lists/*} 這行指令清除 \texttt{apt} 快取，以減少 Docker 映像的大小。
 
-    \item 第 19 行：\texttt{mkdir -p /usr/libexec/run} 確保 \texttt{/usr/libexec/run} 目錄存在，用於存放後續執行的腳本或工具。
+    \item 第 19 行：\texttt{RUN mkdir -p /usr/libexec/run} 確保 \texttt{/usr/libexec/run} 目錄存在，用於存放後續執行的腳本或工具。
 
     \item 第 21 - 22 行：\texttt{COPY} 指令將檔案從 Host 複製到容器內相對應的位置。
 
