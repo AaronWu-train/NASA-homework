@@ -1680,7 +1680,7 @@ CMD ["/usr/libexec/run/run.sh"]
     \item 第 1 行：\texttt{FROM python:3.9-slim} 指令表示這個 Docker image 是基於 \texttt{python:3.9-slim} 映像建立的。
       這是一個精簡版的 Python 3.9 映像，基於 Debian，保留 Python 及必要的系統元件，但刪除了部分工具來減少映像大小。
 
-    \item 第 2 - 16 行：\texttt{RUN} 代表在 Docker 映像建構（build）時 執行的指令。這裡透過 \texttt{apt-get} 安裝了一些必要的 Linux 套件：
+    \item 第 2 - 16 行：\texttt{RUN} 代表在 Docker image build 時執行的指令。這裡透過 \texttt{apt-get} 安裝了一些必要的 Linux 套件：
       \begin{itemize}
         \item \texttt{build-essential}：編譯 C/C++ 必備的工具（如 \texttt{gcc}）。
         \item \texttt{libssl-dev}：SSL 加密函式庫。
@@ -1695,11 +1695,11 @@ CMD ["/usr/libexec/run/run.sh"]
         \item \texttt{iputils-ping}：提供 \texttt{ping} 指令，測試網路連線。
       \end{itemize}
 
-    \item 第 17 行：\texttt{rm -rf /var/lib/apt/lists/*} 這行指令清除 \texttt{apt} 快取，以減少 Docker 映像的大小。
+    \item 第 17 行：\texttt{rm -rf /var/lib/apt/lists/*} 指令清除 \texttt{apt} 下載的 package 清單，以減少 Docker 映像大小。
 
     \item 第 19 行：\texttt{RUN mkdir -p /usr/libexec/run} 確保 \texttt{/usr/libexec/run} 目錄存在，用於存放後續執行的腳本或工具。
 
-    \item 第 21 - 22 行：\texttt{COPY} 指令將檔案從 Host 複製到容器內相對應的位置。
+    \item 第 21 - 22 行：\texttt{COPY} 指令會在 build image 時，將 Host 的檔案複製到 image 中指定位置。
 
     \item 第 24 - 25 行：\texttt{chmod +x} 指令賦予\texttt{transfer} 和 \texttt{run.sh} 執行權限：
     \item 第 27 行：\texttt{CMD} 可以指定容器啟動時的預設指令。當容器啟動時，會執行 \texttt{run.sh} 腳本。
