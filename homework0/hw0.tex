@@ -128,10 +128,10 @@ TCP/IP 模型總共分為五層，依照由下而上的順序分別是：
       \item 功能：負責網路當中物理上的實體連接，為資料端裝置提供傳送資料的通路，並將數據轉換為電信號或無線電波進行傳輸。
       \item 範例：網路線、無線電波、光纖等。
     \end{itemize}
-  \item \textbf{Link Layer}（鏈結層）：
+  \item \textbf{Data Link Layer}（資料鏈結層）：
     \begin{itemize}
       \item 功能：定義了在區域網路連結範圍內的設備之間的直接連線的通信方法，會將資料分成 Frame 進行傳輸。主要協議包含 Ethernet、Wi-Fi、PPP 等。這一層具有數據糾錯的功能，可以檢測數據傳輸中的錯誤。
-      \item 範例：乙太網 (ethernet)、交換機（Switch）等。
+      \item 範例：乙太網 (ethernet)、ARP (Address Resolution Protocol)等。
     \end{itemize}
   \item \textbf{Internet Layer}（網路層）：
     \begin{itemize}
@@ -186,7 +186,7 @@ TCP/IP 模型總共分為五層，依照由下而上的順序分別是：
     \item 五層架構中扮演的角色：
       \vspace{-0.5em}
       \begin{itemize}
-        \item \textbf{Switch}：大部分為第 2 層，在 Link Layer（鏈結層）透過設備 MAC Address 轉發數據。少部分交換器也支援第 3 層交換，可以在網路層根據目的地 IP 位址轉發數據。
+        \item \textbf{Switch}：屬於第 2 層，在 Data Link Layer（資料鏈結層）透過設備 MAC Address 轉發數據。
         \item \textbf{Router}：屬於第 3 層，在 Internet Layer（網路層）根據 IP 位址轉發數據。
       \end{itemize}
   \end{itemize}
@@ -195,7 +195,7 @@ TCP/IP 模型總共分為五層，依照由下而上的順序分別是：
 % Problem 1-2 (c)
 \begin{problem}{1-2 (c)} \textbf{Broadcast Storm 和 Switching Loop}
   \begin{enumerate}
-    \item \textbf{Broadcast Storm}: Broadcast Storm 指的是在網路當中， Broadcast 跟 Multicast 的封包在網路中不斷的傳播和累積，導致網路流量過大，使得網路效能下降，甚至導致網路癱瘓。Broadcast Storm 的原因可能是因為網路中的裝置不斷的轉發 Broadcast 封包，導致封包在網路中不斷的傳播。
+    \item \textbf{Broadcast Storm}: Broadcast Storm 指的是在網路當中， Broadcast 跟 Multicast 的封包在網路中不斷的傳播和累積，導致網路流量過大，使得網路效能下降，甚至導致網路癱瘓。
 
     \item \textbf{Switching Loop}: Switching Loop 是指在網路當中具有大於一條的 layer-2 路徑，例如交換機之間形成一個環。因為在 layer-2 當中是不具有 TTL 機制的，因此封包會在網路中不斷的循環、廣播、擴大，導致 Broadcast Storm 的發生。
 
@@ -385,7 +385,7 @@ TCP/IP 模型總共分為五層，依照由下而上的順序分別是：
   \item 在資工系上的 Wi-Fi 系統當中，應該用到了 FDM 的技術。
     \begin{itemize}
       \item 資工系的 Wi-Fi 分為 \texttt{csie} 和 \texttt{csie-5G}，其中 \texttt{csie} 使用 2.4GHz 或 5GHz 頻段（由設備自行選擇），\texttt{csie-5G} 使用 5GHz 頻段，使用了不同的頻率進行傳輸以分流。
-      \item OFDMA: 許多 Wi-Fi 使用 OFDMA（Orthogonal Frequency Division Multiple Access）技術，將頻寬切成多個有正交性的子載波，以便在同一個頻段上進行多用戶傳輸。
+      \item OFDMA: 許多 Wi-Fi 系統使用 OFDMA（Orthogonal Frequency Division Multiple Access）技術，將頻寬切成多個有正交性的子載波，以便在同一個頻段上進行多用戶傳輸。
     \end{itemize}
 \end{itemize}
 
@@ -399,7 +399,6 @@ TCP/IP 模型總共分為五層，依照由下而上的順序分別是：
   \begin{itemize}
     \item 作業系統：macOS Sequoia 15.2
     \item Command Line Tools: 16.2.0
-    \item Shell: zsh 5.9 (arm64-apple-darwin24.0)
   \end{itemize}
 \end{myquote}
 
@@ -469,7 +468,7 @@ traceroute to speed.ntu.edu.tw (140.112.5.178), 64 hops max, 40 byte packets
     \item Class B: \texttt{172.16.0.0 -- 172.31.255.255}
     \item Class C: \texttt{192.168.0.0 -- 192.168.255.255}
   \end{itemize}
-  因此，\texttt{10.200.200.200} 是一個 Private Network 的 IP 位址。
+  因此，\texttt{10.200.200.200} 是一個 Private Network 的 IP 位址。至於另外兩個 IP 位址，皆不在私有 IP 地址範圍內，因此可以認定為公有 IP 地址。
 
   % 另外，若我在瀏覽器當中輸入 \texttt{10.200.200.200}，則會出現台大 sslvpn 登入頁面的畫面（如 \autoref{fig:2-1-c} 所示），但若關閉 VPN 連線後，則無法連線至該 IP 位址。有此可以推知該 IP 位址為位於台大內網的 sslvpn 的伺服器 IP 位址，屬於 Private Network。
 
@@ -480,7 +479,6 @@ traceroute to speed.ntu.edu.tw (140.112.5.178), 64 hops max, 40 byte packets
   %   \label{fig:2-1-c}
   % \end{figure}
 
-  至於另外兩個 IP 位址，皆不在私有 IP 地址範圍內，因此可以認定為公有 IP 地址。
 \end{problem}
 
 % Problem 2-1-d
@@ -975,7 +973,7 @@ NASA_HW0{1_10V3_r54}
 
 % Problem 5.1
 \begin{problem}{5.1}
-  子網（Subnet）係將一個較大型網路依據子網遮罩（Subnet Mask）劃分為更小且便於管理的區塊，其運作原理在於對 IP 位址與遮罩進行 AND 運算，以確定該 IP 所屬之子網，並藉此限制廣播域、減少無謂的廣播流量；在同一子網內，各設備可直接通訊，而跨子網的封包則必須經由 gateway 轉發。
+  子網（Subnet）即為將一個較大型網路依據子網遮罩（Subnet Mask）劃分為更小且便於管理的區塊，其運作原理在於對 IP 位址與遮罩進行 AND 運算，以確定該 IP 所屬之子網；在同一子網內，各設備可直接通訊，而跨子網的封包則必須經由 gateway 轉發。
 \end{problem}
 
 % Problem 5.2
@@ -1028,20 +1026,20 @@ NASA_HW0{1_10V3_r54}
 \end{problem}
 
 % Problem 5.7
-\begin{problem}{5.7} 我預估需要 1.5 到 2 小時的停機時間：
+\begin{problem}{5.7} 我預估需要至少 2 到 3 小時的停機時間：
 
   \begin{table}[H]
     \centering
-    \begin{tabular}{lp{3cm}p{8cm}}
+    \begin{tabular}{lp{6cm}p{10cm}}
       \toprule
       \textbf{步驟} & \textbf{估計時間}\\
       \midrule
-      備份現有憑證與設定 (系統仍在線) & 10 - 15分鐘 \\
+      備份現有憑證與設定 (系統仍在線) & 10 - 15 分鐘 (不計入停機時間)\\
       系統下線、更換憑證 & 10 - 20 分鐘 \\
-      排除故障、修復錯誤 & 20 - 40 分鐘 \\
-      測試新憑證是否正常 & 10 - 15 分鐘 \\
-      重新啟動伺服器、上線 & 10 - 15 分鐘 \\
-      預留緩衝時間 & 30 分鐘 \\
+      排除故障、修復錯誤 & 30 - 60 分鐘 \\
+      測試新憑證是否正常 & 10 - 20 分鐘 \\
+      重新啟動伺服器、上線 & 10 - 20 分鐘 \\
+      預留緩衝時間 & 60 分鐘 \\
       \bottomrule
     \end{tabular}
     \caption{更換憑證步驟與時間估算}
@@ -1062,7 +1060,8 @@ ip route add 66.133.109.36 via <A1 gateway> dev A1
   \footnote{本回應不對任何「平衡作業、考試、社交生活與睡眠」的行為提供任何保證，因為這在 NASA 課程內部邏輯上不可能成立。}
   \footnote{本人已充分了解，參與 NASA 可能導致嚴重的時間管理失衡，包括但不限於：因長時間 Debug 而錯過其他課程的作業 Deadline，或因過度使用 Arch Linux 而錯過人生重要時刻。}
   \footnote{本人已知悉，NASA 作業可能會讓 \texttt{rm -rf /*} 等指令變得極度誘人，為個人電腦帶來不可逆的破壞。}
-  \footnote{本人已經準備好迎接所有可能發生的災難，但仍無法保證學業成績能夠倖存。}加入 NASA 了！
+  \footnote{本人已經準備好迎接所有可能發生的災難，但仍無法保證學業成績能夠倖存。}
+  \footnote{以上註解條款皆為搞笑唬爛，如有雷同，純屬巧合}加入 NASA 了！
   \begin{center}
     \includegraphics[width=0.3\textwidth]{5-9.jpg}
   \end{center}
@@ -1087,7 +1086,7 @@ ip route add 66.133.109.36 via <A1 gateway> dev A1
     \item \href{https://wiki.archlinux.org/title/Swap}{Swap - ArchWiki}
     \item \href{https://www.cyberciti.biz/faq/find-my-linux-machine-name/}{Linux Find Out My Machine Name/Hostname - nixCraft}
     \item \href{https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/managing_storage_devices/getting-started-with-swap_managing-storage-devices#recommended-system-swap-space_getting-started-with-swap}{Recommended System Swap Space - Red Hat}
-    \item 討論對象：chatGPT、喻慈恩
+    \item 討論對象：chatGPT、喻慈恩、賴泓安
   \end{itemize}
 \end{mycolorbox}
 
@@ -1253,13 +1252,13 @@ swapon /dev/sda4
         \item Timezone: Asia/Taipei
         \item Automatic time sync (NTP): enable
       \end{itemize}
-    \item 選擇完成後，按下 \texttt{Install} 開始安裝 (\autoref{fig:6-0-11})
-      \begin{figure}[H]
-        \centering
-        \includegraphics[width=0.9\textwidth]{arch/11.png}
-        \caption{按下 Install 之後，確認各項設定，之後點選 Yes 進行安裝}
-        \label{fig:6-0-11}
-      \end{figure}
+    \item 選擇完成後，按下 \texttt{Install} ，並確認各項設定，之後點選 Yes 進行安裝。 %(\autoref{fig:6-0-11})
+      % \begin{figure}[H]
+      %   \centering
+      %   \includegraphics[width=0.9\textwidth]{arch/11.png}
+      %   \caption{按下 Install 之後，確認各項設定，之後點選 Yes 進行安裝}
+      %   \label{fig:6-0-11}
+      % \end{figure}
 
     \item 安裝完成後，選擇 yes， 來 chroot 進入新安裝的系統
       \begin{figure}[H]
@@ -1290,7 +1289,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
     \item 開機，使用 Grub 選擇 Arch Linux 進入系統
       \begin{figure}[H]
         \centering
-        \includegraphics[width=0.8\textwidth]{arch/grub.png}
+        \includegraphics[width=0.9\textwidth]{arch/grub.png}
         \caption{使用 Grub 選擇 Arch Linux 進入系統}
         \label{fig:6-0-15}
       \end{figure}
@@ -1349,6 +1348,7 @@ sudo lsblk -o NAME,FSTYPE,FSVER,LABEL,UUID,SIZE,FSAVAIL,FSUSE%,MOUNTPOINT
 \end{problem}
 
 % Problem 6.3
+\clearpage
 \begin{problem}{6.3}
   \textbf{Linux Distribution 與 kernel 版本}
   \begin{itemize}
@@ -1366,10 +1366,11 @@ sudo lsblk -o NAME,FSTYPE,FSVER,LABEL,UUID,SIZE,FSAVAIL,FSUSE%,MOUNTPOINT
 \end{problem}
 
 % Problem 7
+\clearpage
 \subsection{Flag Hunting (25pt)}
 
 % Problem 7.1
-\subsubsection{history (6pt)}
+\subsubsection{history}
 
 \begin{mycolorbox}[teal]
   \footnotesize
@@ -1397,7 +1398,6 @@ echo $HISTFILE
   \end{itemize}
 \end{problem}
 
-\clearpage
 % Problem 7.1-b
 \begin{problem}{7.1 (b)} bash session 可暫存指令數
   \begin{itemize}
@@ -1412,7 +1412,7 @@ echo $HISTFILE
       \begin{figure}[H]
         \centering
         \includegraphics[width=0.8\textwidth]{7-1-b-2.png}
-        \caption{\texttt{.bashrc}，可以看到第 19 行宣告了環境變數 \texttt{HISTSIZE} 的值}
+        \caption{\texttt{.bashrc} 第 19 行宣告了環境變數 \texttt{HISTSIZE} 的值}
         \label{fig:7-1-b-2}
       \end{figure}
     \item 若修改 \texttt{.bashrc} 當中 \texttt{HISTSIZE} 的值，再重新開啟一個 bash session，可以發現 \texttt{HISTSIZE} 的值已經被修改。因此，可以確認 \texttt{HISTSIZE} 的確是記錄在 \texttt{/home/nasa/.bashrc} 檔案中。
@@ -1429,14 +1429,16 @@ echo $HISTFILE
         \caption{Screenshot of \texttt{echo \$HISTFILESIZE}}
         \label{fig:7-1-c-0}
       \end{figure}
+      \vspace{-1.5em}
     \item 同上題，可以在 \texttt{.bashrc} 的第 20 行找到 \texttt{HISTFILESIZE} 的設定。
       \begin{figure}[H]
         \centering
         \includegraphics[width=0.8\textwidth]{7-1-c-1.png}
-        \caption{\texttt{.bashrc}，可以看到第 20 行宣告了環境變數 \texttt{HISTFILESIZE} 的值}
+        \caption{\texttt{.bashrc} 第 20 行宣告了環境變數 \texttt{HISTFILESIZE} 的值}
         \label{fig:7-1-c-1}
       \end{figure}
-    \item 因此，可以確認 \texttt{HISTFILESIZE} 的確是記錄在 \texttt{/home/nasa/.bashrc} 檔案中。
+      \vspace{-1em}
+    \item 因此， \texttt{HISTFILESIZE} 是記錄在 \texttt{/home/nasa/.bashrc} 檔案中。
   \end{itemize}
 \end{problem}
 \begin{problem}{7.1 (d)} flag
@@ -1444,10 +1446,11 @@ echo $HISTFILE
     \item 首先，查看預設的 history file (\texttt{/home/nasa/.bash\_history}) 的內容，發現裡面有記載將 flag 輸出到新的 history file 第 104 行的內容：
       \begin{figure}[H]
         \centering
-        \includegraphics[width=0.8\textwidth]{7-1-d-1.png}
+        \includegraphics[width=0.6\textwidth]{7-1-d-1.png}
         \caption{Screenshot of \texttt{\textasciitilde/.bash\_history}}
         \label{fig:7-1-d-1}
       \end{figure}
+      \vspace{-1em}
     \item 結合 (a) 小題的內容，前往 \texttt{\textasciitilde/kickstart.nvim/.git/logs/refs/remotes/origin/HEAD} 查看第 104 行的內容，即可找到 flag。
     \item 我使用 vim 來查看該檔案，並設定開啟行號（\texttt{:set nu}），跳到第 104 行找到內容如下：
       \begin{figure}[H]
@@ -1457,18 +1460,18 @@ echo $HISTFILE
         \label{fig:7-1-d-2}
       \end{figure}
   \end{itemize}
+  \vspace{-1.4em}
   \begin{mycolorbox}[green]
     \textbf{Flag of Problem 7.1 (d):}
     \begin{minted}{text}
 NASA{y0UF1nd+heCoRr3tFL4G}
     \end{minted}
   \end{mycolorbox}
-
 \end{problem}
 
 % Problem 7.2
 
-\subsubsection{寶藏箱 (/home/nasa/treasure)(5pt)}
+\subsubsection{寶藏箱 (/home/nasa/treasure)}
 \begin{mycolorbox}[teal]
   \footnotesize
   \textbf{Reference:}
@@ -1512,7 +1515,7 @@ NASA{EZ_TrEa$Ur3_HunT!}
   \end{minted}
 \end{mycolorbox}
 
-\subsubsection{魔物 (/home/nasa/boss)(5pt)}
+\subsubsection{魔物 (/home/nasa/boss)}
 \begin{mycolorbox}[teal]
   \footnotesize
   \textbf{Reference:}
@@ -1549,7 +1552,7 @@ NASA{m0dERn_Pr0B1em$_reQU1r3_m0dERn_SOluT10N5}
 \end{figure}
 
 \clearpage
-\subsubsection{通關密語 (/home/nasa/chal)(5pt)}
+\subsubsection{通關密語 (/home/nasa/chal)}
 \begin{mycolorbox}[teal]
   \footnotesize
   \textbf{Reference:}
@@ -1593,7 +1596,7 @@ NASA2025{n4ndeharuh1ka93yatt4n0}
 \end{mycolorbox}
 
 \clearpage
-\subsubsection{tmux (4pt)}
+\subsubsection{tmux}
 \begin{mycolorbox}[teal]
   \footnotesize
   \textbf{Reference:}
@@ -1645,7 +1648,7 @@ Ctrl-a %
     \item \href{https://www.jinnsblog.com/2020/09/linux-tcpdump-network-traffic-tutorial.html}{Tcpdump 擷取封包指令範例教學 - Jinn's Blog}
   \end{itemize}
 \end{mycolorbox}
-\begin{problem}{8.1} \textbf{解讀古老卷軸 (3pt)}
+\begin{problem}{8.1} \textbf{解讀古老卷軸}
   \begin{itemize}
     \item Dockerfile 內容如以下以及 \autoref{fig:8-1} 所示
       \begin{minted}[frame=lines, linenos, escapeinside=||, framesep=2mm]{Dockerfile}
@@ -1714,7 +1717,7 @@ CMD ["/usr/libexec/run/run.sh"]
 \end{problem}
 
 \begin{problem}{8.2}
-  \textbf{啟動聖杯 (3pt)}
+  \textbf{啟動聖杯}
   \begin{itemize}
     \item 首先我嘗試了使用指令直接啟動 docker 容器，但是發現無法成功啟動，如 \autoref{label:8-2-1} 所示。
       \begin{figure}[H]
@@ -1748,7 +1751,7 @@ docker run -e MAGIC_SPELL='hahahaiLoveNASA' my-magic-cup
 \end{problem}
 
 \begin{problem}{8.3}
-  \textbf{神秘訊息 (4pt)}
+  \textbf{神秘訊息}
   \begin{itemize}
     \item 啟動 Docker container 並且 detach 之後，我使用指令 \texttt{docker ps -a} 查看開啟的 container
       \begin{figure}[H]
