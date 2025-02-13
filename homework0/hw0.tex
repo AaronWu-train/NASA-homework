@@ -167,7 +167,7 @@ TCP/IP 模型總共分為五層，依照由下而上的順序分別是：
 \end{mycolorbox}
 
 % Problem 1-2 (a)
-\begin{problem}{1-2 (a)} \textbf{虛擬區域網路 (Virtual Local Area Network, VLAN)}
+\begin{problem}{1.2 (a)} \textbf{虛擬區域網路 (Virtual Local Area Network, VLAN)}
   \begin{itemize}
     \item 功能：VLAN 是一種將網路裝置分割成多個虛擬網段的技術，可以藉由路由器或是交換器建置，將硬體上在相同區域網路內的裝置以軟體隔離成不同網段，以達成更有效的管理。
     \item 用途：用來區隔裝置、避免廣播風暴或其他資安危機。
@@ -175,7 +175,7 @@ TCP/IP 模型總共分為五層，依照由下而上的順序分別是：
 \end{problem}
 
 % Problem 1-2 (b)
-\begin{problem}{1-2 (b)} \textbf{Switch v.s. Router}
+\begin{problem}{1.2 (b)} \textbf{Switch v.s. Router}
   \begin{itemize}
     \item 功能與用途：
       \vspace{-0.5em}
@@ -193,9 +193,9 @@ TCP/IP 模型總共分為五層，依照由下而上的順序分別是：
 \end{problem}
 
 % Problem 1-2 (c)
-\begin{problem}{1-2 (c)} \textbf{Broadcast Storm 和 Switching Loop}
+\begin{problem}{1.2 (c)} \textbf{Broadcast Storm 和 Switching Loop}
   \begin{enumerate}
-    \item \textbf{Broadcast Storm}: Broadcast Storm 指的是在網路當中， Broadcast 跟 Multicast 的封包在網路中不斷的傳播和累積，導致網路流量過大，使得網路效能下降，甚至導致網路癱瘓。
+    \item \textbf{Broadcast Storm}: Broadcast Storm 指的是在網路當中， Broadcast 跟 Multicast 的封包在網路中不斷傳播和累積，導致網路流量過大，使網路效能下降，甚至導致網路癱瘓。
 
     \item \textbf{Switching Loop}: Switching Loop 是指在網路當中具有大於一條的 layer-2 路徑，例如交換機之間形成一個環。因為在 layer-2 當中是不具有 TTL 機制的，因此封包會在網路中不斷的循環、廣播、擴大，導致 Broadcast Storm 的發生。
 
@@ -244,7 +244,7 @@ TCP/IP 模型總共分為五層，依照由下而上的順序分別是：
     \begin{itemize}
       \item IPv4 的 IP 為四個 0 到 255 的數字組成，以小數點隔開。而 IPv6 的 IP 位址則是由八組四位十六進位數字組成，中間以冒號隔開。
       \item 表頭格式：IPv6 的表頭格式有大幅度的修改，讓表頭格式更簡潔並且具有擴充性。
-      \item 自動配置：IPv4 需要透過 DHCP 伺服器來分配 IP 位址，不然就要手動分配位址。而 IPv6 使用無狀態地址自動配置 (SLAAC)，讓裝置本身可以在沒有其他設備的情況下自動配置 IP 位址，因此不再需要透過 DHCP 來分配 IP 位址，可以降低網路流量。
+      \item 自動配置：IPv4 需要透過 DHCP 伺服器來分配 IP 位址，不然就要手動分配位址。而 IPv6 使用無狀態地址自動配置 (SLAAC)，讓裝置本身可以在沒有其他設備的情況下自動配置 IP 位址，因此不再需要透過 DHCP，可以降低網路流量。
       \item 路由效率：IPv6 不需要經由 NAT 來連接網路，因此可以提高路由效率。
       \item 安全性：IPv6 在設計上考量了安全性，例如預設支援 IPsec，以及使用隱私性更強的協議等等，可以提供更好的安全性。
     \end{itemize}
@@ -324,7 +324,7 @@ TCP/IP 模型總共分為五層，依照由下而上的順序分別是：
 \begin{enumerate}
   \item EFK 是什麼？
     \begin{itemize}
-      \item EFK 是一套由三個開源工具組成的日誌管理以及分析工具系統，分別是 Elasticsearch、Fluentd、Kibana。他可以將伺服器的日誌資料進行收集、分析、儲存、查詢等等，並且可以用來監視伺服器性能、追蹤應用程式錯誤、分析使用者行為等等。
+      \item EFK 是一套由三個開源工具組成的日誌管理以及分析工具系統，分別是 Elasticsearch、Fluentd、Kibana。他可以將伺服器的日誌資料進行收集、分析、儲存、查詢等，並且可以用來監視伺服器性能、追蹤應用程式錯誤、分析使用者行為。
       \item EFK 由以下三個工具組成：
         \begin{enumerate}
           \item \textbf{Elasticsearch}：一個分散式的搜尋與分析引擎，可以用來快速的查詢日記資料。
@@ -333,6 +333,7 @@ TCP/IP 模型總共分為五層，依照由下而上的順序分別是：
         \end{enumerate}
       \item 一般來說，會直接使用 Fluentd 監聽每個容器的 Log，並將 Log 資料送到 Elasticsearch 進行儲存，最後透過 Kibana 來進行分析、視覺化。
     \end{itemize}
+    \clearpage
   \item 優點：
     \begin{itemize}
       \item 集中管理 log：EFK 系統可以將眾多節點與應用程式的 log 整合到一個地方，方便管理和檢視，並且可以進行視覺化的分析。
