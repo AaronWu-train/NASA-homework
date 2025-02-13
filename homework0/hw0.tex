@@ -898,7 +898,7 @@ n = p * q
 phi_n = (p - 1) * (q - 1)
 
 e = 65537
-d = inverse(e, phi_n) # Compute d = e^(-1) (mod φ(n))
+d = inverse(e, phi_n) # Compute d = e^(-1) (mod phi(n))
 
 with open("new_rsa_key_n.txt", "w") as file:
     file.write(str(n))
