@@ -1,0 +1,32 @@
+#! /usr/bin/env bash
+
+args=$(getopt --long "input:,output:" $*)
+echo $args
+
+if [ $? -ne 0 ]; then
+    echo 'Usage: ...'
+    exit 2
+fi
+
+set -- $args
+echo $args
+
+while :; do
+    case "$1" in
+    --input)
+        echo "input args is '$1'"
+        shift
+        shift
+        ;;
+    --output)
+        echo "output arg is '$2'"
+        shift
+        shift
+        ;;
+    --)
+        echo "end"
+        shift
+        break
+        ;;
+    esac
+done
