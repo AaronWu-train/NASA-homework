@@ -1,32 +1,87 @@
 #! /usr/bin/env bash
 
-args=$(getopt --long "input:,output:" $*)
-echo $args
+usage="Usage: ./Combine-Html --input [input file] --output [output file]"
+
+# parsing args
+args=$(getopt -o "" --long "input:,output:" -n 'Combine-Html' -- "$@")
 
 if [ $? -ne 0 ]; then
-    echo 'Usage: ...'
-    exit 2
+    echo $usage
+    exit 1
 fi
 
-set -- $args
-echo $args
+eval set -- "$args"
+unset args
 
-while :; do
+while true; do
     case "$1" in
-    --input)
-        echo "input args is '$1'"
-        shift
-        shift
-        ;;
-    --output)
-        echo "output arg is '$2'"
-        shift
-        shift
-        ;;
-    --)
-        echo "end"
-        shift
-        break
-        ;;
+        '--input')
+            input=$2
+            shift 2
+            ;;
+        '--output')
+            output=$2
+            shift 2
+            ;;
+        '--')
+            shift
+            break
+            ;;
+        *)
+            echo $usage
+            exit 1
+            ;;
     esac
 done
+
+function readable() {
+    if [[ -d "$1" || ! -f "$1" || ! -r "$1" ]]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
+function writeable() {
+    # file exist
+    if [[ -e "$1" && ! -w "$1" ]]; then
+        return 1
+    fi
+
+    # file not exist
+    if [[ ! -e "$1" && ! -w "$(dirname "$1")" ]]; then
+        return 1 
+    fi
+
+    if [[ -d "$1" ]]; then
+        return 1  
+    fi
+    return 0 
+}
+
+
+# main process function
+function process() {
+    local cur=$1
+    local dir=$(dirname $cur)
+
+    while IFS= read -r line; do
+        after = $line
+        while [[ $after =~ \<include\ src=\"([^\"]+)\"\ \/\> ]]; do 
+            echo "${BASH_REMATCH[1]}"      
+        done
+
+        if [[ ${#after} -gt 0 ]]
+            echo $after
+        fi     
+    done < $cur
+}
+
+if ! readable $input || ! writable $output; then
+    echo $usage
+    exit 1
+fi
+
+process $input > $output
+
+
