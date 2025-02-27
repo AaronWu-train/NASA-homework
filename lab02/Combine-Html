@@ -42,7 +42,7 @@ function readable() {
     fi
 }
 
-function writeable() {
+function writable() {
     # file exist
     if [[ -e "$1" && ! -w "$1" ]]; then
         return 1
@@ -66,18 +66,42 @@ function process() {
     local dir=$(dirname $cur)
 
     while IFS= read -r line; do
-        after = $line
-        while [[ $after =~ \<include\ src=\"([^\"]+)\"\ \/\> ]]; do 
-            echo "${BASH_REMATCH[1]}"      
+        after=$line
+        while [[ $after =~ (.*)\<include\ src=\"([^\"]+)\"\ \/\>(.*) ]]; do 
+            before=${BASH_REMATCH[1]}
+            path=${BASH_REMATCH[2]}
+            after=${BASH_REMATCH[3]}
+
+            if [[ ${#before} -gt 0 ]]; then
+                echo $before
+            fi
+
+            if [[ ${path:0:1} != '\/' && ${path:0:1} != '~' ]]; then
+                path="${dir}/${path}"
+            fi
+
+            if ! readable "${path}"; then
+                echo "<p style=\"color:red;\">Cannot access ${path}</p>"
+            elif [[ ${path} == *.html ]]; then
+                process $path
+            elif [[ ${path} == *.png || ${path} == *.jpg ]]; then
+                local image="$(cat ${curFile} | base64)"
+                local extension="${path##*.}"
+                echo "<img src=\"data:image/${extension};base64,${image}\" />"
+            else
+                cat $path
+            fi 
+
+            break 
         done
 
-        if [[ ${#after} -gt 0 ]]
+        if [[ ${#after} -gt 0 ]]; then
             echo $after
         fi     
     done < $cur
 }
 
-if ! readable $input || ! writable $output; then
+if ! readable ${input} || ! writable ${output} ; then
     echo $usage
     exit 1
 fi
