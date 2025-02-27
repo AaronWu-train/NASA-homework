@@ -85,7 +85,7 @@ function process() {
             elif [[ ${path} == *.html ]]; then
                 process $path
             elif [[ ${path} == *.png || ${path} == *.jpg ]]; then
-                local image="$(cat ${curFile} | base64)"
+                local image=$(base64 -w 0 ${path})
                 local extension="${path##*.}"
                 echo "<img src=\"data:image/${extension};base64,${image}\" />"
             else
