@@ -1,0 +1,27 @@
+# TEST GROUP: Problem 2
+build dir2 --output your_output/dir2.mktree
+build --output your_output/dir2.mktree dir2
+
+# TEST GROUP: Problem 3
+gen-proof .hidden --tree output/files/dir2.mktree --output your_output/.hidden.proof
+gen-proof _ --tree output/files/dir2.mktree --output your_output/_.proof
+gen-proof ___--____ --tree output/files/dir2.mktree --output your_output/___--____.proof
+gen-proof a_ --tree output/files/dir2.mktree --output your_output/a_.proof
+gen-proof b- --tree output/files/dir2.mktree --output your_output/b-.proof
+gen-proof b/a --tree output/files/dir2.mktree --output your_output/a.proof
+gen-proof b/z --tree output/files/dir2.mktree --output your_output/z.proof
+gen-proof b_ --tree output/files/dir2.mktree --output your_output/b_.proof
+gen-proof ba --tree output/files/dir2.mktree --output your_output/ba.proof
+gen-proof bz --tree output/files/dir2.mktree --output your_output/bz.proof
+
+# TEST GROUP: Problem 4
+verify-proof dir2/.hidden --proof output/files/.hidden.proof --root fdf0b59b23c37b6f35061c1dd72c29a28e29535b8c327dee610c91bfc461cce5
+verify-proof dir2/_ --proof output/files/_.proof --root fdf0b59b23c37b6f35061c1dd72c29a28e29535b8c327dee610c91bfc461cce5
+verify-proof dir2/___--____ --proof output/files/___--____.proof --root fdf0b59b23c37b6f35061c1dd72c29a28e29535b8c327dee610c91bfc461cce5
+verify-proof dir2/a_ --proof output/files/a_.proof --root fdf0b59b23c37b6f35061c1dd72c29a28e29535b8c327dee610c91bfc461cce5
+verify-proof dir2/b- --proof output/files/b-.proof --root fdf0b59b23c37b6f35061c1dd72c29a28e29535b8c327dee610c91bfc461cce5
+verify-proof dir2/b/a --proof output/files/a.proof --root fdf0b59b23c37b6f35061c1dd72c29a28e29535b8c327dee610c91bfc461cce5
+verify-proof dir2/b/z --proof output/files/z.proof --root fdf0b59b23c37b6f35061c1dd72c29a28e29535b8c327dee610c91bfc461cce5
+verify-proof dir2/b_ --proof output/files/b_.proof --root fdf0b59b23c37b6f35061c1dd72c29a28e29535b8c327dee610c91bfc461cce5
+verify-proof dir2/ba --proof output/files/ba.proof --root fdf0b59b23c37b6f35061c1dd72c29a28e29535b8c327dee610c91bfc461cce5
+verify-proof dir2/bz --proof output/files/bz.proof --root fdf0b59b23c37b6f35061c1dd72c29a28e29535b8c327dee610c91bfc461cce5

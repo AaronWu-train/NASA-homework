@@ -1,0 +1,63 @@
+# TEST GROUP: Problem 2
+build dir3 --output your_output/dir3.mktree
+build --output your_output/dir3.mktree dir3
+
+# TEST GROUP: Problem 3
+gen-proof .v2-uI0 --tree output/files/dir3.mktree --output your_output/.v2-uI0.proof
+gen-proof 68zw4R9XRF/1whAT_Tq7Q --tree output/files/dir3.mktree --output your_output/1whAT_Tq7Q.proof
+gen-proof 68zw4R9XRF/J4Os4h/0_7CD --tree output/files/dir3.mktree --output your_output/0_7CD.proof
+gen-proof 68zw4R9XRF/J4Os4h/9LN3yLfL --tree output/files/dir3.mktree --output your_output/9LN3yLfL.proof
+gen-proof 68zw4R9XRF/J4Os4h/RmOo0 --tree output/files/dir3.mktree --output your_output/RmOo0.proof
+gen-proof 68zw4R9XRF/J4Os4h/ab04P4 --tree output/files/dir3.mktree --output your_output/ab04P4.proof
+gen-proof 68zw4R9XRF/rWSrHmMN --tree output/files/dir3.mktree --output your_output/rWSrHmMN.proof
+gen-proof bum2jKNP4Wy/4Lza8TaY --tree output/files/dir3.mktree --output your_output/4Lza8TaY.proof
+gen-proof bum2jKNP4Wy/9uN4Bk/U6k7LeNGznL/u60I1-/TDuaZcBS3lJz --tree output/files/dir3.mktree --output your_output/TDuaZcBS3lJz.proof
+gen-proof bum2jKNP4Wy/9uN4Bk/U6k7LeNGznL/u60I1-/cMsRM5 --tree output/files/dir3.mktree --output your_output/cMsRM5.proof
+gen-proof bum2jKNP4Wy/9uN4Bk/U6k7LeNGznL/u60I1-/iaV78-G5G --tree output/files/dir3.mktree --output your_output/iaV78-G5G.proof
+gen-proof bum2jKNP4Wy/9uN4Bk/U6k7LeNGznL/u60I1-/jpFF-36uPIZ --tree output/files/dir3.mktree --output your_output/jpFF-36uPIZ.proof
+gen-proof bum2jKNP4Wy/9uN4Bk/U6k7LeNGznL/u60I1-/uengS- --tree output/files/dir3.mktree --output your_output/uengS-.proof
+gen-proof bum2jKNP4Wy/jduvNUneW/1.U-GnqYTrAN --tree output/files/dir3.mktree --output your_output/1.U-GnqYTrAN.proof
+gen-proof bum2jKNP4Wy/jduvNUneW/_cxTVR --tree output/files/dir3.mktree --output your_output/_cxTVR.proof
+gen-proof bum2jKNP4Wy/jduvNUneW/rIWLX/BnYs9uXu --tree output/files/dir3.mktree --output your_output/BnYs9uXu.proof
+gen-proof bum2jKNP4Wy/jduvNUneW/rIWLX/PZdwJvqIH --tree output/files/dir3.mktree --output your_output/PZdwJvqIH.proof
+gen-proof bum2jKNP4Wy/jduvNUneW/rIWLX/XNxBvUMd9--/J9RL85-atu --tree output/files/dir3.mktree --output your_output/J9RL85-atu.proof
+gen-proof bum2jKNP4Wy/jduvNUneW/rIWLX/vcSLFaCiD.2/Q2vls.Bp --tree output/files/dir3.mktree --output your_output/Q2vls.Bp.proof
+gen-proof bum2jKNP4Wy/jduvNUneW/rIWLX/xkfp2K/_6f.N39kg --tree output/files/dir3.mktree --output your_output/_6f.N39kg.proof
+gen-proof bum2jKNP4Wy/jduvNUneW/rIWLX/xkfp2K/x_i9J --tree output/files/dir3.mktree --output your_output/x_i9J.proof
+gen-proof bum2jKNP4Wy/jduvNUneW/ufrGC/5QyN7lIpgu --tree output/files/dir3.mktree --output your_output/5QyN7lIpgu.proof
+gen-proof bum2jKNP4Wy/jduvNUneW/ufrGC/EnU5Ud2It. --tree output/files/dir3.mktree --output your_output/EnU5Ud2It..proof
+gen-proof bum2jKNP4Wy/jduvNUneW/ufrGC/WrVIf0TYAmJ --tree output/files/dir3.mktree --output your_output/WrVIf0TYAmJ.proof
+gen-proof bum2jKNP4Wy/jduvNUneW/ufrGC/cHlTVc --tree output/files/dir3.mktree --output your_output/cHlTVc.proof
+gen-proof bum2jKNP4Wy/jduvNUneW/ufrGC/tW5Zj6/fP7aFzDDtkz --tree output/files/dir3.mktree --output your_output/fP7aFzDDtkz.proof
+gen-proof i0qRJZPO --tree output/files/dir3.mktree --output your_output/i0qRJZPO.proof
+gen-proof ktJnlEcoy5D --tree output/files/dir3.mktree --output your_output/ktJnlEcoy5D.proof
+
+# TEST GROUP: Problem 4
+verify-proof dir3/.v2-uI0 --proof output/files/.v2-uI0.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/68zw4R9XRF/1whAT_Tq7Q --proof output/files/1whAT_Tq7Q.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/68zw4R9XRF/J4Os4h/0_7CD --proof output/files/0_7CD.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/68zw4R9XRF/J4Os4h/9LN3yLfL --proof output/files/9LN3yLfL.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/68zw4R9XRF/J4Os4h/RmOo0 --proof output/files/RmOo0.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/68zw4R9XRF/J4Os4h/ab04P4 --proof output/files/ab04P4.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/68zw4R9XRF/rWSrHmMN --proof output/files/rWSrHmMN.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/bum2jKNP4Wy/4Lza8TaY --proof output/files/4Lza8TaY.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/bum2jKNP4Wy/9uN4Bk/U6k7LeNGznL/u60I1-/TDuaZcBS3lJz --proof output/files/TDuaZcBS3lJz.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/bum2jKNP4Wy/9uN4Bk/U6k7LeNGznL/u60I1-/cMsRM5 --proof output/files/cMsRM5.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/bum2jKNP4Wy/9uN4Bk/U6k7LeNGznL/u60I1-/iaV78-G5G --proof output/files/iaV78-G5G.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/bum2jKNP4Wy/9uN4Bk/U6k7LeNGznL/u60I1-/jpFF-36uPIZ --proof output/files/jpFF-36uPIZ.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/bum2jKNP4Wy/9uN4Bk/U6k7LeNGznL/u60I1-/uengS- --proof output/files/uengS-.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/bum2jKNP4Wy/jduvNUneW/1.U-GnqYTrAN --proof output/files/1.U-GnqYTrAN.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/bum2jKNP4Wy/jduvNUneW/_cxTVR --proof output/files/_cxTVR.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/bum2jKNP4Wy/jduvNUneW/rIWLX/BnYs9uXu --proof output/files/BnYs9uXu.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/bum2jKNP4Wy/jduvNUneW/rIWLX/PZdwJvqIH --proof output/files/PZdwJvqIH.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/bum2jKNP4Wy/jduvNUneW/rIWLX/XNxBvUMd9--/J9RL85-atu --proof output/files/J9RL85-atu.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/bum2jKNP4Wy/jduvNUneW/rIWLX/vcSLFaCiD.2/Q2vls.Bp --proof output/files/Q2vls.Bp.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/bum2jKNP4Wy/jduvNUneW/rIWLX/xkfp2K/_6f.N39kg --proof output/files/_6f.N39kg.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/bum2jKNP4Wy/jduvNUneW/rIWLX/xkfp2K/x_i9J --proof output/files/x_i9J.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/bum2jKNP4Wy/jduvNUneW/ufrGC/5QyN7lIpgu --proof output/files/5QyN7lIpgu.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/bum2jKNP4Wy/jduvNUneW/ufrGC/EnU5Ud2It. --proof output/files/EnU5Ud2It..proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/bum2jKNP4Wy/jduvNUneW/ufrGC/WrVIf0TYAmJ --proof output/files/WrVIf0TYAmJ.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/bum2jKNP4Wy/jduvNUneW/ufrGC/cHlTVc --proof output/files/cHlTVc.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/bum2jKNP4Wy/jduvNUneW/ufrGC/tW5Zj6/fP7aFzDDtkz --proof output/files/fP7aFzDDtkz.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/i0qRJZPO --proof output/files/i0qRJZPO.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+verify-proof dir3/ktJnlEcoy5D --proof output/files/ktJnlEcoy5D.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
