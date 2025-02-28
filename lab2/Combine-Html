@@ -34,7 +34,7 @@ while true; do
     esac
 done
 
-function readable() {
+readable() {
     if [[ -d "$1" || ! -f "$1" || ! -r "$1" ]]; then
         return 1
     else
@@ -42,7 +42,7 @@ function readable() {
     fi
 }
 
-function writable() {
+writable() {
     # file exist
     if [[ -e "$1" && ! -w "$1" ]]; then
         return 1
@@ -61,42 +61,44 @@ function writable() {
 
 
 # main process function
-function process() {
+process() {
     local cur=$1
     local dir=$(dirname $cur)
 
     while IFS= read -r line; do
-        after=$line
-        while [[ $after =~ (.*)\<include\ src=\"([^\"]+)\"\ \/\>(.*) ]]; do 
-            before=${BASH_REMATCH[1]}
-            path=${BASH_REMATCH[2]}
-            after=${BASH_REMATCH[3]}
+        local after=$line
+
+        while [[ $after =~ \<include\ src=\"([^\"]+)\"\ \/\> ]]; do
+            local before="${after%%<include src=*}"
+            local path=${BASH_REMATCH[1]}
+            local after="${after#*<include src=\"${path}\" />}"
 
             if [[ ${#before} -gt 0 ]]; then
-                echo $before
+                printf "%s" "$before"
             fi
 
+            local oripath="$path"
             if [[ ${path:0:1} != '\/' && ${path:0:1} != '~' ]]; then
-                path="${dir}/${path}"
+                local path="${dir}/${path}"
             fi
 
             if ! readable "${path}"; then
-                echo "<p style=\"color:red;\">Cannot access ${path}</p>"
+                echo -n "<p style=\"color:red;\">Cannot access ${oripath}</p>"
             elif [[ ${path} == *.html ]]; then
-                process $path
+                process "$path"
             elif [[ ${path} == *.png || ${path} == *.jpg ]]; then
-                local image=$(base64 -w 0 ${path})
+                local image=$(base64 -w 0 "${path}")
                 local extension="${path##*.}"
-                echo "<img src=\"data:image/${extension};base64,${image}\" />"
+                printf "%s" "<img src=\"data:image/${extension};base64,${image}\" />"
             else
-                cat $path
+                printf "%s" "$(cat ${path})"
             fi 
-
-            break 
         done
 
         if [[ ${#after} -gt 0 ]]; then
-            echo $after
+            printf "%s\n" "$after"
+        else 
+            printf "\n"
         fi     
     done < $cur
 }
