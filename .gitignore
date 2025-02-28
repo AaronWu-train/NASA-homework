@@ -316,3 +316,5 @@ _minted/
 *.minted
 dist/
 .env
+
+!homework1/public-testcase/*.out
