@@ -314,3 +314,5 @@ TSWLatexianTemp*
 .DS_Store
 _minted/
 *.minted
+dist/
+.env
