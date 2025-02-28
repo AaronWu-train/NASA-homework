@@ -1,0 +1,115 @@
+# TEST GROUP: Problem 1
+-h
+--help
+-h --help
+ 
+--starburst-stream
+starburst-stream
+
+build
+build dir1
+build --output your_output/dir1.mktree
+build dir1 -o your_output/dir1.mktree
+build dir1 --output
+build dir1 --output=your_output/dir1.mktree
+build dir1 --tree your_output/dir1.mktree
+build dir1 --proof output/files/hi.txt.proof
+build dir1 --output your_output/dir1.mktree --proof output/files/hi.txt.proof
+build dir1 --proof output/files/hi.txt.proof --output your_output/dir1.mktree
+build dir1 dir1/code --output your_output/dir1.mktree
+build dir1 --output your_output/dir1.mktree dir1/code
+build --output your_output/dir1.mktree dir1 dir1/code
+
+build dir1/nonexistent --output your_output/dir1.mktree
+build dir1/hi.txt --output your_output/dir1.mktree
+build dir1/link1 --output your_output/dir1.mktree
+build dir1/media/link2 --output your_output/dir1.mktree
+
+build dir1 --output dir1
+build dir1 --output dir1/link1
+
+gen-proof
+gen-proof --tree output/files/dir1.mktree --output your_output/hi.txt.proof
+gen-proof hi.txt --output your_output/hi.txt.proof
+gen-proof hi.txt --tree --output your_output/hi.txt.proof
+gen-proof hi.txt --tree output/files/dir1.mktree
+gen-proof hi.txt --tree output/files/dir1.mktree --output
+gen-proof hi.txt --tree output/files/dir1.mktree --proof your_output/hi.txt.proof
+gen-proof hi.txt --tree output/files/dir1.mktree --output your_output/hi.txt.proof --root 123abc456ddef
+gen-proof hi.txt --proof output/files/hi.txt.proof --tree output/files/dir1.mktree --output your_output/hi.txt.proof
+gen-proof hi.txt code/hello.c --tree output/files/dir1.mktree --output your_output/hi.txt.proof
+
+gen-proof hi.txt --tree dir1/nonexistent --output your_output/hi.txt.proof
+gen-proof hi.txt --tree dir1 --output your_output/hi.txt.proof
+gen-proof hi.txt --tree dir1/link1 --output your_output/hi.txt.proof
+
+gen-proof hi.txt --tree output/files/dir1.mktree --output dir1
+gen-proof hi.txt --tree output/files/dir1.mktree --output dir1/link1
+
+verify-proof
+verify-proof --proof output/files/hi.txt.proof --root abc123def456
+verify-proof dir1/hi.txt --root abc123def456
+verify-proof dir1/hi.txt --proof --root abc123def456
+verify-proof dir1/hi.txt --proof output/files/hi.txt.proof
+verify-proof dir1/hi.txt --proof output/files/hi.txt.proof --root
+verify-proof dir1/hi.txt --output your_output/nonexistent --root abc123def456
+verify-proof dir1/hi.txt --proof output/files/hi.txt.proof --root abc123def456 --output your_output/nonexistent
+verify-proof dir1/hi.txt --tree output/files/dir1.mktree --proof output/files/hi.txt.proof --root abc123def456
+verify-proof dir1/hi.txt dir1/code/hello.c --proof output/files/hi.txt.proof --root abc123def456
+
+verify-proof dir1/nonexistent --proof output/files/hi.txt.proof --root abc123def456
+verify-proof dir1 --proof output/files/hi.txt.proof --root abc123def456
+verify-proof dir1/link1 --proof output/files/hi.txt.proof --root abc123def456
+verify-proof dir1/media/link2 --proof output/files/hi.txt.proof --root abc123def456
+
+verify-proof dir1/hi.txt --proof dir1/nonexistent --root abc123def456
+verify-proof dir1/hi.txt --proof dir1 --root abc123def456
+verify-proof dir1/hi.txt --proof dir1/link1 --root abc123def456
+
+verify-proof dir1/hi.txt --proof output/files/hi.txt.proof --root xyz
+verify-proof dir1/hi.txt --proof output/files/hi.txt.proof --root AbC
+verify-proof dir1/hi.txt --proof output/files/hi.txt.proof --root "and in that light I find deliverance"
+
+# TEST GROUP: Problem 2
+build dir1 --output your_output/dir1.mktree
+build --output your_output/dir1.mktree dir1
+
+# TEST GROUP: Problem 3
+gen-proof code/hello.c --tree output/files/dir1.mktree --output your_output/hello.c.proof
+gen-proof code/judge.py --tree output/files/dir1.mktree --output your_output/judge.py.proof
+gen-proof code/run.sh --tree output/files/dir1.mktree --output your_output/run.sh.proof
+gen-proof hi.txt --tree output/files/dir1.mktree --output your_output/hi.txt.proof
+gen-proof media/image1.jpg --tree output/files/dir1.mktree --output your_output/image1.jpg.proof
+gen-proof media/inner/image2.png --tree output/files/dir1.mktree --output your_output/image2.png.proof
+gen-proof media/inner/image3.gif --tree output/files/dir1.mktree --output your_output/image3.gif.proof
+
+gen-proof --tree output/files/dir1.mktree code/hello.c --output your_output/hello.c.proof
+gen-proof --tree output/files/dir1.mktree --output your_output/hello.c.proof code/hello.c
+gen-proof --output your_output/hello.c.proof --tree output/files/dir1.mktree code/hello.c
+
+gen-proof nonexistent --tree output/files/dir1.mktree --output your_output/nonexistent.proof
+
+# TEST GROUP: Problem 4
+verify-proof dir1/code/hello.c --proof output/files/hello.c.proof --root 61972f8a5bf9925d70d34934dafced66756c5f9d7a80e3b265e61e5526155f83
+verify-proof dir1/code/judge.py --proof output/files/judge.py.proof --root 61972f8a5bf9925d70d34934dafced66756c5f9d7a80e3b265e61e5526155f83
+verify-proof dir1/code/run.sh --proof output/files/run.sh.proof --root 61972f8a5bf9925d70d34934dafced66756c5f9d7a80e3b265e61e5526155f83
+verify-proof dir1/hi.txt --proof output/files/hi.txt.proof --root 61972f8a5bf9925d70d34934dafced66756c5f9d7a80e3b265e61e5526155f83
+verify-proof dir1/media/image1.jpg --proof output/files/image1.jpg.proof --root 61972f8a5bf9925d70d34934dafced66756c5f9d7a80e3b265e61e5526155f83
+verify-proof dir1/media/inner/image2.png --proof output/files/image2.png.proof --root 61972f8a5bf9925d70d34934dafced66756c5f9d7a80e3b265e61e5526155f83
+verify-proof dir1/media/inner/image3.gif --proof output/files/image3.gif.proof --root 61972f8a5bf9925d70d34934dafced66756c5f9d7a80e3b265e61e5526155f83
+
+verify-proof --proof output/files/hi.txt.proof dir1/hi.txt --root 61972f8a5bf9925d70d34934dafced66756c5f9d7a80e3b265e61e5526155f83
+verify-proof --proof output/files/hi.txt.proof --root 61972f8a5bf9925d70d34934dafced66756c5f9d7a80e3b265e61e5526155f83 dir1/hi.txt
+verify-proof --root 61972f8a5bf9925d70d34934dafced66756c5f9d7a80e3b265e61e5526155f83 --proof output/files/hi.txt.proof dir1/hi.txt
+
+verify-proof dir1/hi.txt --proof output/files/hi.txt.proof --root 61972F8A5BF9925D70D34934DAFCED66756C5F9D7A80E3B265E61E5526155F83
+
+verify-proof dir1/code/run.sh --proof output/files/hi.txt.proof --root 61972F8A5BF9925D70D34934DAFCED66756C5F9D7A80E3B265E61E5526155F83
+verify-proof dir1/hi.txt --proof output/files/hi.txt.proof --root 61972F8A5BF9925D70D34934DAFCED66756C5F9D7A80E3B265E61E5526155F84
+verify-proof dir1/hi.txt --proof output/files/hi.txt.proof.fake1 --root 61972F8A5BF9925D70D34934DAFCED66756C5F9D7A80E3B265E61E5526155F83
+verify-proof dir1/hi.txt --proof output/files/hi.txt.proof.fake2 --root 61972F8A5BF9925D70D34934DAFCED66756C5F9D7A80E3B265E61E5526155F83
+verify-proof dir1/hi.txt --proof output/files/hi.txt.proof.fake3 --root 61972F8A5BF9925D70D34934DAFCED66756C5F9D7A80E3B265E61E5526155F83
+verify-proof dir1/hi.txt --proof output/files/hi.txt.proof.fake4 --root 61972F8A5BF9925D70D34934DAFCED66756C5F9D7A80E3B265E61E5526155F83
+verify-proof dir1/hi.txt --proof output/files/hi.txt.proof.fake5 --root 61972F8A5BF9925D70D34934DAFCED66756C5F9D7A80E3B265E61E5526155F83
+verify-proof dir1/hi.txt --proof output/files/hi.txt.proof.fake6 --root 61972F8A5BF9925D70D34934DAFCED66756C5F9D7A80E3B265E61E5526155F83
+verify-proof dir1/hi.txt --proof output/files/hi.txt.proof.fake7 --root 61972F8A5BF9925D70D34934DAFCED66756C5F9D7A80E3B265E61E5526155F83
