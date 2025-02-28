@@ -317,4 +317,5 @@ _minted/
 dist/
 .env
 
-!homework1/public-testcase/**/*.out
+!homework1/public-testcase/**/*
+homework1/public-testcase/**/.DS_Store
