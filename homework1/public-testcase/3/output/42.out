@@ -1,0 +1,6 @@
+arg:
+verify-proof dir3/bum2jKNP4Wy/9uN4Bk/U6k7LeNGznL/u60I1-/jpFF-36uPIZ --proof output/files/jpFF-36uPIZ.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+stdout:
+OK
+exit status:
+0

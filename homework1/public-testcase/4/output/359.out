@@ -1,0 +1,6 @@
+arg:
+verify-proof dir4/cc1H3s/y_OevkcE2Cu/gSkOPxl/2pXHno/yRlF9R5/a-1CLvBdC79/WVmar/cCF3f-n/sgNyUBUZZ1BW/WYzu4Y0CN --proof output/files/WYzu4Y0CN.proof --root af8f2b5b0ff7ff01ce60fe9e96e5e29ac5060c864814cb8490adebecc1e92666
+stdout:
+OK
+exit status:
+0

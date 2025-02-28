@@ -1,0 +1,6 @@
+arg:
+verify-proof dir3/bum2jKNP4Wy/jduvNUneW/rIWLX/XNxBvUMd9--/J9RL85-atu --proof output/files/J9RL85-atu.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+stdout:
+OK
+exit status:
+0

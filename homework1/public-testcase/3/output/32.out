@@ -1,0 +1,6 @@
+arg:
+verify-proof dir3/68zw4R9XRF/1whAT_Tq7Q --proof output/files/1whAT_Tq7Q.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+stdout:
+OK
+exit status:
+0

@@ -1,0 +1,11 @@
+arg:
+gen-proof cc1H3s/y_OevkcE2Cu/gSkOPxl/gG-me --tree output/files/dir4.mktree --output your_output/gG-me.proof
+stdout:
+exit status:
+0
+output_file:
+leaf_index:325,tree_size:326
+098c77b2613d7b4cfb9b763f0aa1ba0fea4d23c6ee1d3c23a09619d026da3ce9
+5a4bc7be0a8571050ac86b97b85c9cb1d0ee01ae3713af67e8f4a6053c8c92c9
+7cd3bca1594616272de585aaa9a72e963386f6792c4ec66edd82829ba554434b
+31a1a389a65d901b12c62fa6d033bf2e1919156d5be390d00292ebf30e452275

@@ -1,0 +1,12 @@
+arg:
+gen-proof .v2-uI0 --tree output/files/dir3.mktree --output your_output/.v2-uI0.proof
+stdout:
+exit status:
+0
+output_file:
+leaf_index:1,tree_size:28
+b74a3cd5ec4461f078e2c207f818bcda29a00cfa5aaa216160e49b45f6cf186a
+da4da0a96b1434dcdcde2815a79e90b456ad73237f8974f824f660ecc955daac
+d0ae9b4ae3dd0fd2273d95d6fa54069b84f35707a1d4e9d8ee708bc6c7debbd0
+977fc0da9c80f4d607a9858e1259d7bdfb637c006f364696bc80de8a40db578a
+115bb286fe5f20b71e1fe5383b8f692aea185cbe3d849cf9d9a25bfb48b17e20

@@ -1,0 +1,6 @@
+arg:
+verify-proof dir4/cc1H3s/y_OevkcE2Cu/gSkOPxl/2pXHno/yRlF9R5/a-1CLvBdC79/fy4mrw7E/Xdx1FB/YobaeDBIg-KZ/FiQA8azs --proof output/files/FiQA8azs.proof --root af8f2b5b0ff7ff01ce60fe9e96e5e29ac5060c864814cb8490adebecc1e92666
+stdout:
+OK
+exit status:
+0

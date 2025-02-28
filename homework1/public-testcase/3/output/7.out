@@ -1,0 +1,12 @@
+arg:
+gen-proof 68zw4R9XRF/J4Os4h/RmOo0 --tree output/files/dir3.mktree --output your_output/RmOo0.proof
+stdout:
+exit status:
+0
+output_file:
+leaf_index:5,tree_size:28
+881598f01a7a03141e224ab4ed3cf44cdf6d19edc16c0be82ca5f9f53516e3dc
+f4c2b44f9af3101ac89f8e8ab409932406f0fa4558c61656a29f9574bc7830e0
+d9cb175e0e31c91a4d1f74202ed722ccf8ef2aec2ca8c71b262ee6a4dd5714db
+977fc0da9c80f4d607a9858e1259d7bdfb637c006f364696bc80de8a40db578a
+115bb286fe5f20b71e1fe5383b8f692aea185cbe3d849cf9d9a25bfb48b17e20

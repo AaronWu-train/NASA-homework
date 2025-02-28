@@ -1,0 +1,10 @@
+arg:
+gen-proof --tree output/files/dir1.mktree code/hello.c --output your_output/hello.c.proof
+stdout:
+exit status:
+0
+output_file:
+leaf_index:1,tree_size:7
+c1e4d9c7090927b06bf2d394cad89fb30213535719874f7fcfd224d6e427743c
+8cbdd9b8a078a7c3ac8e02307e5ec41e51f9212593f6434599bd223b64416eb7
+3606efb5d124ab5308089042c46353f35d4deb443a3619330a6bd32ce7829c85

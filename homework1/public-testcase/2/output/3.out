@@ -1,0 +1,11 @@
+arg:
+gen-proof .hidden --tree output/files/dir2.mktree --output your_output/.hidden.proof
+stdout:
+exit status:
+0
+output_file:
+leaf_index:1,tree_size:10
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+2dba5dbc339e7316aea2683faf839c1b7b1ee2313db792112588118df066aa35
+5310a330e8f970388503c73349d80b45cd764db615f1bced2801dcd4524a2ff4
+2dba5dbc339e7316aea2683faf839c1b7b1ee2313db792112588118df066aa35

@@ -1,0 +1,6 @@
+arg:
+verify-proof dir4/cc1H3s/y_OevkcE2Cu/gSkOPxl/2pXHno/yRlF9R5/a-1CLvBdC79/zIsEfIY0qY/1aM.YjYl9xI/pG1EHT5B1_/PTeO8 --proof output/files/PTeO8.proof --root af8f2b5b0ff7ff01ce60fe9e96e5e29ac5060c864814cb8490adebecc1e92666
+stdout:
+OK
+exit status:
+0

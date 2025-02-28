@@ -317,4 +317,4 @@ _minted/
 dist/
 .env
 
-!homework1/public-testcase/*.out
+!homework1/public-testcase/**/*.out

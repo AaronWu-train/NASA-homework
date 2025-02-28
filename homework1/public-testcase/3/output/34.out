@@ -1,0 +1,6 @@
+arg:
+verify-proof dir3/68zw4R9XRF/J4Os4h/9LN3yLfL --proof output/files/9LN3yLfL.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+stdout:
+OK
+exit status:
+0

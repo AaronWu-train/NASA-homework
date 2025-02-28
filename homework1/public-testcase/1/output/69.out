@@ -1,0 +1,9 @@
+arg:
+gen-proof media/inner/image3.gif --tree output/files/dir1.mktree --output your_output/image3.gif.proof
+stdout:
+exit status:
+0
+output_file:
+leaf_index:7,tree_size:7
+808c79213372250712763cf36ba3933ab73646505415df7e68a87b5d25941c77
+9e233136e7e103e3ab852d16de432a37ccf934d8277cbf5b8bb516ac9a3db96e

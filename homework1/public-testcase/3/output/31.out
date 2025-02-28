@@ -1,0 +1,6 @@
+arg:
+verify-proof dir3/.v2-uI0 --proof output/files/.v2-uI0.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+stdout:
+OK
+exit status:
+0

@@ -1,0 +1,6 @@
+arg:
+verify-proof dir1/hi.txt --proof output/files/hi.txt.proof.fake6 --root 61972F8A5BF9925D70D34934DAFCED66756C5F9D7A80E3B265E61E5526155F83
+stdout:
+OK
+exit status:
+0

@@ -1,0 +1,12 @@
+arg:
+gen-proof cc1H3s/y_OevkcE2Cu/gSkOPxl/2pXHno/yRlF9R5/oeTlOx --tree output/files/dir4.mktree --output your_output/oeTlOx.proof
+stdout:
+exit status:
+0
+output_file:
+leaf_index:324,tree_size:326
+0ccc7b2e824810e8550446735b4b0893d2bcf266fe985a592a9c19b683555b9b
+a0328851167d632679580cd0d26c4165bdad8f8ba9f5ca00df794be64bab9344
+d9c62bb5970c6700edc47e41fd4eec1c7a864ee0bbc59b6df5a221fe4bb9ed93
+7cd3bca1594616272de585aaa9a72e963386f6792c4ec66edd82829ba554434b
+31a1a389a65d901b12c62fa6d033bf2e1919156d5be390d00292ebf30e452275

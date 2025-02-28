@@ -1,0 +1,12 @@
+arg:
+gen-proof bum2jKNP4Wy/jduvNUneW/ufrGC/5QyN7lIpgu --tree output/files/dir3.mktree --output your_output/5QyN7lIpgu.proof
+stdout:
+exit status:
+0
+output_file:
+leaf_index:22,tree_size:28
+c5efac4377533fecd10f9f1945d93ff0c633c33a7f39156394cafb086f105820
+98d73a067bbaaeb97cb1fae584089e49dd29b1e316390fe357a24eaafeb244af
+2be0fe2a454161bf6b8563a032b27cc7860f5c0d2f032692763238d281d4e5a7
+31f2140bf69c001eeb1ac839fca1e110f868b4082e38ce2187bd3ab50bbea969
+9573c6323687964e44197a8b821f8fbfb8477aa29d2386475a6f6b95872e521d

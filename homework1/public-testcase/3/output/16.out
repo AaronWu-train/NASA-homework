@@ -1,0 +1,12 @@
+arg:
+gen-proof bum2jKNP4Wy/jduvNUneW/1.U-GnqYTrAN --tree output/files/dir3.mktree --output your_output/1.U-GnqYTrAN.proof
+stdout:
+exit status:
+0
+output_file:
+leaf_index:14,tree_size:28
+856808b1bfdc76d361ff8dc57f7c19081fdcd4a218e3361f4f743a43ccf938c0
+da3e2a9e34ed2e48344e7fe022b935da1983ee6d5725b3fa82434db38a915f7a
+ad406673af117a37861582ba7140d89d311b767a032bed476b7f77b42ac29262
+4097b16761cc37cb8c5dfb7180fcbbcd7780aa4ab7c7987d4fc7ebec98e47296
+115bb286fe5f20b71e1fe5383b8f692aea185cbe3d849cf9d9a25bfb48b17e20

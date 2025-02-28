@@ -1,0 +1,6 @@
+arg:
+verify-proof dir3/bum2jKNP4Wy/jduvNUneW/rIWLX/xkfp2K/x_i9J --proof output/files/x_i9J.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+stdout:
+OK
+exit status:
+0

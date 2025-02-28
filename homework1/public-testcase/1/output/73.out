@@ -1,0 +1,6 @@
+arg:
+gen-proof nonexistent --tree output/files/dir1.mktree --output your_output/nonexistent.proof
+stdout:
+ERROR: file not found in tree
+exit status:
+1

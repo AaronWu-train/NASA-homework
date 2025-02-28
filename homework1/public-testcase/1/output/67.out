@@ -1,0 +1,10 @@
+arg:
+gen-proof media/image1.jpg --tree output/files/dir1.mktree --output your_output/image1.jpg.proof
+stdout:
+exit status:
+0
+output_file:
+leaf_index:5,tree_size:7
+2a69eb97abd356255b6586b563f77d40e814bd41ae69a503ca22b10e49e67de9
+ea58dc841d4df26457deff35e4e0e05935663c5489e8e4e5159a8cbdea74a8ef
+9e233136e7e103e3ab852d16de432a37ccf934d8277cbf5b8bb516ac9a3db96e

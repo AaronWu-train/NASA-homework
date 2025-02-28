@@ -1,0 +1,12 @@
+arg:
+gen-proof bum2jKNP4Wy/9uN4Bk/U6k7LeNGznL/u60I1-/uengS- --tree output/files/dir3.mktree --output your_output/uengS-.proof
+stdout:
+exit status:
+0
+output_file:
+leaf_index:13,tree_size:28
+91ad5b784f3191982ff892018690524055e62a8058bf6b17f97412c606c73f6e
+da3e2a9e34ed2e48344e7fe022b935da1983ee6d5725b3fa82434db38a915f7a
+ad406673af117a37861582ba7140d89d311b767a032bed476b7f77b42ac29262
+4097b16761cc37cb8c5dfb7180fcbbcd7780aa4ab7c7987d4fc7ebec98e47296
+115bb286fe5f20b71e1fe5383b8f692aea185cbe3d849cf9d9a25bfb48b17e20

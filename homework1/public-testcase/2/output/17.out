@@ -1,0 +1,6 @@
+arg:
+verify-proof dir2/b- --proof output/files/b-.proof --root fdf0b59b23c37b6f35061c1dd72c29a28e29535b8c327dee610c91bfc461cce5
+stdout:
+OK
+exit status:
+0

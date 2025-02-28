@@ -1,0 +1,12 @@
+arg:
+gen-proof bum2jKNP4Wy/jduvNUneW/rIWLX/XNxBvUMd9--/J9RL85-atu --tree output/files/dir3.mktree --output your_output/J9RL85-atu.proof
+stdout:
+exit status:
+0
+output_file:
+leaf_index:18,tree_size:28
+1fc968ed07cb95c05a3f88c2efeda141c5356e41fe332c3126033526d3813a00
+b9ed300a158f04dc913b006cca2eedc0512a8eb9855d8bf64f8caae7c3453f18
+92bbd5d87a8c8e879454d1c8182a17921380cbb1a5447ee194a6eb06905b2a41
+31f2140bf69c001eeb1ac839fca1e110f868b4082e38ce2187bd3ab50bbea969
+9573c6323687964e44197a8b821f8fbfb8477aa29d2386475a6f6b95872e521d

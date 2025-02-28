@@ -1,0 +1,6 @@
+arg:
+verify-proof dir3/bum2jKNP4Wy/jduvNUneW/rIWLX/BnYs9uXu --proof output/files/BnYs9uXu.proof --root dfddc3e865736e5b84271016ac03fdbe3dc6660a59cb43cc90bb8babe1dbddf5
+stdout:
+OK
+exit status:
+0

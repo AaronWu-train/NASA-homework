@@ -1,0 +1,12 @@
+arg:
+gen-proof bum2jKNP4Wy/9uN4Bk/U6k7LeNGznL/u60I1-/jpFF-36uPIZ --tree output/files/dir3.mktree --output your_output/jpFF-36uPIZ.proof
+stdout:
+exit status:
+0
+output_file:
+leaf_index:12,tree_size:28
+5912b620b2d5de7b62ea2d854664646922e3cc1d6f5aeb8d5b67b3d9d72c4a2f
+bf4b63b3d2193ec1af6c651c504fed2ddae944d4e577b7b785ce5726246fb010
+75004a5ca31d76df2781fbfeb4c090f868e2c7ee4f429d9287a3c56291ba0030
+4097b16761cc37cb8c5dfb7180fcbbcd7780aa4ab7c7987d4fc7ebec98e47296
+115bb286fe5f20b71e1fe5383b8f692aea185cbe3d849cf9d9a25bfb48b17e20

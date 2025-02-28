@@ -1,0 +1,12 @@
+arg:
+gen-proof bum2jKNP4Wy/jduvNUneW/rIWLX/xkfp2K/_6f.N39kg --tree output/files/dir3.mktree --output your_output/_6f.N39kg.proof
+stdout:
+exit status:
+0
+output_file:
+leaf_index:20,tree_size:28
+9187c3b2d2776e310a4413c837a2dc398ad6952900c35b9de8b0f95305c77363
+520dbaf8782f260485aa42966722ccf56b003bc15ba7153ca22dd0201f37a677
+92bbd5d87a8c8e879454d1c8182a17921380cbb1a5447ee194a6eb06905b2a41
+31f2140bf69c001eeb1ac839fca1e110f868b4082e38ce2187bd3ab50bbea969
+9573c6323687964e44197a8b821f8fbfb8477aa29d2386475a6f6b95872e521d
