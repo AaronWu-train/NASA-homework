@@ -43,7 +43,7 @@ process_build() {
 
     arr=()
     for file in "${files[@]}"; do
-        arr+=("$(sha256sum $file | awk '{print $1}')")
+        arr+=("$(sha256sum "$file" | awk '{print $1}')")
     done
 
     for ((i = 0; i < ${#arr[@]}; i++)); do
@@ -58,7 +58,7 @@ process_build() {
     while [[ ${#arr[@]} -gt 1 ]]; do
         newarr=()
         for ((i = 0; i < ${#arr[@]}; i += 2)); do
-            local j=$(($i + 1))
+            local j=$((i + 1))
             if [[ $j -lt ${#arr[@]} ]]; then
                 local tmp="${arr[$i]}${arr[$j]}"
                 local tmpH
@@ -130,7 +130,7 @@ process_gen_proof() {
                 return 1
             fi
 
-            printf "leaf_index:%s,tree_size:%s\n" "$(($pos + 1))" "$n"
+            printf "leaf_index:%s,tree_size:%s\n" "$((pos + 1))" "$n"
             continue
         fi
 
@@ -146,8 +146,8 @@ process_gen_proof() {
                 parts+=("$tmp")
             fi
 
-            if [[ $n -gt 1 && $(($pos ^ 1)) -lt $n ]]; then
-                echo "${parts[$(($pos ^ 1))]}"
+            if [[ $n -gt 1 && $((pos ^ 1)) -lt $n ]]; then
+                echo "${parts[$((pos ^ 1))]}"
             fi
             if [[ $((n % 2)) -gt 0 ]]; then
                 tmp="${parts[$((n - 1))]}"
