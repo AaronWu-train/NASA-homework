@@ -119,6 +119,52 @@ build() {
     process_build "$directory" > "$output"
 }
 
+process_gen_proof() {
+    leaf_path="$1"
+    tree_file="$2"
+    reading_first_part=true
+    n=0
+
+    while IFS= read -r line; do
+        if [ -z "$line" ]; then
+            reading_first_part=false
+            
+            if [[ -z "$pos" ]]; then
+                return 1
+            fi
+            
+            printf "leaf_index:%s,tree_size:%s\n" "$(($pos+1))" "$n"
+            continue
+        fi
+
+        if $reading_first_part; then
+            if [[ "$1" = "$line"  ]]; then
+                pos=$n
+            fi
+            n=$(($n+1))
+        else
+            IFS=":" read -ra parts <<< "$line"
+            
+            if [[ ! -z $tmp ]]; then
+                parts+=("$tmp")
+            fi
+
+            if [[ $n -gt 1 && $(($pos ^ 1)) -lt $n ]]; then
+                echo "${parts[$(($pos ^ 1))]}"
+            fi
+            if [[ $(($n % 2)) -gt 0 ]]; then
+                tmp="${parts[$(($n - 1))]}"
+            else
+                tmp=""
+            fi
+
+            n=$((($n+1)/2))
+            pos=$(($pos/2))
+        fi
+    done < "$tree_file"
+    return 0
+}
+
 gen_proof() {
     while [[ "$#" -gt 0 ]]; do
         case "$1" in
@@ -168,7 +214,14 @@ gen_proof() {
         exit 1
     fi
 
+    if ! process_gen_proof "$argument" "$tree_file" > "$output_file"; then
+        echo "ERROR: file not found in tree"
+        exit 1 
+    else
+        exit 0 
+    fi
 }
+
 
 verify_proof() {
     while [[ "$#" -gt 0 ]]; do
