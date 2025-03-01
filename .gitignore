@@ -319,3 +319,4 @@ dist/
 
 !homework1/public-testcase/**/*
 homework1/public-testcase/**/.DS_Store
+homework1/public-testcase/**/your_output/
