@@ -203,7 +203,7 @@ gen_proof() {
     fi
 
     # file1 exist and not regular file
-    if [[ -e $output_file  && ! -f $output_file || -L $output_file ]]; then
+    if [[ -e $output_file && ! -f $output_file || -L $output_file ]]; then
         echo "$usage"
         exit 1
     fi
@@ -222,6 +222,50 @@ gen_proof() {
     fi
 }
 
+process_verify_proof() {
+    leaf_file="$1"
+    proof_file="$2"
+    root_hash="$(echo "$3" | awk '{print tolower($0)}')"
+
+    h="$(sha256sum ${leaf_file} | awk '{print $1}')"
+
+    while IFS= read -r line; do
+        if [[ -z $FIRST_LINE ]]; then
+            FIRST_LINE=48763
+            k=$(echo "$line" | awk -F'[:,]' '{print $2}')
+            n=$(echo "$line" | awk -F'[:,]' '{print $4}')
+            k=$(($k-1))
+            n=$(($n-1))
+        else
+            if [[ $n -eq 0 ]]; then
+                echo "Verification Failed"
+                exit 1;
+            fi
+
+            if [[ $(($k & 1)) -gt 0 || $k -eq $n ]]; then
+                local tmp="${line}${h}"
+                h="$(echo -n "$tmp" | xxd -r -p | sha256sum | awk '{print $1}')"
+                while [[ $(($k & 1)) -eq 0 ]]; do 
+                    k=$(($k/2))
+                    n=$(($n/2))
+                done
+            else
+                local tmp="${h}${line}"
+                h="$(echo -n "$tmp" | xxd -r -p | sha256sum | awk '{print $1}')"
+            fi
+            k=$(($k/2))
+            n=$(($n/2))
+        fi
+    done < "$proof_file"
+
+    if [[ $n -eq 0 && "$h" = "${root_hash}" ]]; then
+        echo "OK"
+        exit 0;
+    else
+        echo "Verification Failed"
+        exit 1;
+    fi
+}
 
 verify_proof() {
     while [[ "$#" -gt 0 ]]; do
@@ -269,6 +313,8 @@ verify_proof() {
         echo "$usage"
         exit 1 
     fi
+
+    process_verify_proof "$argument" "$proof" "$root"
 }
 
 ## main function: check args
