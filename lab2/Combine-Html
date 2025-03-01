@@ -43,6 +43,10 @@ readable() {
 }
 
 writable() {
+    if [[ -d "$1" ]]; then
+        return 1  
+    fi
+    
     # file exist
     if [[ -e "$1" && ! -w "$1" ]]; then
         return 1
@@ -51,10 +55,6 @@ writable() {
     # file not exist
     if [[ ! -e "$1" && ! -w "$(dirname "$1")" ]]; then
         return 1 
-    fi
-
-    if [[ -d "$1" ]]; then
-        return 1  
     fi
     return 0 
 }
