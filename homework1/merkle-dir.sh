@@ -25,54 +25,131 @@ Examples:
   merkle-dir.sh gen-proof file1.txt --tree dir1.mktree --output file1.proof
   merkle-dir.sh verify-proof dir1/file1.txt --proof file1.proof --root abc123def456'
 
-build() {
-    case $1 in
-        '--output')
-            output="$2"
-            shift 2
-            ;;
-        *)
-            if [[ -z "$directory" ]]; then
-                directory="$1"
-                shift
+writable() {
+    if [[ -d "$1" || -h "$1" ]]; then
+        return 1 
+    fi
+    if [[ ! -e "$1" || ( -f "$1" && -w "$1" ) ]]; then
+        return 0 
+    fi
+    return 1 
+}
+
+process_build() {
+    mapfile -t files < <(find "$1" -type f | LC_COLLATE=C sort)
+    printf "%s\n" "${files[@]}"
+
+    printf "\n"
+
+    arr=()
+    for file in ${files[@]}
+    do 
+        arr+=("$(sha256sum $file | awk '{print $1}')")
+    done
+
+    for ((i=0;i < ${#arr[@]}; i++))
+    do
+        if [[ $i -eq 0 ]]; then
+            printf "%s" "${arr[$i]}"
+        else 
+            printf ":%s" "${arr[$i]}"
+        fi
+    done
+    printf "\n"
+
+    while [[ ${#arr[@]} -gt 1 ]]; do 
+        newarr=()
+        for ((i=0;i < ${#arr[@]}; i+=2)); do 
+            local j=$(( $i + 1 ))
+            if [[ $j -lt ${#arr[@]} ]]; then
+                local tmp="$(echo -n ${arr[$i]} | xxd -r -p)$(echo -n ${arr[$j]} | xxd -r -p)"
+                local tmpH="$(echo -n "$tmp" | sha256sum | awk '{print $1}')"
+                [[ $i -gt 1 ]] && echo -n ":"
+                printf "%s" "$tmpH"
+                newarr+=("$tmpH")
             else
-                echo "$usage"
-                exit 1
+                newarr+=("${arr[$i]}")
             fi
-            ;;
-    esac
+        done
+        printf "\n"
+        arr=(${newarr[@]})
+    done
+    printf "\n"
+}
 
-    if [[ -z "$output" ]] || [[ -z "$directory" ]]; then
+
+build() {
+    while [[ "$#" -gt 0 ]]; do
+        case "$1" in
+            '--output')
+                if [[ "$#" -lt 2 ]]; then
+                    echo "$usage"
+                    exit 1 
+                fi
+                output="$2"
+                shift 2
+                ;;
+            *)
+                if [[ -z "$directory" ]]; then
+                    directory="$1"
+                    shift
+                else
+                    echo "$usage"
+                    exit 1
+                fi
+                ;;
+        esac
+    done
+
+
+    if [[ -z "$output" || -z "$directory" ]]; then
         echo "$usage"
         exit 1
     fi
 
-    if [[ ! -d $directory ]] || [[ ! -f $output ]]; then
+    if ! writable "$output"; then
         echo "$usage"
         exit 1
     fi
+
+    if [[ ! -d "$directory" || -L "$directory" ]] ; then
+        echo "$usage"
+        exit 1
+    fi
+
+    process_build "$directory" > "$output"
 }
 
 gen_proof() {
-    case $1 in
-        '--output')
-            output_file="$2"
-            shift 2
-            ;;
-        '--tree')
-            tree_file="$2"
-            shift 2
-            ;;
-         *)
-            if [[ -z "$argument" ]]; then
-                argument="$1"
-                shift
-            else
-                echo "$usage"
-                exit 1
-            fi
-            ;;
-    esac
+    while [[ "$#" -gt 0 ]]; do
+        case "$1" in
+            '--output')
+                if [[ "$#" -lt 2 ]]; then
+                    echo "$usage"
+                    exit 1 
+                fi
+                output_file="$2"
+                shift 2
+                ;;
+            '--tree')
+                if [[ "$#" -lt 2 ]]; then
+                    echo "$usage"
+                    exit 1 
+                fi
+                tree_file="$2"
+                shift 2
+                ;;
+            *)
+                if [[ -z "$argument" ]]; then
+                    argument="$1"
+                    shift
+                else
+                    echo "$usage"
+                    exit 1
+                fi
+                ;;
+        esac
+    done
 
     # loss options or argument
     if [[ -z "$output_file" ]] || [[ -z "$tree_file" ]] || [[ -z "$argument" ]]; then
@@ -81,38 +158,49 @@ gen_proof() {
     fi
 
     # file1 exist and not regular file
-    if [[ -e $output_file ]] && [[ ! -f $output_file ]]; then
+    if [[ -e $output_file  && ! -f $output_file || -L $output_file ]]; then
         echo "$usage"
         exit 1
     fi
 
     # file2 not regular file
-    if [[ ! -f $tree_file ]]; then
+    if [[ ! -f $tree_file || -L $tree_file ]]; then
         echo "$usage"
         exit 1
     fi
+
 }
 
 verify_proof() {
-    case $1 in
-        '--proof')
-            proof="$2"
-            shift 2
-            ;;
-        '--root')
-            root="$2"
-            shift 2
-            ;;
-         *)
-            if [[ -z "$argument" ]]; then
-                argument="$1"
-                shift
-            else
-                echo "$usage"
-                exit 1
-            fi
-            ;;
-    esac
+    while [[ "$#" -gt 0 ]]; do
+        case "$1" in
+            '--proof')
+                if [[ "$#" -lt 2 ]]; then
+                    echo "$usage"
+                    exit 1 
+                fi
+                proof="$2"
+                shift 2
+                ;;
+            '--root')
+                if [[ "$#" -lt 2 ]]; then
+                    echo "$usage"
+                    exit 1 
+                fi
+                root="$2"
+                shift 2
+                ;;
+            *)
+                if [[ -z "$argument" ]]; then
+                    argument="$1"
+                    shift
+                else
+                    echo "$usage"
+                    exit 1
+                fi
+                ;;
+        esac
+    done
 
     # loss options or argument
     if [[ -z "$proof" ]] || [[ -z "$root" ]] || [[ -z "$argument" ]]; then
@@ -120,7 +208,7 @@ verify_proof() {
         exit 1
     fi
 
-    if [[ -f "$proof" ]] || [[ -f "$argument" ]]; then
+    if [[ ! -f "$proof" || ! -f "$argument" || -L "$proof" || -L "$argument" ]]; then
         echo "$usage"
         exit 1
     fi

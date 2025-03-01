@@ -43,7 +43,7 @@ if [[ $# -ne 2 ]]; then
     usage
 fi
 
-TIMEOUT=60
+TIMEOUT=5
 TESTDIR="$2"
 SCRIPT="$(realpath -m "$1" --relative-to "$TESTDIR")"
 OLDPWD="$PWD"
