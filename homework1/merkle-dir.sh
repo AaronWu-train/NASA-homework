@@ -37,7 +37,7 @@ writable() {
 
 process_build() {
     mapfile -t files < <(find "$1" -type f | LC_COLLATE=C sort)
-    printf "%s\n" "${files[@]}"
+    printf "%s\n" "$(realpath -s --relative-to=$1 ${files[@]})"
 
     printf "\n"
 
@@ -62,8 +62,8 @@ process_build() {
         for ((i=0;i < ${#arr[@]}; i+=2)); do 
             local j=$(( $i + 1 ))
             if [[ $j -lt ${#arr[@]} ]]; then
-                local tmp="$(echo -n ${arr[$i]} | xxd -r -p)$(echo -n ${arr[$j]} | xxd -r -p)"
-                local tmpH="$(echo -n "$tmp" | sha256sum | awk '{print $1}')"
+                local tmp="${arr[$i]}${arr[$j]}"
+                local tmpH="$(echo -n "$tmp" | xxd -r -p | sha256sum | awk '{print $1}')"
                 [[ $i -gt 1 ]] && echo -n ":"
                 printf "%s" "$tmpH"
                 newarr+=("$tmpH")
@@ -74,7 +74,6 @@ process_build() {
         printf "\n"
         arr=(${newarr[@]})
     done
-    printf "\n"
 }
 
 
