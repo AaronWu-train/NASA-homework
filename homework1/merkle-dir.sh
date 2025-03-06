@@ -211,8 +211,8 @@ gen_proof() {
         exit 1
     fi
 
-    if ! process_gen_proof "$argument" "$tree_file" >"$output_file"; then
-        echo "ERROR: file not found in tree"
+    if ! process_gen_proof "$argument" "$tree_file" > "$output_file"; then
+        echo 'ERROR: file not found in tree'
         exit 1
     else
         exit 0
