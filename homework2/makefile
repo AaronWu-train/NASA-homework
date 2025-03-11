@@ -20,9 +20,7 @@ archive: prepare_dist
 
 prepare_dist:
 	@mkdir -p $(DIST_DIR)/$(ARCHIVE_DIR)
-	@for file in $(FILES_TO_ARCHIVE); do \
-	    cp $$file $(DIST_DIR)/$(ARCHIVE_DIR); \
-	done	
+	cp $(FILES_TO_ARCHIVE) $(DIST_DIR)/$(ARCHIVE_DIR)/$(STUDENT_ID).pdf
 
 clean:
 	rm -f ./*.aux ./*.log ./*.bbl ./*.blg ./*.toc ./*.out ./*.lof ./*.lot ./*fls ./*.fdb_latexmk ./*.synctex.gz
