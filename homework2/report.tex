@@ -368,6 +368,58 @@ NTFS 檔案系統可以滿足題目所要求，在雙系統中支援原生讀寫
 % -----------------------------------------------------------
 % Problem 5
 \section{快照真的好難喔}
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item \href{https://ithelp.ithome.com.tw/m/articles/10081811}{LVM系統快照設定教學 (iThome)}
+    \item \href{https://blog.csdn.net/qq_36393978/article/details/118221951}{Linux解压缩tar.zst类型文件 (CSDN)}
+  \end{itemize}
+\end{mycolorbox}
+
+我以 root 進入 VM，並進行以下操作：
+\begin{enumerate}
+  \item 將 \texttt{/dev/vdc1} 設為 pv，並且加到 \texttt{nasahw2-main} vg 中
+  \begin{minted}{bash}
+    pvcreate /dev/vdc1
+    vgextend nasahw2-main /dev/vdc1
+  \end{minted}
+  \item 建立 snapshot 的 lv
+  \begin{minted}{bash}
+    lvcreate -L 1GiB -s -n backup /dev/nasahw2-main/course
+  \end{minted}
+  \item 掛載 \texttt{/dev/nasahw2-main/backup} 到 \texttt{/mnt/backup}
+  \begin{minted}{bash}
+    mkdir -p /mnt/backup
+    mount /dev/nasahw2-main/backup /mnt/backup
+  \end{minted}
+  \item \texttt{lsblk} 結果如 \autoref{fig:5-1} 所示。
+  \item 進行備份到 tar:
+  \begin{minted}{bash}
+    tar -I zstd -cvf /home/balu/backup.tar.zst /mnt/backup
+  \end{minted}
+  \item 卸載 /mnt/backup，並刪除 snapshot。
+  \begin{minted}{bash}
+    umount /mnt/backup
+    lvremove /dev/nasahw2-main/backup
+  \end{minted}
+  \item 執行 \texttt{lsblk; df -hT}，結果如 \autoref{fig:5-2} 所示。
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/5-1.png}
+    \caption{Screenshot of \texttt{lsblk} after creating snapshot}
+    \label{fig:5-1}
+  \end{figure}
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/5-2.png}
+    \caption{Screenshot of \texttt{lsblk; df -hT} after removing snapshot}
+    \label{fig:5-2}
+  \end{figure}
+\end{enumerate}
+
 
 \clearpage
 % -----------------------------------------------------------
