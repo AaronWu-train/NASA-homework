@@ -103,6 +103,9 @@
 \bigskip
 
 \setcounter{section}{-1}
+
+% -----------------------------------------------------------
+% Problem 0
 \section{VM Setup}
 \begin{mycolorbox}[teal]
   \textbf{Reference:} 
@@ -114,8 +117,8 @@
     \item \href{https://medium.com/@pythonaugust/enable-ssh-on-arch-linux-8f1ede0d9c88}{Enable SSH on Arch Linux}
   \end{itemize}
 \end{mycolorbox}
-為了方便連線，我打算在 VM 當中配置 ssh server，使我可以利用 ssh 的方式進入虛擬機。
-步驟如下：
+
+為了方便連線，我打算在 VM 當中配置 ssh server，使我可以利用 ssh 的方式進入虛擬機。步驟如下：
 
 \begin{enumerate}
   \item 執行 \texttt{run\_vm.sh}，以 vnc 登入 VM 當中的 root 帳號。
@@ -164,30 +167,92 @@
 % Problem 1
 \section{那傢伙竟然敢無視窗}
 
+\begin{mycolorbox}[teal]
+  \textbf{Reference:} 
+  \footnotesize
+  \begin{itemize}
+    \item \href{https://docs.kernel.org/filesystems/ntfs3.html}{NTFS3}
+    \item \href{https://en.wikipedia.org/wiki/Journaling_file_system}{Journaling file system (Wikipedia)}
+    \item \href{https://stackoverflow.com/questions/73065519/how-to-mount-ntfs-in-linux-without-fuseblk}{How to mount NTFS in Linux without fuseblk (Stack Overflow)}
+    \item \href{https://www.insidentally.com/articles/000029/}{使用 ntfs3 驱动替换 ntfs-3g 挂载 windows NTFS 分区}
+    \item \href{https://blog.csdn.net/weixin_43801670/article/details/125105727}{对NTFS硬盘进行读写操作；开机自动挂载硬盘 (CSDN)}
+  \end{itemize}
+\end{mycolorbox}
+
+NTFS 檔案系統可以滿足題目所要求，在雙系統中支援原生讀寫，並且在 Windows 11 下支援日誌功能。為了格式化 NTFS 檔案系統，需要先安裝 \texttt{ntfs-3g} 套件。我完成此題的步驟如下：
+
+\begin{enumerate}
+  \item 在 VM 當中安裝 \texttt{ntfs-3g} 套件
+  \begin{minted}{bash}
+    sudo pacman -S ntfs-3g
+  \end{minted}
+  \item 創立掛載點
+  \begin{minted}{bash}
+    sudo mkdir /mnt/myusb
+  \end{minted}
+  \item 格式化硬碟
+  \begin{minted}{bash}
+    sudo mkfs.ntfs /dev/vdi2
+  \end{minted}
+  \item 取得 UUID 
+  \begin{minted}{bash}
+    sudo blkid /dev/vdi2
+  \end{minted}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/1-1.png}
+    \caption{Screenshot of \texttt{sudo blkid /dev/vdi2}}
+  \end{figure}
+
+  \item 配置自動掛載硬碟: 修改 /etc/fstab
+  \item 重開機，即可看到硬碟已經掛載
+\end{enumerate}
+\begin{mycolorbox}[green]
+\begin{answer} 　
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/1-3.png}
+    \caption{Screenshot of \texttt{cat /etc/fstab}}
+  \end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/1-2.png}
+  \caption{Screenshot of \texttt{lsblk; df -hT}}
+\end{figure}
+\end{answer}
+\end{mycolorbox}
+
+\clearpage
 % -----------------------------------------------------------
 % Problem 2
 \section{因為要換到新的 SWAP}
 
+\clearpage
 % -----------------------------------------------------------
 % Problem 3
 \section{為資料創造新的棲身之處}
-
+\clearpage
 % -----------------------------------------------------------
 % Problem 4
 \section{我有拜託妳別把我的作業告訴其他人了吧}
 
+\clearpage
 % -----------------------------------------------------------
 % Problem 5
 \section{快照真的好難喔}
 
+\clearpage
 % -----------------------------------------------------------
 % Problem 6
 \section{好老舊喔}
 
+\clearpage
 % -----------------------------------------------------------
 % Problem 7
 \section{我看還是再來合一次吧}
 
+\clearpage
 % -----------------------------------------------------------
 % Problem 8
 \section{等一下，妳還沒回答我}
