@@ -228,10 +228,74 @@ NTFS 檔案系統可以滿足題目所要求，在雙系統中支援原生讀寫
 % Problem 2
 \section{因為要換到新的 SWAP}
 
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item \href{https://linuxize.com/post/create-a-linux-swap-file/}{Create a Linux Swap File (Linuxize)}
+  \end{itemize}
+\end{mycolorbox}
+
+新增 SWAP 檔案的步驟如下：
+\begin{enumerate}
+  \item 建立 /newswap 檔案
+  \begin{minted}{bash}
+    sudo fallocate -l 4G /newswap
+  \end{minted}
+  \item 設定檔案權限
+  \begin{minted}{bash}
+    sudo chmod 600 /newswap
+  \end{minted}
+  \item 格式化檔案
+  \begin{minted}{bash}
+    sudo mkswap /newswap
+  \end{minted}
+  \item 啟用 SWAP 檔案
+  \begin{minted}{bash}
+    sudo swapon /newswap
+  \end{minted}
+\end{enumerate}
+
+\begin{mycolorbox}[green]
+\begin{answer} 　
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/2-1.png}
+    \caption{Screenshot of \texttt{free -h}}
+  \end{figure}
+\end{answer}
+\end{mycolorbox}
+
+
 \clearpage
 % -----------------------------------------------------------
 % Problem 3
 \section{為資料創造新的棲身之處}
+
+
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item \href{https://www.linuxcool.com/lvextend}{lvextend命令 (LinuxCool)}
+  \end{itemize}
+\end{mycolorbox}
+使用指令如下：
+\begin{minted}{bash}
+  sudo lvextend -L 1GiB /dev/nasahw2-main/course
+\end{minted}
+\vspace{-0.1cm}
+\begin{mycolorbox}[green]
+\begin{answer} 　
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/3-1.png}
+    \caption{Screenshot of \texttt{lsblk; df -hT}}
+  \end{figure}
+\end{answer}
+\end{mycolorbox}
+
+
 \clearpage
 % -----------------------------------------------------------
 % Problem 4
