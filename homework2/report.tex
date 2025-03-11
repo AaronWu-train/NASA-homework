@@ -53,6 +53,8 @@
 % 樣式設定
 \renewcommand\thesubsection{\arabic{subsection}}
 \titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection.}{0.5em}{}
+\renewcommand{\thesection}{\arabic{section}.}
+\setminted{frame=lines, linenos, framesep=2mm, breaklines=true, breakanywhere=true, autogobble=true}
 
 % 自訂框線環境
 \newmdenv[
@@ -74,6 +76,7 @@
 
 \linespread{1.1}
 % \usemintedstyle{xcode}
+\AtBeginEnvironment{minted}{\vspace{-10pt}} % 可根據需求調整間距數值
 \setminted{breaklines=true, breakanywhere=true, autogobble=true}
 
 % tex-fmt: on
@@ -99,6 +102,95 @@
 \end{tabular}
 \bigskip
 
+\setcounter{section}{-1}
+\section{VM Setup}
+\begin{mycolorbox}[teal]
+  \textbf{Reference:} 
+  \footnotesize
+  \begin{itemize}
+    \item \href{https://bbs.archlinux.org/viewtopic.php?id=303841}{unable to retrieve community.db: 404 errors (Arch Linux Forums)}
+    \item \href{https://unix.stackexchange.com/questions/574493/sudo-pacman-syu-fails-with-error-failed-to-commit-transaction-invalid-or-cor}{sudo pacman -Syu fails with error: failed to commit transaction (Stack Exchange)}
+    \item \href{https://wiki.archlinux.org/title/OpenSSH}{OpenSSH (ArchWiki)}
+    \item \href{https://medium.com/@pythonaugust/enable-ssh-on-arch-linux-8f1ede0d9c88}{Enable SSH on Arch Linux}
+  \end{itemize}
+\end{mycolorbox}
+為了方便連線，我打算在 VM 當中配置 ssh server，使我可以利用 ssh 的方式進入虛擬機。
+步驟如下：
+
+\begin{enumerate}
+  \item 執行 \texttt{run\_vm.sh}，以 vnc 登入 VM 當中的 root 帳號。
+  \item 更新 archlinux 失敗，經查閱資料後，發現需要將 \texttt{/etc/pacman.conf} 中的 \texttt{[[community]]} 註解掉。
+  \item 更新 archlinux keyring
+  \begin{minted}{bash}
+    pacman -Sy archlinux-keyring
+  \end{minted}
+  \item 更新 archlinux 並安裝 openssh：
+  \begin{minted}{bash}
+  pacman -Syu
+  pacman -S openssh
+  \end{minted}
+  \item 啟動 sshd 
+  \begin{minted}{bash}
+    systemctl enable sshd
+    systemctl start sshd
+  \end{minted}
+  \item 離開 VM，並在 host 端修改 \texttt{run\_vm.sh}，加入最後一行，使 host 端的 4321 port 轉發到 VM 的 22 port。
+  \begin{minted}{bash}
+    #!/bin/bash
+
+    echo "Starting VM at port $1"
+    echo "parameter is $(($1 - 5900))"
+
+    qemu-system-x86_64 -m 2G --enable-kvm -vnc :"$(($1 - 5900))",password=on -monitor stdio \
+            -drive file=disk1.qcow2,media=disk,index=0 \
+            -drive file=disk2.qcow2,if=virtio,media=disk,index=1 \
+            -drive file=disk3.qcow2,if=virtio,media=disk,index=2 \
+            -drive file=disk4.qcow2,if=virtio,media=disk,index=3 \
+            -drive file=disk5.qcow2,if=virtio,media=disk,index=4 \
+            -drive file=disk6.qcow2,if=virtio,media=disk,index=5 \
+            -drive file=disk7.qcow2,if=virtio,media=disk,index=6 \
+            -drive file=disk8.qcow2,if=virtio,media=disk,index=7 \
+            -drive file=disk9.qcow2,if=virtio,media=disk,index=8 \
+            -drive file=disk10.qcow2,if=virtio,media=disk,index=9 \
+            -net user,hostfwd=tcp::5555-:22 -net nic
+  \end{minted}
+  \item 成功從工作站當中以 balu 的帳號 ssh 進去 VM。
+  \begin{minted}{bash}
+    ssh balu@localhost -p 4321
+  \end{minted}
+\end{enumerate}
+
+% -----------------------------------------------------------
+% Problem 1
+\section{那傢伙竟然敢無視窗}
+
+% -----------------------------------------------------------
+% Problem 2
+\section{因為要換到新的 SWAP}
+
+% -----------------------------------------------------------
+% Problem 3
+\section{為資料創造新的棲身之處}
+
+% -----------------------------------------------------------
+% Problem 4
+\section{我有拜託妳別把我的作業告訴其他人了吧}
+
+% -----------------------------------------------------------
+% Problem 5
+\section{快照真的好難喔}
+
+% -----------------------------------------------------------
+% Problem 6
+\section{好老舊喔}
+
+% -----------------------------------------------------------
+% Problem 7
+\section{我看還是再來合一次吧}
+
+% -----------------------------------------------------------
+% Problem 8
+\section{等一下，妳還沒回答我}
 
 
 % -----------------------------------------------------------
