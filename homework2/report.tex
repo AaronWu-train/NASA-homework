@@ -102,6 +102,14 @@
 \end{tabular}
 \bigskip
 
+\begin{mycolorbox}[blue]
+  \textbf{Discussion Partners:}
+  \begin{itemize}
+    \item Classmates：賴泓安、鄭竣陽、陳澔樂、喻慈恩
+    \vspace{0.5em}
+  \end{itemize}
+\end{mycolorbox}
+
 \setcounter{section}{-1}
 
 % -----------------------------------------------------------
@@ -117,6 +125,7 @@
     \item \href{https://medium.com/@pythonaugust/enable-ssh-on-arch-linux-8f1ede0d9c88}{Enable SSH on Arch Linux}
   \end{itemize}
 \end{mycolorbox}
+\vspace{0.5em}
 
 為了方便連線，我打算在 VM 當中配置 ssh server，使我可以利用 ssh 的方式進入虛擬機。步驟如下：
 
@@ -144,7 +153,8 @@
     echo "Starting VM at port $1"
     echo "parameter is $(($1 - 5900))"
 
-    qemu-system-x86_64 -m 2G --enable-kvm -vnc :"$(($1 - 5900))",password=on -monitor stdio \
+    qemu-system-x86_64 -m 2G --enable-kvm \
+            -vnc :"$(($1 - 5900))",password=on -monitor stdio \
             -drive file=disk1.qcow2,media=disk,index=0 \
             -drive file=disk2.qcow2,if=virtio,media=disk,index=1 \
             -drive file=disk3.qcow2,if=virtio,media=disk,index=2 \
@@ -155,7 +165,7 @@
             -drive file=disk8.qcow2,if=virtio,media=disk,index=7 \
             -drive file=disk9.qcow2,if=virtio,media=disk,index=8 \
             -drive file=disk10.qcow2,if=virtio,media=disk,index=9 \
-            -net user,hostfwd=tcp::5555-:22 -net nic
+            -net user,hostfwd=tcp::4321-:22 -net nic
   \end{minted}
   \item 成功從工作站當中以 balu 的帳號 ssh 進去 VM。
   \begin{minted}{bash}
@@ -210,14 +220,12 @@ NTFS 檔案系統可以滿足題目所要求，在雙系統中支援原生讀寫
 \begin{mycolorbox}[green]
 \begin{answer} 　
   \begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{images/1-3.png}
+    \includegraphics[width=0.98\textwidth]{images/1-3.png}
     \caption{Screenshot of \texttt{cat /etc/fstab}}
   \end{figure}
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{images/1-2.png}
+  \includegraphics[width=0.98\textwidth]{images/1-2.png}
   \caption{Screenshot of \texttt{lsblk; df -hT}}
 \end{figure}
 \end{answer}
@@ -259,8 +267,7 @@ NTFS 檔案系統可以滿足題目所要求，在雙系統中支援原生讀寫
 \begin{mycolorbox}[green]
 \begin{answer} 　
   \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.95\textwidth]{images/2-1.png}
+    \includegraphics[width=0.98\textwidth]{images/2-1.png}
     \caption{Screenshot of \texttt{free -h}}
   \end{figure}
 \end{answer}
@@ -300,7 +307,61 @@ NTFS 檔案系統可以滿足題目所要求，在雙系統中支援原生讀寫
 % -----------------------------------------------------------
 % Problem 4
 \section{我有拜託妳別把我的作業告訴其他人了吧}
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item \href{https://medium.com/@allypetitt/how-to-encrypt-a-drive-in-linux-83b3001744f4}{How to Encrypt a Drive in Linux (Medium)}
+  \end{itemize}
+\end{mycolorbox}
 
+我做的步驟如下：
+\begin{enumerate}
+  \item 以 root 進入 VM。
+  \item 切出一塊新的 lvm，作為加密區域
+  \begin{minted}{bash}
+    lvcreate -L 800MiB -n homework nasahw2-main
+  \end{minted}
+  \item 加密 \texttt{/dev/nasahw2-main/homework}
+  \begin{minted}{bash}
+    cryptsetup luksFormat /dev/nasahw2-main/homework
+  \end{minted}
+  \item 開啟加密區域
+  \begin{minted}{bash}
+    cryptsetup open /dev/nasahw2-main/homework homework
+  \end{minted}
+  \item 格式化加密區域
+  \begin{minted}{bash}
+    mkfs.ext4 /dev/mapper/homework 
+  \end{minted}
+  \item 掛載加密區域
+  \begin{minted}{bash}
+    mount /dev/mapper/homework /home/balu/homework/
+  \end{minted}
+  \item 設定 keyfile
+  \begin{minted}{bash}
+    cryptsetup luksAddKey /dev/nasahw2-main/homework /home/balu/lvm_key
+  \end{minted}
+  \item 設定開機自動解密，在 \texttt{/etc/crypttab} 中加入底下這行：
+  \begin{minted}{bash}
+    homework /dev/nasahw2-main/homework /home/balu/lvm_key
+  \end{minted}
+  \item 設定開機自動 mount，在 \texttt{/etc/fstab} 中加入底下這行：
+  \begin{minted}{bash}
+    /dev/mapper/homework /home/balu/homework ext4 defaults 0 2
+  \end{minted}
+  \item 重開機，確認加密區域已經掛載
+\end{enumerate}
+
+\begin{mycolorbox}[green]
+\begin{answer} 　
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.99\textwidth]{images/4-1.png}
+    \caption{Screenshot of \texttt{lsblk; df -hT}}
+  \end{figure}
+\end{answer}
+\end{mycolorbox}
 \clearpage
 % -----------------------------------------------------------
 % Problem 5
