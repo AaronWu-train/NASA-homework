@@ -437,7 +437,7 @@ NTFS 檔案系統可以滿足題目所要求，在雙系統中支援原生讀寫
     \end{itemize}
 \end{mycolorbox}
 
-我做的步驟如下：
+我以 root 進入 VM，並進行以下操作：
 \begin{enumerate}
   \item 將 \texttt{/dev/vdd1} 設為 pv，並且加到 \texttt{nasahw2-secondary} vg 中
   \begin{minted}{bash}
@@ -470,11 +470,87 @@ NTFS 檔案系統可以滿足題目所要求，在雙系統中支援原生讀寫
 % Problem 7
 \section{我看還是再來合一次吧}
 
-\clearpage
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item \href{https://unix.stackexchange.com/questions/190709/merge-2-lvms-both-have-data-and-on-same-volume-group-without-data-loss}{Merge 2 LVs both have data and on same volume group without data loss (Stack Exchange)}
+    \item \href{https://docs.redhat.com/zh-cn/documentation/red_hat_enterprise_linux/9/html/configuring_and_managing_logical_volumes/combining-lvm-volume-groups_managing-lvm-volume-groups}{合并 LVM 卷组 (Red Hat)}
+  \end{itemize}
+\end{mycolorbox}
+
+我以 root 進入 VM，並進行以下操作：
+\begin{enumerate}
+  \item 將 \texttt{nasahw2-secondary} 的所有磁區都 unmount，並且 deactivate 該 vg。
+  \begin{minted}{bash}
+    umount /dev/nasahw2-secondary/*
+    vgchange -a n nasahw2-secondary
+  \end{minted}
+  \item 透過 vgmerge -t 測試合併 \texttt{nasahw2-secondary} 到 \texttt{nasahw2-main} 是否會有異常。確認完成後，執行 vgmerge。
+  \begin{minted}{bash}
+    vgmerge -t nasahw2-main nasahw2-secondary
+    vgmerge nasahw2-main nasahw2-secondary
+  \end{minted}
+  \item 修改開機自動啟動，將 \texttt{/ect/fstab} 當中的 \texttt{nasahw2-secondary} 改為 \texttt{nasahw2-main}
+  \item 重開機，確認合併成功
+\end{enumerate}
+
+\begin{mycolorbox}[green]
+\begin{answer} 　
+  \begin{figure}[H]
+    \includegraphics[width=0.99\textwidth]{images/7-3.png}
+    \caption{Screenshot of \texttt{sudo vgs; sudo lvs} and \texttt{cat /ect/fstab}}
+  \end{figure}
+\end{answer}
+\end{mycolorbox}
+
 % -----------------------------------------------------------
 % Problem 8
 \section{等一下，妳還沒回答我}
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{enumerate}
+    \item \href{https://www.ecscoupon.com/4536.html}{Btrfs 和 ZFS 區別是什麼，使用哪個比較好？}
+    \item \href{https://blog.csdn.net/weixin_42792088/article/details/132862333}{初識 FUSE (CSDN)}
+    \item \href{https://www.linwei.com.tw/forum-detail/76/}{磁碟分割MBR、GPT是什麼？}
+    \item (a) \href{https://blog.darkthread.net/blog/1000-vs-1024-kb-kib/}{1000 還是 1024？KB、KiB、MB、MiB} \\
+    (b) \href{https://superuser.com/questions/1741437/with-ls-sh-is-1k-a-kilobyte-a-kilobit-1000-bytes-1024-bytes-or-what}{With ls -sh, is 1K a kilobyte, a kilobit, 1000 bytes, 1024 bytes, or what?}
+    \item \href{https://raidnas.tw/hsinchu-nas-raid-explain-rescue/}{5張圖輕鬆介紹RAID磁碟陣列}
+  \end{enumerate}
+\end{mycolorbox}
 
+\begin{problem}{8.1} 
+  Btrfs 和 ZFS 都是支援 Copy On Write (CoW) 的檔案系統，但是 Btrfs 是 Linux 的內建檔案系統，而 ZFS 則是由 Sun Microsystems 開發的檔案系統。Btrfs 的特色是支援 RAID，而 ZFS 則是支援 RAID-Z。
+\end{problem}
+
+\begin{problem}{8.2} 
+  FUSE 是一種讓非 root 使用者不需要修改 kernel 當中的程式碼，即可以自己在使用者空間中實作檔案系統的技術。此技術的優點為方便開發與除錯檔案系統。缺點為效能較差。
+\end{problem}
+
+\begin{problem}{8.3} 
+  兩者皆為硬碟用於啟動系統的分割表格式。MBR 為 Master Boot Record 的縮寫，為舊的分割表格式，最多支援 2.1TB 的硬碟，且只支援最多 4 個主分割區，再多需要使用「擴展分區」。 GPT 為 GUID Partition Table 的縮寫，支援更大的硬碟，且可以切割成無限個分割區。(Windows 上只能 128 個)
+\end{problem}
+
+\begin{problem}{8.4} MB 採用 SI 制的定義，以 1000 進位。而 MiB 採用 IEC 的定義，以 1024 進位。
+\begin{itemize}
+  \item 1 MB  = 1,000 KB  = 1,000,000 Bites ($1000 \times 1000$)
+  \vspace{-0.3cm}
+  \item 1 MiB = 1,024 KiB = 1,048,576 Bites ($1024 \times 1024$)
+\end{itemize}
+在工作站上，根據 GNU Coreutils ls manual page，使用 -h 時是以 1024 進位，顯示的為 MiB。若要以 1000 進位，則使用 \texttt{--si} 選項。
+\end{problem}
+
+\begin{problem}{8.5} 
+
+  RAID 全名為容錯式磁碟陣列，是將多顆硬碟透過虛擬化儲存技術，合併成一個或多個硬碟陣列組。
+  \begin{itemize}
+    \item RAID 0: 需要兩個以上的硬碟，將資料分割成多個區塊，並且分別寫入不同的硬碟，提高讀寫速度。然而，若其中一顆硬碟故障，則整個陣列的資料都會遺失，安全性較低。
+    \item RAID 1: 需要兩個以上的硬碟，其中一個用來存放主資料，另一個作為鏡像備份，具有極高安全性，可以用來保存重要的關鍵資料。但成本、讀寫速度及硬碟空間利用率較低。
+    \item RAID 5: 需要三個以上的硬碟，將資料分割成多個區塊，並且分別寫入不同的硬碟，並且在每個區塊中加入奇偶校驗碼，當其中一顆硬碟故障時，可以透過奇偶校驗碼重建資料。
+    \item RAID 10: 需要四個以上的硬碟，將硬碟分成兩組。先將資料以 RAID 0 分別放在兩組，每組當中再以 RAID 1 做鏡像備份。缺點為成本較高，但具有高安全性和讀寫速度。
+  \end{itemize}
+\end{problem}
 
 % -----------------------------------------------------------
 %    You don't have to mess with anything below this line.
