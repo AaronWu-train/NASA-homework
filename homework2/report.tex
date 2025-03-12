@@ -102,7 +102,7 @@
 \end{tabular}
 \bigskip
 
-\begin{mycolorbox}[blue]
+\begin{mycolorbox}[cyan]
   \textbf{Discussion Partners:}
   \begin{itemize}
     \item Classmates：賴泓安、鄭竣陽、陳澔樂、喻慈恩
@@ -426,6 +426,44 @@ NTFS 檔案系統可以滿足題目所要求，在雙系統中支援原生讀寫
 % -----------------------------------------------------------
 % Problem 6
 \section{好老舊喔}
+
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item \href{https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/6/html/logical_volume_manager_administration/vg_remove_pv#VG_remove_PV}{Removing Physical Volumes from a Volume Group (Red Hat)}
+    \item \href{https://www.linuxcool.com/pvmove}{pvmove命令 (LinuxCool)}
+    \item \href{https://unix.stackexchange.com/questions/679362/remove-a-pv-from-lvm}{Remove a PV from LVM (Stack Exchange)}
+    \end{itemize}
+\end{mycolorbox}
+
+我做的步驟如下：
+\begin{enumerate}
+  \item 將 \texttt{/dev/vdd1} 設為 pv，並且加到 \texttt{nasahw2-secondary} vg 中
+  \begin{minted}{bash}
+    pvcreate /dev/vdd1
+    vgextend nasahw2-secondary /dev/vdd1
+  \end{minted}
+  \item 搬移 pv \texttt{/dev/vde1} 中的內容到 \texttt{/dev/vdd1}
+  \begin{minted}{bash}
+    pvmove /dev/vde1 /dev/vdd1
+  \end{minted}
+  \item 將 \texttt{/dev/vde1} 從 \texttt{nasahw2-secondary} vg 中移除，並且刪除 pv
+  \begin{minted}{bash}
+    vgreduce nasahw2-secondary /dev/vde1
+    pvremove /dev/vde1
+  \end{minted}
+\end{enumerate}
+
+\begin{mycolorbox}[green]
+\begin{answer} 　
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/6-1.png}
+    \caption{Screenshot of \texttt{sudo pvs; sudo vgs}}
+  \end{figure}
+\end{answer}
+\end{mycolorbox}
 
 \clearpage
 % -----------------------------------------------------------
