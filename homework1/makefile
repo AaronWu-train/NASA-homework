@@ -1,7 +1,7 @@
 TEXFILE = *.tex
 PDF = $(TEXFILE:.tex=.pdf)
 
--include .env
+-include ../.env
 STUDENT_ID ?= unknown
 ARCHIVE_DIR = $(STUDENT_ID)
 ARCHIVE = $(STUDENT_ID).zip
