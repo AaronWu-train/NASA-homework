@@ -17,9 +17,11 @@
 \usepackage{xcolor,changepage,mdframed} % 顏色與框線相關
 \usepackage{titlesec} % 標題格式
 \usepackage{setspace} % 行距
+\usepackage{tabularx} 
 \usepackage{minted} % 程式碼高亮（需安裝 Python 套件 pygments）
 \usepackage[shortlabels]{enumitem} % 列表格式
-\usepackage[colorlinks=true,linkcolor=black,urlcolor=blue,citecolor=blue]{hyperref} % 超連結
+\usepackage[colorlinks=true,linkcolor=black,urlcolor=blue,citecolor=blue]{hyperref}
+% 超連結
 \graphicspath{{images}}
 
 % 字體設定 (xeCJK)
@@ -103,11 +105,177 @@
 \begin{mycolorbox}[cyan]
   \textbf{Discussion Partners:}
   \begin{itemize}
-    \item Classmates：賴泓安、鄭竣陽、陳澔樂、喻慈恩
-    \vspace{0.5em}
+    \item Classmates：賴泓安、鄭竣陽、喻慈恩
+      \vspace{0.5em}
   \end{itemize}
 \end{mycolorbox}
 
+\section{Short Answer}
+
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{enumerate}
+    \item \url{https://docs.opnsense.org/manual/firewall.html#action}
+    \item \url{https://docs.opnsense.org/manual/firewall.html#direction}
+    \item
+      \url{https://docs.opnsense.org/manual/firewall_generic.html#address-types}
+  \end{enumerate}
+\end{mycolorbox}
+
+\begin{enumerate}
+  \item Block 會直接把封包丟掉，並且不會通知 Client 端他被 Block 了。通常用在不被信任的網路當中。而 Reject 則會通知 Client 此封包被拒絕接受，在 TCP 當中會回傳 RST 封包，而在 UDP 當中會回傳 ICMP Port Unreachable 封包。此設定多半用在可被信任的網路或是內部網路當中。
+
+  \item In(comming) 代表的是封包從 Source 進入到防火牆時要進行防火牆規則的審查，而 Out(going) 代表的是封包從防火牆出去到 Destination 時再審查。通常預設都是使用 In 來設定防火牆規則。
+
+  \item Network 指的是分配給該 interface 的所有網路，包含被 assign 的虛擬 IP 位址。而 Address 指的是所有該 interface 上的 IP 位址。一般常見的設定當中，都是選擇 interface network。
+\end{enumerate}
+
+\section{OPNsense}
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item \url{https://docs.opnsense.org/manual/install.html}
+    \item \href{https://www.zenarmor.com/docs/network-security-tutorials/how-to-setup-dhcp-server-on-opnsense/}{How to Setup DHCP Server on OPNsense}
+    \item 
+    \item 
+    \item 
+    \item 
+    \item 
+    \item 
+    \item 
+  \end{itemize}
+\end{mycolorbox}
+
+% Problem 2.1
+\subsection{}
+\begin{enumerate}
+  \item 根據 Lab 5 的方法，在 VirtualBox 當中新增一台 OPNsense 虛擬機，設定如下：
+  \begin{itemize}
+    \item CPU：1 Core
+    \item Memory： 4 GB
+    \item Storage： 16 GB
+    \item Network Adapter 1: Host-only Adapter
+    \item Network Adapter 2: NAT Network
+    \item Installation Media: OPNsense-25.1-dvd-amd64.iso
+  \end{itemize}
+  \item 以 \texttt{installer / opnsense} 登入。
+  \item 點選 Install (ZFS) 進行安裝，之後點選 \texttt{stripe}，在硬碟選擇時選擇 \texttt{ada0} 進行安裝。
+  \item 安裝完成後，會跳出設定 Root Password 的畫面，輸入學號完畢後按下 Enter。
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{2-1-1.png}
+    \caption{Set Root Password}
+  \end{figure}
+  \item 關機後，移除 ISO 檔，重新開機。以 \texttt{root / b13901011} 登入。
+\end{enumerate}
+
+
+% Problem 2.2
+\subsection{}
+\begin{enumerate}
+  \item 在 VirtualBox 設定當中，設定 Host-only Network (作為 LAN) 和 NAT Network (作為 WAN)。
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.49\textwidth]{2-2-1.png}
+    \includegraphics[width=0.49\textwidth]{2-2-2.png}
+    \caption{Network Settings}
+  \end{figure}
+  \item 設定 OPNsense VM 的 interface: 
+  \begin{itemize}
+    \item 按 1 進入 \texttt{Assign interfaces}，在 WAN interface 選擇 \texttt{em1}，在 LAN interface 選擇 \texttt{em0}，最後按 y 進行修改
+    \item 按 2 進入，將 \texttt{1 - LAN} 的 ip address 設定為 \texttt{192.168.56.1/24}，並將 \texttt{1 - WAN} 設定為 DHCP。
+  \end{itemize}
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{p{3cm}p{4cm}p{6cm}}
+      \toprule
+      \textbf{Interface} & \textbf{Network Type} & \textbf{IP / Subnet} \\
+      \midrule
+      LAN (em0) & Host-only Network & \texttt{192.168.56.1/24} \\
+      WAN (em1) & NAT Network & \texttt{10.0.2.15/24} (DHCP) \\
+      \bottomrule
+      \end{tabular}
+  \end{table}
+  \item 在 Host 的 Browser 中，使用 LAN ip 進入 OPNsense 的 Web GUI，登入帳號為 \texttt{root}，密碼為 \texttt{b13901011}。
+  \item 在 Setup Wizard 當中的 \texttt{Configure WAN Interface}頁面當中，取消選取 \texttt{"Block private networks from entering via WAN"} 以及 \texttt{"Block non-Internet routed networks from entering via WAN"}。
+  \item 在 Interfaces > Devices > VLAN 當中，設定以下 VLAN，並按下 Apply。
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{p{2cm}p{5.5cm}p{1cm}p{3cm}p{2.5cm}}
+      \toprule
+      \textbf{Device} & \textbf{Parent} & \textbf{Tag} & \textbf{PCP} & \textbf{Description} \\
+      \midrule
+      vlan0.11 & em0 (08:00:27:9f:f1:c3)[LAN] & 11 & Best Effort (0) & VLAN 11 \\
+      vlan0.12 & em0 (08:00:27:9f:f1:c3)[LAN] & 12 & Best Effort (0) & VLAN 12 \\
+      vlan0.99 & em0 (08:00:27:9f:f1:c3)[LAN] & 99 & Best Effort (0) & VLAN 99 \\
+      \bottomrule
+      \end{tabular}
+  \end{table}
+  \item 在 Interface > Assignments 當中，加入三個 VLAN 的 interface。
+  \item 在 Interface > [VLAN \texttt{<number>}] (\texttt{<number>} $ = {11, 12, 99}$)當中，分別 {Enable Interface}， IPv4 Configuration Type 選擇 Static IPv4，並設定防火牆 IP 位址。
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{p{3cm}p{4cm}}
+      \toprule
+      \textbf{VLAN} & \textbf{IPv4 Address}  \\
+      \midrule
+      VLAN 11 & 10.30.11.1/24 \\
+      VLAN 12 & 10.30.12.1/24 \\
+      VLAN 99 & 10.30.99.1/24 \\
+      \bottomrule
+      \end{tabular}
+  \end{table}
+\end{enumerate}
+
+
+% Problem 2.3
+\subsection{}
+\begin{enumerate}
+  \item Navigate to Services > ISC DHCPv4 > [VLAN 11] on the web UI.
+  \item 點選 Enable DHCP server on VLAN 11。
+  \item 將 Range 設為 from \texttt{10.30.11.100} to \texttt{10.30.11.199} 
+  \item 設定 DNS Server 為 \texttt{8.8.8.8} 和 \texttt{8.8.4.4}。
+  \item 點選 Save，並且重複上述步驟設定 VLAN 12 和 VLAN 99 的 DHCP Server。
+  \item 分別進入 Firewall > Rules > [VLAN 11]、[VLAN 12]、和 [VLAN 99]，並且新增規則以允許 DHCP 的封包進入。
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{llllllll}
+      \toprule
+      \textbf{Interface} & \textbf{Action} & \textbf{Direction} & \textbf{Protocol} & \textbf{Source} & \textbf{Port} & \textbf{Destination} & \textbf{Port} \\
+      \midrule
+      VLAN 11 & Pass & In & IPv4 UDP & VLAN 11 net & 68 & This Firewall & 67 \\
+      VLAN 12 & Pass & In & IPv4 UDP & VLAN 11 net & 68 & This Firewall & 67 \\
+      VLAN 99 & Pass & In & IPv4 UDP & VLAN 12 net & 68 & This Firewall & 67 \\
+      \bottomrule
+      \end{tabular}
+  \end{table}
+  \item 在 Firewall > Rules > WAN 中，新增以下規則以阻擋對外部發送 DHCP 封包。
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{llllllll}
+      \toprule
+      \textbf{Interface} & \textbf{Action} & \textbf{Direction} & \textbf{Protocol} & \textbf{Source} & \textbf{Port} & \textbf{Destination} & \textbf{Port} \\
+      \midrule
+      WAN & Block & Out & IPv4 UDP & This Firewall & 67 & WAN net & 68 \\
+      \bottomrule
+      \end{tabular}
+  \end{table}
+  \item Save and Apply Changes.
+\end{enumerate}
+
+% Problem 2.4
+\subsection{}
+
+% Problem 2.5
+\subsection{}
+
+% Problem 2.6
+\subsection{}
+
+% Problem 2.7
+\subsection{}
 
 % -----------------------------------------------------------
 %    You don't have to mess with anything below this line.
