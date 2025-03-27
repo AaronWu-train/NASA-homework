@@ -106,7 +106,7 @@
   \textbf{Discussion Partners:}
   \begin{itemize}
     \item Classmates：賴泓安、鄭竣陽、陳澔樂、喻慈恩
-    \vspace{0.5em}
+      \vspace{0.5em}
   \end{itemize}
 \end{mycolorbox}
 
@@ -116,7 +116,7 @@
 % Problem 0
 \section{VM Setup}
 \begin{mycolorbox}[teal]
-  \textbf{Reference:} 
+  \textbf{Reference:}
   \footnotesize
   \begin{itemize}
     \item \href{https://bbs.archlinux.org/viewtopic.php?id=303841}{unable to retrieve community.db: 404 errors (Arch Linux Forums)}
@@ -141,7 +141,7 @@
   pacman -Syu
   pacman -S openssh
   \end{minted}
-  \item 啟動 sshd 
+  \item 啟動 sshd
   \begin{minted}{bash}
     systemctl enable sshd
     systemctl start sshd
@@ -178,7 +178,7 @@
 \section{那傢伙竟然敢無視窗}
 
 \begin{mycolorbox}[teal]
-  \textbf{Reference:} 
+  \textbf{Reference:}
   \footnotesize
   \begin{itemize}
     \item \href{https://docs.kernel.org/filesystems/ntfs3.html}{NTFS3}
@@ -204,31 +204,31 @@ NTFS 檔案系統可以滿足題目所要求，在雙系統中支援原生讀寫
   \begin{minted}{bash}
     sudo mkfs.ntfs /dev/vdi2
   \end{minted}
-  \item 取得 UUID 
+  \item 取得 UUID
   \begin{minted}{bash}
     sudo blkid /dev/vdi2
   \end{minted}
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{images/1-1.png}
-    \caption{Screenshot of \texttt{sudo blkid /dev/vdi2}}
-  \end{figure}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=\textwidth]{images/1-1.png}
+      \caption{Screenshot of \texttt{sudo blkid /dev/vdi2}}
+    \end{figure}
 
   \item 配置自動掛載硬碟: 修改 /etc/fstab
   \item 重開機，即可看到硬碟已經掛載
 \end{enumerate}
 \begin{mycolorbox}[green]
-\begin{answer} 　
-  \begin{figure}[H]
-    \includegraphics[width=0.98\textwidth]{images/1-3.png}
-    \caption{Screenshot of \texttt{cat /etc/fstab}}
-  \end{figure}
+  \begin{answer} 　
+    \begin{figure}[H]
+      \includegraphics[width=0.98\textwidth]{images/1-3.png}
+      \caption{Screenshot of \texttt{cat /etc/fstab}}
+    \end{figure}
 
-\begin{figure}[H]
-  \includegraphics[width=0.98\textwidth]{images/1-2.png}
-  \caption{Screenshot of \texttt{lsblk; df -hT}}
-\end{figure}
-\end{answer}
+    \begin{figure}[H]
+      \includegraphics[width=0.98\textwidth]{images/1-2.png}
+      \caption{Screenshot of \texttt{lsblk; df -hT}}
+    \end{figure}
+  \end{answer}
 \end{mycolorbox}
 
 \clearpage
@@ -265,20 +265,18 @@ NTFS 檔案系統可以滿足題目所要求，在雙系統中支援原生讀寫
 \end{enumerate}
 
 \begin{mycolorbox}[green]
-\begin{answer} 　
-  \begin{figure}[H]
-    \includegraphics[width=0.98\textwidth]{images/2-1.png}
-    \caption{Screenshot of \texttt{free -h}}
-  \end{figure}
-\end{answer}
+  \begin{answer} 　
+    \begin{figure}[H]
+      \includegraphics[width=0.98\textwidth]{images/2-1.png}
+      \caption{Screenshot of \texttt{free -h}}
+    \end{figure}
+  \end{answer}
 \end{mycolorbox}
-
 
 \clearpage
 % -----------------------------------------------------------
 % Problem 3
 \section{為資料創造新的棲身之處}
-
 
 \begin{mycolorbox}[teal]
   \textbf{Reference:}
@@ -293,15 +291,14 @@ NTFS 檔案系統可以滿足題目所要求，在雙系統中支援原生讀寫
 \end{minted}
 \vspace{-0.1cm}
 \begin{mycolorbox}[green]
-\begin{answer} 　
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.95\textwidth]{images/3-1.png}
-    \caption{Screenshot of \texttt{lsblk; df -hT}}
-  \end{figure}
-\end{answer}
+  \begin{answer} 　
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.95\textwidth]{images/3-1.png}
+      \caption{Screenshot of \texttt{lsblk; df -hT}}
+    \end{figure}
+  \end{answer}
 \end{mycolorbox}
-
 
 \clearpage
 % -----------------------------------------------------------
@@ -334,7 +331,7 @@ NTFS 檔案系統可以滿足題目所要求，在雙系統中支援原生讀寫
   \end{minted}
   \item 格式化加密區域
   \begin{minted}{bash}
-    mkfs.ext4 /dev/mapper/homework 
+    mkfs.ext4 /dev/mapper/homework
   \end{minted}
   \item 掛載加密區域
   \begin{minted}{bash}
@@ -356,13 +353,13 @@ NTFS 檔案系統可以滿足題目所要求，在雙系統中支援原生讀寫
 \end{enumerate}
 
 \begin{mycolorbox}[green]
-\begin{answer} 　
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.99\textwidth]{images/4-1.png}
-    \caption{Screenshot of \texttt{lsblk; df -hT}}
-  \end{figure}
-\end{answer}
+  \begin{answer} 　
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.99\textwidth]{images/4-1.png}
+      \caption{Screenshot of \texttt{lsblk; df -hT}}
+    \end{figure}
+  \end{answer}
 \end{mycolorbox}
 \clearpage
 % -----------------------------------------------------------
@@ -406,21 +403,20 @@ NTFS 檔案系統可以滿足題目所要求，在雙系統中支援原生讀寫
   \end{minted}
   \item 執行 \texttt{lsblk; df -hT}，結果如 \autoref{fig:5-2} 所示。
 
-  \begin{figure}
-    \centering
-    \includegraphics[width=0.95\textwidth]{images/5-1.png}
-    \caption{Screenshot of \texttt{lsblk} after creating snapshot}
-    \label{fig:5-1}
-  \end{figure}
+    \begin{figure}
+      \centering
+      \includegraphics[width=0.95\textwidth]{images/5-1.png}
+      \caption{Screenshot of \texttt{lsblk} after creating snapshot}
+      \label{fig:5-1}
+    \end{figure}
 
-  \begin{figure}
-    \centering
-    \includegraphics[width=0.95\textwidth]{images/5-2.png}
-    \caption{Screenshot of \texttt{lsblk; df -hT} after removing snapshot}
-    \label{fig:5-2}
-  \end{figure}
+    \begin{figure}
+      \centering
+      \includegraphics[width=0.95\textwidth]{images/5-2.png}
+      \caption{Screenshot of \texttt{lsblk; df -hT} after removing snapshot}
+      \label{fig:5-2}
+    \end{figure}
 \end{enumerate}
-
 
 \clearpage
 % -----------------------------------------------------------
@@ -434,7 +430,7 @@ NTFS 檔案系統可以滿足題目所要求，在雙系統中支援原生讀寫
     \item \href{https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/6/html/logical_volume_manager_administration/vg_remove_pv#VG_remove_PV}{Removing Physical Volumes from a Volume Group (Red Hat)}
     \item \href{https://www.linuxcool.com/pvmove}{pvmove命令 (LinuxCool)}
     \item \href{https://unix.stackexchange.com/questions/679362/remove-a-pv-from-lvm}{Remove a PV from LVM (Stack Exchange)}
-    \end{itemize}
+  \end{itemize}
 \end{mycolorbox}
 
 我以 root 進入 VM，並進行以下操作：
@@ -456,13 +452,13 @@ NTFS 檔案系統可以滿足題目所要求，在雙系統中支援原生讀寫
 \end{enumerate}
 
 \begin{mycolorbox}[green]
-\begin{answer} 　
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.95\textwidth]{images/6-1.png}
-    \caption{Screenshot of \texttt{sudo pvs; sudo vgs}}
-  \end{figure}
-\end{answer}
+  \begin{answer} 　
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.95\textwidth]{images/6-1.png}
+      \caption{Screenshot of \texttt{sudo pvs; sudo vgs}}
+    \end{figure}
+  \end{answer}
 \end{mycolorbox}
 
 \clearpage
@@ -496,12 +492,12 @@ NTFS 檔案系統可以滿足題目所要求，在雙系統中支援原生讀寫
 \end{enumerate}
 
 \begin{mycolorbox}[green]
-\begin{answer} 　
-  \begin{figure}[H]
-    \includegraphics[width=0.99\textwidth]{images/7-3.png}
-    \caption{Screenshot of \texttt{sudo vgs; sudo lvs} and \texttt{cat /ect/fstab}}
-  \end{figure}
-\end{answer}
+  \begin{answer} 　
+    \begin{figure}[H]
+      \includegraphics[width=0.99\textwidth]{images/7-3.png}
+      \caption{Screenshot of \texttt{sudo vgs; sudo lvs} and \texttt{cat /ect/fstab}}
+    \end{figure}
+  \end{answer}
 \end{mycolorbox}
 
 % -----------------------------------------------------------
@@ -515,33 +511,33 @@ NTFS 檔案系統可以滿足題目所要求，在雙系統中支援原生讀寫
     \item \href{https://blog.csdn.net/weixin_42792088/article/details/132862333}{初識 FUSE (CSDN)}
     \item \href{https://www.linwei.com.tw/forum-detail/76/}{磁碟分割MBR、GPT是什麼？}
     \item (a) \href{https://blog.darkthread.net/blog/1000-vs-1024-kb-kib/}{1000 還是 1024？KB、KiB、MB、MiB} \\
-    (b) \href{https://superuser.com/questions/1741437/with-ls-sh-is-1k-a-kilobyte-a-kilobit-1000-bytes-1024-bytes-or-what}{With ls -sh, is 1K a kilobyte, a kilobit, 1000 bytes, 1024 bytes, or what?}
+      (b) \href{https://superuser.com/questions/1741437/with-ls-sh-is-1k-a-kilobyte-a-kilobit-1000-bytes-1024-bytes-or-what}{With ls -sh, is 1K a kilobyte, a kilobit, 1000 bytes, 1024 bytes, or what?}
     \item \href{https://raidnas.tw/hsinchu-nas-raid-explain-rescue/}{5張圖輕鬆介紹RAID磁碟陣列}
   \end{enumerate}
 \end{mycolorbox}
 
-\begin{problem}{8.1} 
+\begin{problem}{8.1}
   Btrfs 和 ZFS 都是支援 Copy On Write (CoW) 的檔案系統，但是 Btrfs 是 Linux 的內建檔案系統，而 ZFS 則是由 Sun Microsystems 開發的檔案系統。Btrfs 的特色是支援 RAID，而 ZFS 則是支援 RAID-Z。
 \end{problem}
 
-\begin{problem}{8.2} 
+\begin{problem}{8.2}
   FUSE 是一種讓非 root 使用者不需要修改 kernel 當中的程式碼，即可以自己在使用者空間中實作檔案系統的技術。此技術的優點為方便開發與除錯檔案系統。缺點為效能較差。
 \end{problem}
 
-\begin{problem}{8.3} 
+\begin{problem}{8.3}
   兩者皆為硬碟用於啟動系統的分割表格式。MBR 為 Master Boot Record 的縮寫，為舊的分割表格式，最多支援 2.1TB 的硬碟，且只支援最多 4 個主分割區，再多需要使用「擴展分區」。 GPT 為 GUID Partition Table 的縮寫，支援更大的硬碟，且可以切割成無限個分割區。(Windows 上只能 128 個)
 \end{problem}
 
 \begin{problem}{8.4} MB 採用 SI 制的定義，以 1000 進位。而 MiB 採用 IEC 的定義，以 1024 進位。
-\begin{itemize}
-  \item 1 MB  = 1,000 KB  = 1,000,000 Bites ($1000 \times 1000$)
-  \vspace{-0.3cm}
-  \item 1 MiB = 1,024 KiB = 1,048,576 Bites ($1024 \times 1024$)
-\end{itemize}
-在工作站上，根據 GNU Coreutils ls manual page，使用 -h 時是以 1024 進位，顯示的為 MiB。若要以 1000 進位，則使用 \texttt{--si} 選項。
+  \begin{itemize}
+    \item 1 MB  = 1,000 KB  = 1,000,000 Bites ($1000 \times 1000$)
+      \vspace{-0.3cm}
+    \item 1 MiB = 1,024 KiB = 1,048,576 Bites ($1024 \times 1024$)
+  \end{itemize}
+  在工作站上，根據 GNU Coreutils ls manual page，使用 -h 時是以 1024 進位，顯示的為 MiB。若要以 1000 進位，則使用 \texttt{--si} 選項。
 \end{problem}
 
-\begin{problem}{8.5} 
+\begin{problem}{8.5}
 
   RAID 全名為容錯式磁碟陣列，是將多顆硬碟透過虛擬化儲存技術，合併成一個或多個硬碟陣列組。
   \begin{itemize}
