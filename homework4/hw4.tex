@@ -140,11 +140,9 @@
     \item \href{https://www.zenarmor.com/docs/network-security-tutorials/how-to-setup-dhcp-server-on-opnsense/}{How to Setup DHCP Server on OPNsense} (Problem 2.3)
     \item \url{https://docs.opnsense.org/manual/aliases.html} (Problem 2.4)
     \item \url{https://docs.opnsense.org/manual/settingsmenu.html#secure-shell} (Problem 2.5)
-    \item 詢問鄭竣陽得知 \texttt{traceroute} 要加上 \texttt{-I} 參數 (Problem 2.5)
     \item \url{https://docs.opnsense.org/manual/aliases.html#url-tables} (Problem 2.6)
     \item \href{https://www.allthingstech.ch/using-opnsense-and-ip-blocklists-to-block-malicious-traffic/}{Using OPNsense and IP Blocklists to Block Malicious Traffic} (Problem 2.6)
-    \item
-    \item
+    \item \href{https://www.provya.com/blog/opnsense-time-based-rules/}{OPNsense Time Based Rules} (Problem 2.6)
   \end{itemize}
 \end{mycolorbox}
 
@@ -165,7 +163,7 @@
   \item 安裝完成後，會跳出設定 Root Password 的畫面，輸入學號完畢後按下 Enter。
     \begin{figure}[H]
       \centering
-      \includegraphics[width=0.7\textwidth]{2-1-1.png}
+      \includegraphics[width=0.9\textwidth]{2-1-1.png}
       \caption{Set Root Password}
     \end{figure}
   \item 關機後，移除 ISO 檔，重新開機。以 \texttt{root / b13901011} 登入。
@@ -262,7 +260,7 @@
     \end{table}
   \item Save and Apply Changes.
 \end{enumerate}
-
+\clearpage
 % Problem 2.4
 \subsection{}
 \begin{enumerate}
@@ -308,10 +306,10 @@
           \small
           \begin{tabular}{lllllll}
             \toprule
-            \textbf{Action} & \textbf{Direction} & \textbf{ Protocol} & \textbf{Source} & \textbf{Port} & \textbf{Destination} & \textbf{Port} \\
+            \textbf{Action} & \textbf{Direction} & \textbf{Protocol} & \textbf{Source} & \textbf{Port} & \textbf{Destination} & \textbf{Port} \\
             \midrule
-            Pass & In & IPv4 TCP/UDP & VLAN 99 net & * & This Firewall & \texttt{\footnotesize ADMIN\_PORTS} \\
-            Pass & In & IPv4 * & VLAN 99 net & * & \texttt{\footnotesize CSIE\_WS, GOOGLE\_DNS} & * \\
+            Pass & In & IPv4 TCP/UDP & \texttt{VLAN99 net} & * & \texttt{\footnotesize This Firewall} & \texttt{\footnotesize ADMIN\_PORTS} \\
+            Pass & In & IPv4 * & \texttt{VLAN99 net} & * & \texttt{\footnotesize CSIE\_WS, GOOGLE\_DNS} & * \\
             \bottomrule
           \end{tabular}
         \end{table}
@@ -335,20 +333,61 @@
 \subsection{}
 \begin{enumerate}
   \item 進到 System > Aliases 頁面，並新增一個 Alias 來阻擋特定列表的 IP 位址。
-  \begin{table}[H]
-    \centering
-    \begin{tabular}{p{2.5cm}lll}
-      \toprule
-      \textbf{Name} & \textbf{Type} & \textbf{Refresh Frequency}  & \textbf{Content} \\
-      \midrule
-      \texttt{BLOCK\_LIST} & URL Table (IPs)& 1 Day & 題目給的網址\\
-      \bottomrule
-    \end{tabular}
-  \end{table}
-  \item 在 Firewall > Rules > [VLAN 11] 頁面，新增以下規則（加在 2.3 的規則之後）：
+    \begin{table}[H]
+      \centering
+      \begin{tabular}{p{2.5cm}lll}
+        \toprule
+        \textbf{Name} & \textbf{Type} & \textbf{Refresh Frequency}  & \textbf{Content} \\
+        \midrule
+        \texttt{BLOCK\_LIST} & URL Table (IPs)& 1 Day & 題目給的網址\\
+        \bottomrule
+      \end{tabular}
+    \end{table}
+  \item 在 Firewall > Settings > Schedules 頁面，新增一個 Schedules。Description 欄位設定為 \texttt{monday\_mornings}，在 Month 欄位下方的日曆當中，按下 Mon 來選擇所有週一。Time 欄位中，選擇 Start Time 為 9:00，end time 為 12:00，並按下 Add Time。最後按下 Save。
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=\textwidth]{2-6-1.png}
+      \caption{Setup Schedule}
+    \end{figure}
+  \item 在 Firewall > Rules > VLAN11 頁面，新增以下規則（加在 Problem 2.3 的規則之後）：
+    \begin{table}[H]
+      \centering
+      \small
+      \begin{tabular}{llllllll}
+        \toprule
+        \textbf{Action} & \textbf{Direction} & \textbf{Protocol} & \textbf{Source} & \textbf{Port} & \textbf{Destination} & \textbf{Port} & \textbf{Schedule} \\
+        \midrule
+        Block & In & IPv4 * & \texttt{VLAN11 net} & * & * & * & \texttt{monday\_mornings} \\
+        Block & In & IPv4 * & \texttt{VLAN11 net} & * & \texttt{VLAN99 net} & * & * \\
+        Block & In & IPv4 * & \texttt{VLAN11 net} & * & \texttt{This Firewall} & * & * \\
+        Block & In & IPv4 * & \texttt{VLAN11 net} & * & \texttt{BLOCK\_LIST} & * & * \\
+        Pass & In & IPv4 * & \texttt{VLAN11 net} & * & * & * & * \\
+        \bottomrule
+      \end{tabular}
+    \end{table}
+
+  \item 在 Firewall > Rules > VLAN12 頁面，新增以下規則（加在 Problem 2.3 的規則之後）：
+    \begin{table}[H]
+      \centering
+      \small
+      \begin{tabular}{llllllll}
+        \toprule
+        \textbf{Action} & \textbf{Direction} & \textbf{Protocol} & \textbf{Source} & \textbf{Port} & \textbf{Destination} & \textbf{Port} & \textbf{Schedule} \\
+        \midrule
+        Block & In & IPv4 * & \texttt{VLAN12 net} & * & * & * & \texttt{monday\_mornings} \\
+        Block & In & IPv4 * & \texttt{VLAN12 net} & * & \texttt{VLAN99 net} & * & * \\
+        Block & In & IPv4 * & \texttt{VLAN12 net} & * & \texttt{This Firewall} & * & * \\
+        Block & In & IPv4 * & \texttt{VLAN12 net} & * & \texttt{BLOCK\_LIST} & * & * \\
+        Block & In & IPv4 * & \texttt{VLAN12 net} & * & \texttt{VLAN11 net} & * & * \\
+        Pass & In & IPv4 * & \texttt{VLAN12 net} & * & * & * & * \\
+        \bottomrule
+      \end{tabular}
+    \end{table}
+  \item Apply Changes.
 \end{enumerate}
 % Problem 2.7
 \subsection{}
+按照題目所敘，到 \texttt{System > Configuration > Backups} 頁面，點選 Download Configuration 即可。
 
 % -----------------------------------------------------------
 %    You don't have to mess with anything below this line.
