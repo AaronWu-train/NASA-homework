@@ -17,7 +17,7 @@
 \usepackage{xcolor,changepage,mdframed} % 顏色與框線相關
 \usepackage{titlesec} % 標題格式
 \usepackage{setspace} % 行距
-\usepackage{tabularx} 
+\usepackage{tabularx}
 \usepackage{minted} % 程式碼高亮（需安裝 Python 套件 pygments）
 \usepackage[shortlabels]{enumitem} % 列表格式
 \usepackage[colorlinks=true,linkcolor=black,urlcolor=blue,citecolor=blue]{hyperref}
@@ -136,15 +136,15 @@
   \textbf{Reference:}
   \footnotesize
   \begin{itemize}
-    \item \url{https://docs.opnsense.org/manual/install.html}
-    \item \href{https://www.zenarmor.com/docs/network-security-tutorials/how-to-setup-dhcp-server-on-opnsense/}{How to Setup DHCP Server on OPNsense}
-    \item 
-    \item 
-    \item 
-    \item 
-    \item 
-    \item 
-    \item 
+    \item \url{https://docs.opnsense.org/manual/install.html} (Problem 2.1)
+    \item \href{https://www.zenarmor.com/docs/network-security-tutorials/how-to-setup-dhcp-server-on-opnsense/}{How to Setup DHCP Server on OPNsense} (Problem 2.3)
+    \item \url{https://docs.opnsense.org/manual/aliases.html} (Problem 2.4)
+    \item \url{https://docs.opnsense.org/manual/settingsmenu.html#secure-shell} (Problem 2.5)
+    \item 詢問鄭竣陽得知 \texttt{traceroute} 要加上 \texttt{-I} 參數 (Problem 2.5)
+    \item \url{https://docs.opnsense.org/manual/aliases.html#url-tables} (Problem 2.6)
+    \item \href{https://www.allthingstech.ch/using-opnsense-and-ip-blocklists-to-block-malicious-traffic/}{Using OPNsense and IP Blocklists to Block Malicious Traffic} (Problem 2.6)
+    \item
+    \item
   \end{itemize}
 \end{mycolorbox}
 
@@ -152,128 +152,201 @@
 \subsection{}
 \begin{enumerate}
   \item 根據 Lab 5 的方法，在 VirtualBox 當中新增一台 OPNsense 虛擬機，設定如下：
-  \begin{itemize}
-    \item CPU：1 Core
-    \item Memory： 4 GB
-    \item Storage： 16 GB
-    \item Network Adapter 1: Host-only Adapter
-    \item Network Adapter 2: NAT Network
-    \item Installation Media: OPNsense-25.1-dvd-amd64.iso
-  \end{itemize}
+    \begin{itemize}
+      \item CPU：1 Core
+      \item Memory： 4 GB
+      \item Storage： 16 GB
+      \item Network Adapter 1: Host-only Adapter
+      \item Network Adapter 2: NAT Network
+      \item Installation Media: OPNsense-25.1-dvd-amd64.iso
+    \end{itemize}
   \item 以 \texttt{installer / opnsense} 登入。
   \item 點選 Install (ZFS) 進行安裝，之後點選 \texttt{stripe}，在硬碟選擇時選擇 \texttt{ada0} 進行安裝。
   \item 安裝完成後，會跳出設定 Root Password 的畫面，輸入學號完畢後按下 Enter。
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\textwidth]{2-1-1.png}
-    \caption{Set Root Password}
-  \end{figure}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.7\textwidth]{2-1-1.png}
+      \caption{Set Root Password}
+    \end{figure}
   \item 關機後，移除 ISO 檔，重新開機。以 \texttt{root / b13901011} 登入。
 \end{enumerate}
-
 
 % Problem 2.2
 \subsection{}
 \begin{enumerate}
   \item 在 VirtualBox 設定當中，設定 Host-only Network (作為 LAN) 和 NAT Network (作為 WAN)。
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.49\textwidth]{2-2-1.png}
-    \includegraphics[width=0.49\textwidth]{2-2-2.png}
-    \caption{Network Settings}
-  \end{figure}
-  \item 設定 OPNsense VM 的 interface: 
-  \begin{itemize}
-    \item 按 1 進入 \texttt{Assign interfaces}，在 WAN interface 選擇 \texttt{em1}，在 LAN interface 選擇 \texttt{em0}，最後按 y 進行修改
-    \item 按 2 進入，將 \texttt{1 - LAN} 的 ip address 設定為 \texttt{192.168.56.1/24}，並將 \texttt{1 - WAN} 設定為 DHCP。
-  \end{itemize}
-  \begin{table}[H]
-    \centering
-    \begin{tabular}{p{3cm}p{4cm}p{6cm}}
-      \toprule
-      \textbf{Interface} & \textbf{Network Type} & \textbf{IP / Subnet} \\
-      \midrule
-      LAN (em0) & Host-only Network & \texttt{192.168.56.1/24} \\
-      WAN (em1) & NAT Network & \texttt{10.0.2.15/24} (DHCP) \\
-      \bottomrule
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.49\textwidth]{2-2-1.png}
+      \includegraphics[width=0.49\textwidth]{2-2-2.png}
+      \caption{Network Settings}
+    \end{figure}
+  \item 設定 OPNsense VM 的 interface:
+    \begin{itemize}
+      \item 按 1 進入 \texttt{Assign interfaces}，在 WAN interface 選擇 \texttt{em1}，在 LAN interface 選擇 \texttt{em0}，最後按 y 進行修改
+      \item 按 2 進入，將 \texttt{1 - LAN} 的 ip address 設定為 \texttt{192.168.56.1/24}，並將 \texttt{1 - WAN} 設定為 DHCP。
+    \end{itemize}
+    \begin{table}[H]
+      \centering
+      \begin{tabular}{p{3cm}p{4cm}p{6cm}}
+        \toprule
+        \textbf{Interface} & \textbf{Network Type} & \textbf{IP / Subnet} \\
+        \midrule
+        LAN (em0) & Host-only Network & \texttt{192.168.56.1/24} \\
+        WAN (em1) & NAT Network & \texttt{10.0.2.15/24} (DHCP) \\
+        \bottomrule
       \end{tabular}
-  \end{table}
+    \end{table}
   \item 在 Host 的 Browser 中，使用 LAN ip 進入 OPNsense 的 Web GUI，登入帳號為 \texttt{root}，密碼為 \texttt{b13901011}。
   \item 在 Setup Wizard 當中的 \texttt{Configure WAN Interface}頁面當中，取消選取 \texttt{"Block private networks from entering via WAN"} 以及 \texttt{"Block non-Internet routed networks from entering via WAN"}。
   \item 在 Interfaces > Devices > VLAN 當中，設定以下 VLAN，並按下 Apply。
-  \begin{table}[H]
-    \centering
-    \begin{tabular}{p{2cm}p{5.5cm}p{1cm}p{3cm}p{2.5cm}}
-      \toprule
-      \textbf{Device} & \textbf{Parent} & \textbf{Tag} & \textbf{PCP} & \textbf{Description} \\
-      \midrule
-      vlan0.11 & em0 (08:00:27:9f:f1:c3)[LAN] & 11 & Best Effort (0) & VLAN 11 \\
-      vlan0.12 & em0 (08:00:27:9f:f1:c3)[LAN] & 12 & Best Effort (0) & VLAN 12 \\
-      vlan0.99 & em0 (08:00:27:9f:f1:c3)[LAN] & 99 & Best Effort (0) & VLAN 99 \\
-      \bottomrule
+    \begin{table}[H]
+      \centering
+      \begin{tabular}{p{2cm}p{5.5cm}p{1cm}p{3cm}p{2.5cm}}
+        \toprule
+        \textbf{Device} & \textbf{Parent} & \textbf{Tag} & \textbf{PCP} & \textbf{Description} \\
+        \midrule
+        vlan0.11 & em0 (08:00:27:9f:f1:c3)[LAN] & 11 & Best Effort (0) & VLAN 11 \\
+        vlan0.12 & em0 (08:00:27:9f:f1:c3)[LAN] & 12 & Best Effort (0) & VLAN 12 \\
+        vlan0.99 & em0 (08:00:27:9f:f1:c3)[LAN] & 99 & Best Effort (0) & VLAN 99 \\
+        \bottomrule
       \end{tabular}
-  \end{table}
+    \end{table}
   \item 在 Interface > Assignments 當中，加入三個 VLAN 的 interface。
   \item 在 Interface > [VLAN \texttt{<number>}] (\texttt{<number>} $ = {11, 12, 99}$)當中，分別 {Enable Interface}， IPv4 Configuration Type 選擇 Static IPv4，並設定防火牆 IP 位址。
-  \begin{table}[H]
-    \centering
-    \begin{tabular}{p{3cm}p{4cm}}
-      \toprule
-      \textbf{VLAN} & \textbf{IPv4 Address}  \\
-      \midrule
-      VLAN 11 & 10.30.11.1/24 \\
-      VLAN 12 & 10.30.12.1/24 \\
-      VLAN 99 & 10.30.99.1/24 \\
-      \bottomrule
+    \begin{table}[H]
+      \centering
+      \begin{tabular}{p{3cm}p{4cm}}
+        \toprule
+        \textbf{VLAN} & \textbf{IPv4 Address}  \\
+        \midrule
+        VLAN 11 & 10.30.11.1/24 \\
+        VLAN 12 & 10.30.12.1/24 \\
+        VLAN 99 & 10.30.99.1/24 \\
+        \bottomrule
       \end{tabular}
-  \end{table}
+    \end{table}
 \end{enumerate}
-
 
 % Problem 2.3
 \subsection{}
 \begin{enumerate}
   \item Navigate to Services > ISC DHCPv4 > [VLAN 11] on the web UI.
   \item 點選 Enable DHCP server on VLAN 11。
-  \item 將 Range 設為 from \texttt{10.30.11.100} to \texttt{10.30.11.199} 
+  \item 將 Range 設為 from \texttt{10.30.11.100} to \texttt{10.30.11.199}
   \item 設定 DNS Server 為 \texttt{8.8.8.8} 和 \texttt{8.8.4.4}。
   \item 點選 Save，並且重複上述步驟設定 VLAN 12 和 VLAN 99 的 DHCP Server。
   \item 分別進入 Firewall > Rules > [VLAN 11]、[VLAN 12]、和 [VLAN 99]，並且新增規則以允許 DHCP 的封包進入。
-  \begin{table}[H]
-    \centering
-    \begin{tabular}{llllllll}
-      \toprule
-      \textbf{Interface} & \textbf{Action} & \textbf{Direction} & \textbf{Protocol} & \textbf{Source} & \textbf{Port} & \textbf{Destination} & \textbf{Port} \\
-      \midrule
-      VLAN 11 & Pass & In & IPv4 UDP & VLAN 11 net & 68 & This Firewall & 67 \\
-      VLAN 12 & Pass & In & IPv4 UDP & VLAN 11 net & 68 & This Firewall & 67 \\
-      VLAN 99 & Pass & In & IPv4 UDP & VLAN 12 net & 68 & This Firewall & 67 \\
-      \bottomrule
+    \begin{table}[H]
+      \centering
+      \begin{tabular}{llllllll}
+        \toprule
+        \textbf{Interface} & \textbf{Action} & \textbf{Direction} & \textbf{Protocol} & \textbf{Source} & \textbf{Port} & \textbf{Destination} & \textbf{Port} \\
+        \midrule
+        VLAN 11 & Pass & In & IPv4 UDP & VLAN 11 net & 68 & This Firewall & 67 \\
+        VLAN 12 & Pass & In & IPv4 UDP & VLAN 11 net & 68 & This Firewall & 67 \\
+        VLAN 99 & Pass & In & IPv4 UDP & VLAN 12 net & 68 & This Firewall & 67 \\
+        \bottomrule
       \end{tabular}
-  \end{table}
+    \end{table}
   \item 在 Firewall > Rules > WAN 中，新增以下規則以阻擋對外部發送 DHCP 封包。
-  \begin{table}[H]
-    \centering
-    \begin{tabular}{llllllll}
-      \toprule
-      \textbf{Interface} & \textbf{Action} & \textbf{Direction} & \textbf{Protocol} & \textbf{Source} & \textbf{Port} & \textbf{Destination} & \textbf{Port} \\
-      \midrule
-      WAN & Block & Out & IPv4 UDP & This Firewall & 67 & WAN net & 68 \\
-      \bottomrule
+    \begin{table}[H]
+      \centering
+      \begin{tabular}{llllllll}
+        \toprule
+        \textbf{Interface} & \textbf{Action} & \textbf{Direction} & \textbf{Protocol} & \textbf{Source} & \textbf{Port} & \textbf{Destination} & \textbf{Port} \\
+        \midrule
+        WAN & Block & Out & IPv4 UDP & This Firewall & 67 & WAN net & 68 \\
+        \bottomrule
       \end{tabular}
-  \end{table}
+    \end{table}
   \item Save and Apply Changes.
 \end{enumerate}
 
 % Problem 2.4
 \subsection{}
+\begin{enumerate}
+  \item 進到 Firewall > Aliases 頁面。
+  \item 新增以下的 Aliases:
+    \begin{table}[H]
+      \centering
+      \begin{tabular}{p{2.5cm}p{2cm}l}
+        \toprule
+        \textbf{Name} & \textbf{Type} & \textbf{Content} \\
+        \midrule
+        \texttt{ADMIN\_PORTS} & Port(s) & 22, 80, 443 \\
+        \texttt{CSIE\_WS} & Host(s) & ws1.csie.org, ws2.csie.org, ..., ws7.csie.org \\
+        \texttt{GOOGLE\_DNS} & Host(s) & 8.8.8.8, 8.8.4.4 \\
+        \bottomrule
+      \end{tabular}
+    \end{table}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.9\textwidth]{2-4-1.png}
+      \caption{Setup Aliases}
+    \end{figure}
+  \item 按下 Apply。
+\end{enumerate}
 
 % Problem 2.5
 \subsection{}
+\begin{enumerate}
+  \item 啟用 SSH 服務。
+    \begin{enumerate}
+      \item 進到 Firewall > Settings > Administration 頁面。
+      \item 在 Secure Shell 的區塊中，勾選 \texttt{Enable Secure Shell}、\texttt{Permit root user login} 和 \texttt{Permit password login}
+      \item \texttt{Logic Group} 選擇 \texttt{wheel, admins}。
+      \item \texttt{Listen Interfaces} 選擇 \texttt{VLAN 99}。
+      \item 按下 Save。
+    \end{enumerate}
+  \item 設定規則
+    \begin{enumerate}
+      \item 進入 Firewall > Rules > [VLAN 99] 頁面。
+      \item 新增以下規則，分別允許 VLAN 99 連線到防火牆的 \texttt{ADMIN\_PORTS} 和 \texttt{GOOGLE\_DNS}、\texttt{CSIE\_WS}。
+        \begin{table}[H]
+          \centering
+          \small
+          \begin{tabular}{lllllll}
+            \toprule
+            \textbf{Action} & \textbf{Direction} & \textbf{ Protocol} & \textbf{Source} & \textbf{Port} & \textbf{Destination} & \textbf{Port} \\
+            \midrule
+            Pass & In & IPv4 TCP/UDP & VLAN 99 net & * & This Firewall & \texttt{\footnotesize ADMIN\_PORTS} \\
+            Pass & In & IPv4 * & VLAN 99 net & * & \texttt{\footnotesize CSIE\_WS, GOOGLE\_DNS} & * \\
+            \bottomrule
+          \end{tabular}
+        \end{table}
+    \end{enumerate}
+  \item 按照 Lab 5 簡報當中的方式，架設一台 Alpine Linux VM，並且透過 DHCP 獲得 VLAN 99 的 IP。我連線到 NTU VPN，並獲取以下結果截圖：
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.88\textwidth]{2-5-1.png}
+      \caption{Screenshot of \texttt{ip r} and \texttt{traceroute}}
+    \end{figure}
+    \vspace{-0.6cm}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.88\textwidth]{2-5-2.png}
+      \caption{Screenshot of SSH to OPNsense Firewall}
+    \end{figure}
+    \vspace{-1cm}
+\end{enumerate}
 
 % Problem 2.6
 \subsection{}
-
+\begin{enumerate}
+  \item 進到 System > Aliases 頁面，並新增一個 Alias 來阻擋特定列表的 IP 位址。
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{p{2.5cm}lll}
+      \toprule
+      \textbf{Name} & \textbf{Type} & \textbf{Refresh Frequency}  & \textbf{Content} \\
+      \midrule
+      \texttt{BLOCK\_LIST} & URL Table (IPs)& 1 Day & 題目給的網址\\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  \item 在 Firewall > Rules > [VLAN 11] 頁面，新增以下規則（加在 2.3 的規則之後）：
+\end{enumerate}
 % Problem 2.7
 \subsection{}
 
