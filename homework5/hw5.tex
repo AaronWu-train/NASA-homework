@@ -119,10 +119,9 @@
     \item \href{https://www.cloudpanel.io/tutorial/how-to-add-user-to-sudoers-in-debian/}{How to add user to sudoers in Debian}
     \item \href{https://www.reddit.com/r/linuxquestions/comments/pcfjo6/bash_usermod_command_not_found_in_latest_debian/}{Bash: usermod command not found in latest Debian}
     \item \href{https://computingforgeeks.com/install-powerdns-and-powerdns-admin-on-debian/}{Install PowerDNS and PowerDNS Admin on Debian}
-    \item 
-    \item 
-    \item 
-    \item 
+    \item \url{https://repo.powerdns.com/}
+    \item \url{https://doc.powerdns.com/authoritative/installation.html}
+    \item \href{https://wiki.freedomstu.com/books/%E9%96%8B%E6%BA%90%E8%BB%9F%E9%AB%94%E5%AE%89%E8%A3%9D%E6%B5%81%E7%A8%8B/page/powerdns-debian}{PowerDNS 架設 - Debian}
   \end{itemize}
 \end{mycolorbox}
 \begin{enumerate}
@@ -211,16 +210,85 @@
     nameserver 8.8.8.8
     nameserver 8.8.4.4
   \end{minted}
-  \item 安裝 PowerDNS。
+  \item 加上指定版本的 Repository： \\
+  修改 \texttt{/etc/apt/sources.list.d/pdns.list} 的內容，新增如下：
   \begin{minted}{bash}
-    sudo apt install pdns-server pdns-backend-mysql
+    deb [signed-by=/etc/apt/keyrings/auth-49-pub.asc] http://repo.powerdns.com/debian bookworm-auth-49 main
   \end{minted}
-  \item TODO:
+  修改 \texttt{/etc/apt/preferences.d/auth-49} 的內容，新增如下：
+  \begin{minted}{bash}
+    Package: auth*
+    Pin: origin repo.powerdns.com
+    Pin-Priority: 600
+  \end{minted}
+  
+  並且安裝 PowerDNS。
+  \begin{minted}{bash}
+    sudo install -d /etc/apt/keyrings; 
+    curl https://repo.powerdns.com/FD380FBB-pub.asc | sudo tee /etc/apt/keyrings/auth-49-pub.asc &&
+    sudo apt-get update &&
+    sudo apt-get install pdns-server pdns-backend-mysql 
+  \end{minted}
+  \item Import PowerDNS database schemas to MariaDB
   \begin{minted}{bash}
   mysql -u powerdns_user -p powerdns < /usr/share/pdns-backend-mysql/schema/schema.mysql.sql
-\end{minted}
-
-
+  \end{minted}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{1-1-3.png}
+    \caption{powerdns database schemas}
+  \end{figure}
+  \item 修改 PowerDNS 設定檔案 \texttt{/etc/powerdns/pdns.conf} 的內容，新增如下：
+  \begin{minted}{bash}
+    #################################
+    # local-port    The port on which we listen
+    #
+    local-port=5301
+  \end{minted}
+  \item 新增一個檔案 \texttt{/etc/powerdns/pdns.d/pdns.local.gmysql.conf} 存放 powerdns 的 database 相關設定，內容如下：
+  \begin{minted}{bash}
+    # MySQL Configuration
+    # Launch gmysql backend
+    launch+=gmysql
+    # gmysql parameters
+    gmysql-host=127.0.0.1
+    gmysql-port=3306
+    gmysql-dbname=powerdns
+    gmysql-user=powerdns_user
+    gmysql-password=b13901011
+    gmysql-dnssec=yes
+    # gmysql-socket=
+  \end{minted}
+  \item 修改設定檔案的權限：
+  \begin{minted}{bash}
+    sudo chown pdns: /etc/powerdns/pdns.d/pdns.local.gmysql.conf
+    sudo chmod 640 /etc/powerdns/pdns.d/pdns.local.gmysql.conf
+  \end{minted}
+  \item 測試 PowerDNS 是否能正常運作：
+  \begin{minted}{bash}
+    sudo systemctl stop pdns.service
+    sudo pdns_server --daemon=no --guardian=no --loglevel=9
+  \end{minted}
+  \vspace{-0.3cm}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{1-1-4.png}
+    \caption{PowerDNS 測試}
+  \end{figure}
+  \item 確認沒問題後，重新啟動 PowerDNS 服務，並且截圖題目要求的畫面。
+  \begin{minted}{bash}
+    sudo systemctl restart pdns
+    sudo systemctl enable pdns
+  \end{minted}
+  \begin{mycolorbox}[green]
+    \textbf{Answer:} \\
+    \vspace{-1cm}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.69\textwidth]{1-1-5.png}
+      \caption{\texttt{dig @localhost -p 5301} 以及 \texttt{pdns\_control version} 結果}
+    \end{figure}
+  \end{mycolorbox}
 \end{enumerate}
 
 
