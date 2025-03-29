@@ -104,7 +104,7 @@
 \begin{mycolorbox}[cyan]
   \textbf{Discussion Partners:}
   \begin{itemize}
-    \item Classmates：賴泓安、鄭竣陽、喻慈恩
+    \item Classmates：賴泓安、鄭竣陽、喻慈恩、陳澔樂
       \vspace{0.5em}
   \end{itemize}
 \end{mycolorbox}
@@ -192,7 +192,7 @@
     sudo systemctl start mariadb
     sudo systemctl enable mariadb
   \end{minted}
-  \item 以 \texttt{sudo mysql -u root} 登入 MariaDB，並且執行以下指令設定 root 密碼。
+  \item 以 \texttt{sudo mysql -u root} 登入 MariaDB，並且執行以下指令：
   \begin{minted}{sql}
     CREATE DATABASE powerdns;
     GRANT ALL ON powerdns.* TO 'powerdns_user'@'%' IDENTIFIED BY 'b13901011';
@@ -296,6 +296,82 @@
   \end{mycolorbox}
 \end{enumerate}
 
+% Problem 1-2
+\subsection{Install PowerDNS Admin}
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item \href{https://computingforgeeks.com/install-powerdns-and-powerdns-admin-on-debian/}{Install PowerDNS and PowerDNS Admin on Debian}
+    \item \url{https://docs.docker.com/engine/install/debian/#install-using-the-repository}
+    \item \url{https://github.com/PowerDNS-Admin/PowerDNS-Admin}
+    \item \url{https://github.com/PowerDNS-Admin/PowerDNS-Admin/issues/816#issuecomment-809533428}
+  \end{itemize}
+\end{mycolorbox}
+\begin{enumerate}
+  \item 我打算根據官網 README 的指示，使用 Docker 安裝 PowerDNS Admin。首先，我在虛擬機器上安裝 Docker。
+  \item 根據 Docker 的官方說明，我使用以下指令安裝 Docker：
+  \begin{minted}{bash}
+    # Add Docker's official GPG key:
+    sudo apt-get update
+    sudo apt-get install ca-certificates curl
+    sudo install -m 0755 -d /etc/apt/keyrings
+    sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+    # Add the repository to Apt sources:
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+      $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+    sudo apt-get update
+    sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  \end{minted}
+  \item 將我的使用者加入 Docker 群組。
+  \begin{minted}{bash}
+    sudo usermod -aG docker $USER
+    newgrp docker
+  \end{minted}
+  \item Clone PowerDNS Admin 的 GitHub repository。
+  \begin{minted}{bash}
+    git clone https://github.com/PowerDNS-Admin/PowerDNS-Admin.git
+    cd PowerDNS-Admin
+  \end{minted}
+
+  \item 使用 \texttt{ip addr} 獲取 Debian VM 的 IP 位址為 \texttt{10.0.2.15}
+  \item 修改 PowerDNS 的設定檔：編輯 \texttt{/etc/powerdns/pdns.conf} 的內容，新增如下：
+  \begin{minted}{bash}
+    api=yes
+    api-key=b13901011
+    webserver=yes
+    webserver-address=10.0.2.15  # your real ip  not localhost
+    webserver-allow-from=127.0.0.1,192.168.0.1,172.17.0.2
+  \end{minted}
+  \item 重新啟動 PowerDNS 服務：
+  \begin{minted}{bash}
+    sudo systemctl restart pdns
+  \end{minted}
+
+  \item 使用以下指令啟動 PowerDNS Admin：
+  \begin{minted}{bash}
+    docker run -d \
+      -e SECRET_KEY='a-very-secret-key' \
+      -v pda-data:/data \
+      -p 9191:80 \
+      powerdnsadmin/pda-legacy:latest
+  \end{minted}
+  \item 我使用 vnc 連線到虛擬機器，並且使用瀏覽器開啟 \texttt{http://localhost:9191}，然後註冊一組帳號密碼，並且登入 PowerDNS Admin。
+  \item 登入 PowerDNS Admin 之後，會進入 Server Settings 頁面，在左側 Settings Editor 當中， PowerDNS Server 填寫 \texttt{http://10.0.2.15:8081/}，API Key 填寫 \texttt{b13901011}，PowerDNS Version 填寫 \texttt{4.9.4}，然後按下 Save 按鈕。之後，我進到 Profile 頁面，並截圖。
+  \begin{mycolorbox}[green]
+    \textbf{Answer:} \\
+    \vspace{-0.7cm}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.8\textwidth]{1-2-1.png}
+      \caption{PowerDNS Admin Profile}
+    \end{figure}
+  \end{mycolorbox}
+\end{enumerate}
 
 
 

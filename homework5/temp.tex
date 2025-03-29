@@ -1,0 +1,172 @@
+\item 我打算根據官網 README 的指示，使用 Docker 安裝 PowerDNS Admin。首先，我在虛擬機器上安裝 Docker 和 Docker Compose。
+  \item 根據 Docker 的官方說明，我使用以下指令安裝 Docker：
+  \begin{minted}{bash}
+    # Add Docker's official GPG key:
+    sudo apt-get update
+    sudo apt-get install ca-certificates curl
+    sudo install -m 0755 -d /etc/apt/keyrings
+    sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+    # Add the repository to Apt sources:
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+      $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt-get update
+    sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  \end{minted}
+  \item 將我的使用者加入 Docker 群組。
+  \begin{minted}{bash}
+    sudo usermod -aG docker $USER
+    newgrp docker
+  \end{minted}
+  \item Clone PowerDNS Admin 的 GitHub repository。
+  \begin{minted}{bash}
+    git clone https://github.com/PowerDNS-Admin/PowerDNS-Admin.git
+    cd PowerDNS-Admin
+  \end{minted}
+  \item 使用 Docker Compose 啟動 PowerDNS Admin。
+  \begin{minted}{bash}
+    docker-compose up -d
+  \end{minted}
+
+
+
+
+  \item 建立一個 systemd 服務檔案 \texttt{/etc/systemd/system/pdnsadmin.service}，內容如下：
+  \begin{minted}{bash}
+    [Unit]
+    Description=PowerDNS-Admin
+    Requires=pdnsadmin.socket
+    After=network.target
+
+    [Service]
+    PIDFile=/run/pdnsadmin/pid
+    User=pdns
+    Group=pdns
+    WorkingDirectory=/var/www/html/pdns
+    ExecStart=/var/www/html/pdns/flask/bin/gunicorn --pid /run/pdnsadmin/pid --bind unix:/run/pdnsadmin/socket 'powerdnsadmin:create_app()'
+    ExecReload=/bin/kill -s HUP $MAINPID
+    ExecStop=/bin/kill -s TERM $MAINPID
+    PrivateTmp=true
+
+    [Install]
+    WantedBy=multi-user.target
+  \end{minted}
+  \item 建立一個 socket 檔案 \texttt{/etc/systemd/system/pdnsadmin.socket
+  }，內容如下：
+  \begin{minted}{bash}
+    [Unit]
+    Description=PowerDNS-Admin socket
+
+    [Socket]
+    ListenStream=/run/pdnsadmin/socket
+
+    [Install]
+    WantedBy=sockets.target
+  \end{minted}
+  \item 建立環境檔案，並且設定權限：
+  \begin{minted}{bash}
+    mkdir /run/pdnsadmin/
+    echo "d /run/pdnsadmin 0755 pdns pdns -" >> /etc/tmpfiles.d/pdnsadmin.conf
+    chown -R pdns: /run/pdnsadmin/
+    chown -R pdns: /var/www/html/pdns/powerdnsadmin/
+    \end{minted}
+  \item 啟用並且啟動服務：
+  \begin{minted}{bash}
+    systemctl enable --now pdnsadmin.service pdnsadmin.socket
+  \end{minted}
+
+
+
+
+
+\begin{enumerate}
+  \item 安裝必要套件、Node.js、NPM 以及 Yarn。
+  \begin{minted}{bash}
+    sudo apt install -y python3-dev git libsasl2-dev libldap2-dev python3-venv libmariadb-dev pkg-config build-essential curl libpq-dev
+    curl -sL https://deb.nodesource.com/setup_22.x | sudo bash -
+    sudo apt install -y nodejs
+    curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/yarnkey.gpg >/dev/null
+    echo "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+    sudo apt update && sudo apt install yarn -y
+  \end{minted}
+  \item 編輯 \texttt{/etc/powerdns/pdns.conf}，並且新增如下：
+  \begin{minted}{bash}
+    api=yes
+    api-key=b13901011
+    webserver=yes
+  \end{minted}
+  然後使用 \texttt{sudo systemctl restart pdns} 重新啟動 PowerDNS。
+  \item 建立 PowerDNS-Admin 的資料庫：先以 \texttt{sudo mysql -u root} 登入 MariaDB，然後執行以下指令：
+  {
+  \small
+  \begin{minted}{sql}
+    CREATE DATABASE powerdnsadmin CHARACTER SET utf8 COLLATE utf8_general_ci;
+    GRANT ALL PRIVILEGES ON powerdnsadmin.* TO 'pdnsadminuser'@'%' IDENTIFIED BY 'b13901011';
+    FLUSH PRIVILEGES;
+    EXIT;
+  \end{minted}
+  }
+
+  \item Clone PowerDNS Admin 的 GitHub Repository。
+  \begin{minted}{bash}
+    sudo su -
+    git clone https://github.com/ngoduykhanh/PowerDNS-Admin.git /var/www/html/pdns
+  \end{minted}
+  \item 建立 python venv 環境，並且安裝 python 套件。
+  \begin{minted}{bash}
+    cd /var/www/html/pdns/
+    virtualenv -p python3 flask
+    source ./flask/bin/activate
+    pip install --upgrade pip
+    pip install -r requirements.txt
+    deactivate
+  \end{minted}
+  \item 編輯 \texttt{/var/www/html/pdns/powerdnsadmin/default\_config.py} 為以下（主要修改 20 行之後）：
+  \begin{minted}{bash}
+    import os
+
+    BIND_ADDRESS = '0.0.0.0'
+    CAPTCHA_ENABLE = True
+    CAPTCHA_HEIGHT = 60
+    CAPTCHA_LENGTH = 6
+    CAPTCHA_SESSION_KEY = 'captcha_image'
+    CAPTCHA_WIDTH = 160
+    CSRF_COOKIE_HTTPONLY = True
+    HSTS_ENABLED = False
+    PORT = 9191
+    SALT = '$2b$12$yLUMTIfl21FKJQpTkRQXCu'
+    SAML_ASSERTION_ENCRYPTED = True
+    SAML_ENABLED = False
+    SECRET_KEY = 'e951e5a1f4b94151b360f47edf596dd2'
+    SERVER_EXTERNAL_SSL = os.getenv('SERVER_EXTERNAL_SSL', True)
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    SESSION_TYPE = 'sqlalchemy'
+    # Database settings for SQLAlchemy
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
+    SQLA_DB_USER = 'pdnsadminuser'
+    SQLA_DB_PASSWORD = 'b13901011'
+    SQLA_DB_HOST = '127.0.0.1'
+    SQLA_DB_NAME = 'powerdnsadmin'
+    SQLALCHEMY_DATABASE_URI = f"mysql://{SQLA_DB_USER}:{SQLA_DB_PASSWORD}@{SQLA_DB_HOST}/{SQLA_DB_NAME}"
+  \end{minted}
+  
+
+  \item 建立 database schema。
+  \begin{minted}{bash}
+    cd /var/www/html/pdns/
+    source ./flask/bin/activate
+    export FLASK_APP=powerdnsadmin/__init__.py
+    flask db upgrade
+  \end{minted}
+  \item 編譯網頁
+  \begin{minted}{bash}
+    yarn install --pure-lockfile
+    flask assets build
+  \end{minted}
+  \item 啟動 PowerDNS Admin
+  \begin{minted}{bash}
+    ./run.py
+  \end{minted}
