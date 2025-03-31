@@ -306,6 +306,7 @@
     \item \url{https://docs.docker.com/engine/install/debian/#install-using-the-repository}
     \item \url{https://github.com/PowerDNS-Admin/PowerDNS-Admin}
     \item \url{https://github.com/PowerDNS-Admin/PowerDNS-Admin/issues/816#issuecomment-809533428}
+    \item \url{https://github.com/PowerDNS-Admin/PowerDNS-Admin/issues/975}
   \end{itemize}
 \end{mycolorbox}
 \begin{enumerate}
@@ -355,6 +356,9 @@
   \item 使用以下指令啟動 PowerDNS Admin：
   \begin{minted}{bash}
     docker run -d \
+      --name powerdns_admin \
+      --restart unless-stopped \
+      --add-host=host.docker.internal:host-gateway \
       -e SECRET_KEY='a-very-secret-key' \
       -v pda-data:/data \
       -p 9191:80 \
@@ -363,17 +367,165 @@
   \item 我使用 vnc 連線到虛擬機器，並且使用瀏覽器開啟 \texttt{http://localhost:9191}，然後註冊一組帳號密碼，並且登入 PowerDNS Admin。
   \item 登入 PowerDNS Admin 之後，會進入 Server Settings 頁面，在左側 Settings Editor 當中， PowerDNS Server 填寫 \texttt{http://10.0.2.15:8081/}，API Key 填寫 \texttt{b13901011}，PowerDNS Version 填寫 \texttt{4.9.4}，然後按下 Save 按鈕。之後，我進到 Profile 頁面，並截圖。
   \begin{mycolorbox}[green]
-    \textbf{Answer:} \\
-    \vspace{-0.7cm}
+    \textbf{Answer:} 
+    \vspace{-0.5cm}
     \begin{figure}[H]
       \centering
-      \includegraphics[width=0.8\textwidth]{1-2-1.png}
-      \caption{PowerDNS Admin Profile}
+      \includegraphics[width=0.75\textwidth]{1-2-1.png}
     \end{figure}
   \end{mycolorbox}
 \end{enumerate}
 
+% Problem 1-3
+\subsection{Nginx Reverse Proxy}
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item \url{https://nginx.org/en/linux_packages.html#Debian}
+    \item \url{https://blog.gtwang.org/windows/windows-linux-hosts-file-configuration/}
+    \item \url{https://noob.tw/nginx-reverse-proxy/}
+    \item 參考我先前架設的 Nginx 反向代理的配置文件
+  \end{itemize}
+\end{mycolorbox}
+\begin{enumerate}
+  \item 在虛擬機器上安裝 Nginx。
+  \begin{minted}{bash}
+    sudo apt install nginx
+    sudo systemctl start nginx
+    sudo systemctl enable nginx
+  \end{minted}
+  \item 移除預設的 Nginx 設定檔案。
+  \begin{minted}{bash}
+    sudo unlink /etc/nginx/sites-enabled/default
+  \end{minted}
+  \item 新增一個 Nginx 設定檔案 \texttt{/etc/nginx/conf.d/powerdnsadmin.conf}，內容如下：
+  \begin{minted}{nginx}
+    upstream powerdnsadmin {
+        server 0.0.0.0:9191;
+        keepalive 16;
+    }
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        server_name b13901011.com;
+        location / {
+            proxy_pass http://powerdnsadmin/;
+            proxy_http_version 1.1;
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto https;
+        }
+    }
+  \end{minted}
+  \item 修改 Nginx 的設定檔案權限：
+  \begin{minted}{bash}
+    sudo chown root: /etc/nginx/conf.d/powerdnsadmin.conf
+    sudo chmod 644 /etc/nginx/conf.d/powerdnsadmin.conf
+  \end{minted}
+  \item 重新啟動 Nginx 服務：
+  \begin{minted}{bash}
+    sudo systemctl restart nginx
+  \end{minted}
+  \item 修改 \texttt{/etc/hosts} ，新增以下的內容，使得 \texttt{b13901011.com} 能夠暫時被解析到 localhost。
+  \begin{minted}{bash}
+    127.0.1.1       b13901011.com
+  \end{minted}
+  \item 以 vnc 連線到虛擬機器，並且使用瀏覽器開啟 \texttt{http://b13901011.com}，然後截圖。
 
+  \begin{mycolorbox}[green]
+    \textbf{Answer:} 
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=\textwidth]{1-3-1.png}
+      \caption{以瀏覽器開啟 \texttt{http://b13901011.com} 的畫面}
+    \end{figure}
+  \end{mycolorbox}
+\end{enumerate}
+
+% Problem 1-4
+\subsection{Add records for cscat.tw}
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item \href{https://tech-blog.cymetrics.io/posts/crystal/email-sec-examples/}{關於 email security 的大小事 — 範例篇}
+    \item \url{https://ithelp.ithome.com.tw/m/articles/10214466}
+  \end{itemize}
+\end{mycolorbox}
+\begin{enumerate}
+  \item 登入 PowerDNS Admin，並且點擊 \texttt{Create Zone} 按鈕，新增一個 Zone Name 為 \texttt{cscat.tw} 的 Zone。
+  \item 新增題目所要求的紀錄，並且截圖。
+\end{enumerate}
+\begin{mycolorbox}[green]
+  \textbf{Answer:} 
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{1-4-1.png}
+    \caption{DNS Records}
+  \end{figure}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{1-4-A.png}
+    \caption{\texttt{dig -t A cscat.tw @b13901011.com -p 5301} 的結果}
+  \end{figure}
+  \vspace{-0.5cm}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.69\textwidth]{1-4-CNAME.png}
+    \caption{\texttt{dig -t CNAME www.cscat.tw @b13901011.com -p 5301} 的結果}
+  \end{figure}
+  \vspace{-0.5cm}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.69\textwidth]{1-4-MX.png}
+    \caption{\texttt{dig -t MX cscat.tw @b13901011.com -p 5301} 的結果}
+  \end{figure}
+  \vspace{-0.5cm}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.69\textwidth]{1-4-TXT.png}
+    \caption{\texttt{dig -t TXT cscat.tw @b13901011.com -p 5301} 的結果}
+  \end{figure}
+  \vspace{-0.5cm}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.72\textwidth]{1-4-api-A.png}
+    \caption{\texttt{dig -t A api.cscat.tw @b13901011.com -p 5301} 的結果}
+  \end{figure}
+  \vspace{-0.5cm}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.72\textwidth]{1-4-api-AAAA.png}
+    \caption{\texttt{dig -t AAAA api.cscat.tw @b13901011.com -p 5301} 的結果}
+  \end{figure}
+  \vspace{-0.5cm}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.72\textwidth]{1-4-NS.png}
+    \caption{\texttt{dig -t NS store2.cscat.tw @b13901011.com -p 5301} 的結果}
+  \end{figure}
+\end{mycolorbox}
+
+\subsection{DNSSEC} 
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item
+  \end{itemize}
+\end{mycolorbox}
+
+
+\clearpage
+\section{PowerDNS Recursor}
+
+\clearpage
+\section{dnsdist}
+
+\clearpage
+\section{Master and Slave}
 
 % -----------------------------------------------------------
 %    You don't have to mess with anything below this line.
