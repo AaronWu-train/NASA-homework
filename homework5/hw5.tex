@@ -513,10 +513,28 @@
   \textbf{Reference:}
   \footnotesize
   \begin{itemize}
-    \item
+    \item \href{https://www.cloudflare.com/zh-tw/learning/dns/dnssec/how-dnssec-works/}{DNSSEC 如何運作？}
   \end{itemize}
 \end{mycolorbox}
+\begin{enumerate}
+  \item DNSSEC 是一種透過信任以及數位簽章來驗證 DNS 資料的完整性和真實性的技術。他的核心目的在於確保使用者取得的 DNS 資料來自合法來源且未遭篡改。首先，每一個 Zone 都會有一個公鑰和私鑰的組合。當 DNS 紀錄被簽署時，會產生一個數位簽章，這個簽章會附加在 DNS 回應中。當使用者查詢 DNS 紀錄時，DNS 伺服器會提供這個簽章以及對應的公鑰。使用者的 DNS 客戶端可以使用這個公鑰來驗證簽章的有效性，從而確保回應的完整性和真實性。另外，DNSSEC 建立了一個由 Root Domain 開始的信任鏈，因此當使用者查詢一個子域名時，DNS 客戶端可以驗證這個子域名的簽章是否由上層域名簽署。
+  \item 在 PowerDns Admin 當中，進入 Dashboard 頁面，點擊 \texttt{cscat.tw} 這個 Zone 的\texttt{DNSSEC} 按鈕，即可完成 DNSSEC 的設定。
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.88\textwidth]{1-5-1.png}
+    \caption{PowerDNS Admin DNSSEC 設定}
+  \end{figure}
+\end{enumerate}
+\vspace{-0.5cm}
 
+\begin{mycolorbox}[green]
+  \textbf{Answer:} 
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{1-5-2.png}
+    \caption{\texttt{dig @b13901011.com -p 5301 cscat.tw DNSKEY} 的結果}
+  \end{figure}
+\end{mycolorbox}
 
 \clearpage
 \section{PowerDNS Recursor}
