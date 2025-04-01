@@ -134,10 +134,11 @@
     \item \href{https://stackoverflow.com/questions/3119108/return-custom-403-error-page-with-nginx}{Return custom 403 error page with nginx - Stack Overflow}
     \item \href{https://serverfault.com/questions/615886/including-default-files-and-folders-in-users-home-directory}{Including default files and folders in user's home directory - Server Fault}
     \item \href{https://www.siberoloji.com/enable-userdir-nginx-almalinux/}{How to Enable Userdir with Nginx}
-    \item 
-    \item 
-    \item 
-    \item 
+    \item \href{https://www.server-world.info/en/note?os=Ubuntu_24.04&p=nginx&f=4}{Nginx : Enable Userdir}
+    \item \href{https://serverfault.com/questions/792326/nginx-proxy-pass-using-subfolder}{nginx proxy\_pass using subfolder - Server Fault}
+    \item 參考我先前架設的 Nginx 網頁 Reverse Proxy 設定
+    \item \url{https://nginx.org/en/docs/http/load_balancing.html}
+    \item \href{https://www.maxlist.xyz/2020/06/18/flask-nginx/}{淺談 Nginx 基本配置、負載均衡、緩存和反向代理}
   \end{itemize}
 \end{mycolorbox}
 
@@ -206,18 +207,18 @@
     sudo ufw allow ssh
     sudo ufw allow http
     sudo ufw enable
-    sudo ufw status
+    sudo ufw status verbose
   \end{minted}
   \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{2-1-1.png}
     \caption{UFW 設定}
   \end{figure}
-  \item 為了驗證 ufw 的設定，我使用 \texttt{nmap} 指令來測試連線。在工作站上使用以下指令：
-  \begin{minted}{bash}
-    nmap -p- 10.0.2.15
-  \end{minted}
-  其中，\texttt{10.0.2.15} 是 VM 的 IP 位址。這個指令會掃描所有的 port，並顯示開啟的 port。根據下圖中的結果，可以看到只有 port 22 和 port 80 是開啟的，代表防火牆的設定是正確的。
+  % \item 為了驗證 ufw 的設定，我使用 \texttt{nmap} 指令來測試連線。在工作站上使用以下指令：
+  % \begin{minted}{bash}
+  %   nmap -p- 10.0.2.15
+  % \end{minted}
+  % 其中，\texttt{10.0.2.15} 是 VM 的 IP 位址。這個指令會掃描所有的 port，並顯示開啟的 port。根據下圖中的結果，可以看到只有 port 22 和 port 80 是開啟的，代表防火牆的設定是正確的。
   % \begin{figure}[H]
   %   \centering
   %   \includegraphics[width=0.7\textwidth]{2-1-2.png}
@@ -340,7 +341,7 @@
   建立完成後，可以發現裡面內建了 \texttt{htdocs} 資料夾，並且可以在裡面建立檔案。
   \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{2-4-1.png}
+    \includegraphics[width=0.7\textwidth]{2-4-1.png}
     \caption{UserDir}
   \end{figure}
   \item 在 \texttt{htdocs} 資料夾中建立一個 index.html 檔案，內容如下：
@@ -350,14 +351,260 @@
   \item 使用瀏覽器，連上 \texttt{140.112.91.1:8890/~user1/}，可以看到我剛剛建立的網頁。
   \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{2-4-2.png}
+    \includegraphics[width=0.8\textwidth]{2-4-2.png}
     \caption{UserDir Page}
   \end{figure}
 \end{enumerate}
 
 \subsection{Reverse Proxy}
+\begin{enumerate}
+  \item 首先，使用以下指令重新開啟 ServerMain VM：
+  \begin{minted}{bash}
+    qemu-system-x86_64 -enable-kvm -cpu host -m 8G \
+      -drive file=debian.qcow2,format=qcow2 \
+      -boot d \
+      -monitor stdio \
+      -nic user,hostfwd=tcp::8890-:80,hostfwd=tcp::1102-:22 \
+      -net nic,macaddr=52:54:00:00:00:01 -net vde \
+      -vnc :2100,password=on
+  \end{minted}
+  \item 以 VNC 連線上去，並且打開 terminal，修改 \texttt{/etc/network/interface} 檔案，加入以下內容：
+  \begin{minted}{bash}
+    auto ens3
+    iface ens3 inet static
+      address 10.0.2.15/24
+      gateway 10.0.2.2
+  \end{minted}
+  \item 使用以下指令重啟網路服務：
+  \begin{minted}{bash}
+    sudo systemctl restart networking
+  \end{minted}
+  \item 建立 ServerA 和 ServerB，我使用先前 Problem 2.1 安裝完的 Debian qcow2 備份檔，複製兩份作為 ServerA 和 ServerB 的 VM，並且使用以下指令開啟 VM：
+  \begin{minted}{bash}
+    qemu-system-x86_64 -enable-kvm -cpu host -m 8G \
+      -drive file=serverA.qcow2,format=qcow2 \
+      -boot d \
+      -monitor stdio \
+      -nic user,hostfwd=tcp::8891-:80,hostfwd=tcp::1103-:22 \
+      -net nic,macaddr=52:54:00:00:00:AA -net vde \
+      -vnc :2200,password=on
+  \end{minted}
+  \vspace{-0.5cm}
+  \begin{minted}{bash}
+    qemu-system-x86_64 -enable-kvm -cpu host -m 8G \
+      -drive file=serverB.qcow2,format=qcow2 \
+      -boot d \
+      -monitor stdio \
+      -nic user,hostfwd=tcp::8892-:80,hostfwd=tcp::1104-:22 \
+      -net nic,macaddr=52:54:00:00:00:BB -net vde \
+      -vnc :2300,password=on
+  \end{minted}
+  \item 對於 serverA 和 serverB，重複步驟 2.
+  \item 在三台機器上分別 ip a，得到其共通內網 ip 分別為：
+  \begin{itemize}
+    \item ServerMain: \texttt{192.168.125.218}
+    \item ServerA: \texttt{192.168.126.131}
+    \item ServerB: \texttt{192.168.126.148}
+  \end{itemize}
+  同時，我在 ServerA 和 ServerB 上使用 \texttt{curl 192.168.125.218}，可以看到 ServerMain 的網頁，代表它們可以互相連線。
+  \item 接著我在 ServerA 和 ServerB 參考 problem 2.1 的步驟安裝 Nginx 和 ufw，並且啟用。
+  \item 使用以下指令，在 ServerA 和 ServerB 上建立一個 index.html 檔案
+  \begin{minted}{bash}
+    # Server A
+    sudo mkdir -p /var/www/html/
+    sudo echo "<p>I am Server A</p>" > /var/www/html/index.html
+    # server B
+    sudo mkdir -p /var/www/html/
+    sudo echo "<p>I am Server B</p>" > /var/www/html/index.html
+  \end{minted}
+  \item 修改 ServerA 和 ServerB 的 Nginx 設定檔，將預設的網頁路徑改成我剛剛建立的資料夾。Nginx 的設定檔在 \texttt{/etc/nginx/conf.d/default.conf}。我找到 \texttt{location /} 的設定，修改如下：
+  \begin{minted}{nginx}
+    location / {
+      root   /var/www/html;
+      index  index.html index.htm;
+    }
+  \end{minted}
+  接著，重啟 Nginx 服務。
+  \begin{minted}{bash}
+    sudo systemctl restart nginx
+  \end{minted}
+  \item 我使用瀏覽器直接連線到 Server A 和 ServerB 的網頁，分別是 \texttt{140.112.91.1:8891} 和 \texttt{140.112.91.1:8892}，可以看到我剛剛建立的網頁。
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{2-5-1.png}
+    \includegraphics[width=0.8\textwidth]{2-5-2.png}
+    \caption{Test by directly connecting to Server A and Server B}
+  \end{figure}
+  \item 回到 ServerMain，設定反向代理，修改設定檔案 \texttt{/etc/nginx/conf.d/default.conf}，在最前面新增以下：
+  \begin{minted}{nginx}
+    upstream serverA {
+      server 192.168.126.131:80;
+      keepalive 16;
+    }
+    upstream serverB {
+      server 192.168.126.148:80;
+      keepalive 16;
+    }
+  \end{minted}
+  \item 接著，我在 \texttt{server} 區塊的設定中，加入以下內容：
+  \begin{minted}{nginx}
+    location /serverA/ {
+      proxy_pass http://serverA/;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /serverB/ {
+          proxy_pass http://serverB/;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+    }
+  \end{minted} 
+  \item 以 \texttt{sudo systemctl restart nginx} 重啟 Nginx 服務。
+  \item 從瀏覽器當中，分別輸入網址 \texttt{http://140.112.91.1:8890/serverA/} 和\\
+   \texttt{http://140.112.91.1:8890/serverB/}，可以看到 Server A 和 Server B 的網頁。
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{2-5-3.png}
+    \includegraphics[width=0.8\textwidth]{2-5-4.png}
+    \caption{Result of Reverse Proxy}
+  \end{figure}
+\end{enumerate}
 
 \subsection{Load Balancing}
+\begin{itemize}
+  \item 將 Server B 的 qcow2 檔案複製一份，並命名為 serverC.qcow2。之後，再以以下指令開啟 VM：
+  \begin{minted}{bash}
+    qemu-system-x86_64 -enable-kvm -cpu host -m 8G \
+      -drive file=serverC.qcow2,format=qcow2 \
+      -boot d \
+      -monitor stdio \
+      -nic user,hostfwd=tcp::8893-:80,hostfwd=tcp::1105-:22 \
+      -net nic,macaddr=52:54:00:00:00:CC -net vde \
+      -vnc :2400,password=on
+  \end{minted}
+  \item 此檔案已經設定完網路，並且安裝和啟用過 Nginx 和 ufw，我使用 \texttt{ip a} 來獲 Server C 在 VDE 網路中的 IP 位址為 \texttt{192.168.126.165}。
+  \item 接著，我去修改 Server C 的 \texttt{/var/www/html/index.html} 檔案，內容如下：
+  \begin{minted}{html}
+    <p>I am Server C</p>
+  \end{minted}
+  之後，並重新啟動 Nginx 服務。
+  \begin{minted}{bash}
+    sudo systemctl restart nginx
+  \end{minted}
+  \item 回到 ServerMain，修改 \texttt{/etc/nginx/conf.d/default.conf} 的設定檔，新增一條 upstream 如下：
+  \begin{minted}{nginx}
+    upstream server {
+        server 192.168.126.131:80 max_fails=3 fail_timeout=30s;
+        server 192.168.126.148:80 max_fails=3 fail_timeout=30s;
+        server 192.168.126.165:80 backup;
+    }
+  \end{minted}
+  \item 接著，我在 \texttt{server} 區塊的設定中，加入以下內容：
+  \begin{minted}{nginx}
+    location /balance/ {
+      proxy_pass http://server/;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+    }
+  \end{minted}
+  \item 以 \texttt{sudo systemctl restart nginx} 重啟 Nginx 服務。
+  \item 完成以上之後，我在瀏覽器中以 \texttt{http://140.112.91.1:8890/balance/} 的方式連線到 ServerMain 上的 Nginx 網頁，可以看到 Server A 的網頁，並且重新整理之後可以看到 Server B 的網頁，可以確認成功設定 Round Robin 負載均衡。
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{2-6-1.png}
+    \includegraphics[width=0.9\textwidth]{2-6-2.png}
+    \caption{Load Balancing Page}
+  \end{figure}
+  \item 我關閉 Server A 和 Server B，再重新整理網頁，等待 30 秒左右之後，會發現 Server C 的網頁會顯示出來。
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{2-6-3.png}
+    \caption{Load Balancing Page}
+  \end{figure}
+\end{itemize}
+
+\section*{Appendix}
+以下附上我在 ServerMain 上的完整 Nginx 設定檔 \texttt{/etc/nginx/conf.d/default.conf} 的內容，包含了每一小題的設定：
+\begin{minted}{nginx}
+upstream server {
+    server 192.168.126.131:80 max_fails=3 fail_timeout=30s;
+    server 192.168.126.148:80 max_fails=3 fail_timeout=30s;
+    server 192.168.126.165:80 backup;
+}
+
+upstream serverA {
+    server 192.168.126.131:80;
+    keepalive 16;
+}
+
+upstream serverB {
+    server 192.168.126.148:80;
+    keepalive 16;
+}
+server {
+    listen       80;
+    server_name  localhost;
+
+    location ~ ^/~(.+?)(/.*)?$ {
+            alias /home/$1/htdocs$2;
+            index  index.html index.htm;
+            autoindex on;
+    }
+
+    location / {
+            root   /var/www/html;
+            index  index.html index.htm;
+    }
+
+    location /forbidden/ {
+            return 403;
+    }
+
+    error_page   403  /403.html;
+    location = /403.html {
+            root    /var/www/html;
+            allow all;
+    }
+
+    location /serverA/{
+            proxy_pass http://serverA/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+    }
+    location /serverB/{
+            proxy_pass http://serverB/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /balance/{
+            proxy_pass http://server/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+            root   /usr/share/nginx/html;
+    }
+}
+
+\end{minted}
 
 
 % -----------------------------------------------------------
