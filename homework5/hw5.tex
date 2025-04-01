@@ -133,7 +133,7 @@
   \item 我連線到工作站上，並且下載 Debian 12.10.0 的 \href{https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.10.0-amd64-netinst.iso}{netinst.iso} 安裝檔案。
   \item 使用 \texttt{qemu-img} 建立一個 16GB 的 qcow2 磁碟檔案。
   \begin{minted}{bash}
-    qemu-img create -f qcow2 debian.qcow 16G
+    qemu-img create -f qcow2 debian.qcow2 16G
   \end{minted}
   \item 使用 \texttt{qemu-system-x86\_64} 開啟虛擬機器。連線到 port 7000 後，安裝 Debian 12。
   \begin{minted}{bash}
