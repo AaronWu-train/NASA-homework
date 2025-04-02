@@ -104,7 +104,7 @@
 \begin{mycolorbox}[cyan]
   \textbf{Discussion Partners:}
   \begin{itemize}
-    \item Classmates：賴泓安、鄭竣陽、喻慈恩、陳澔樂
+    \item Classmates：賴泓安、鄭竣陽、喻慈恩
       \vspace{0.5em}
   \end{itemize}
 \end{mycolorbox}
@@ -113,12 +113,115 @@
 %    Problem 1
 % ------------------------------------------------------------
 \section{Short Answers}
+
+\subsection{Web server}
 \begin{mycolorbox}[teal]
   \textbf{References:}
+  \footnotesize
   \begin{itemize}
-    \item 
+    \item \href{https://www.quora.com/What-is-the-difference-between-a-static-web-server-and-a-dynamic-web-server}{What is the difference between a static web server and a dynamic web server? - Quora}
+    \item \href{https://www.jyt0532.com/2019/11/18/proxy-reverse-proxy/}{系統設計 - 正向代理跟反向代理 - JYT0532}
+    \item \href{https://www.pressplay.cc/project/F720CEB1D6057D7ABB5614722AB18FFF/articles/660A57208C29FF94453548ED21F284EF}{用人類語言跟你說甚麼是正向代理和反向代理}
+    \item \href{https://aws.amazon.com/what-is/load-balancing/}{What is Load Balancing? - AWS}
   \end{itemize}
 \end{mycolorbox}
+\begin{problem}{1.1 (a)}
+  以下為 Static Web Server 和 Dynamic Web Server 的差異：
+  \begin{itemize}
+    \item Static Web Server 是用來架設靜態網頁的伺服器，通常是用來提供靜態檔案，包含 HTML、CSS、JavaScript、圖片、影片等。它的主要功能是將這些靜態檔案傳送給客戶端，並不需要進行任何的運算或處理。常見的 Static Web Server 包含 Apache、Nginx、Microsoft IIS 等等。
+    \item Dynamic Web Server 則是用來架設動態網頁的伺服器，他會根據 Client 端不同的請求，來進行一些後端的運算處理，並且將運算的結果傳送給 Client 端。這些運算處理通常是由後端的程式語言來完成，例如 PHP、Python、Ruby 等等。
+    \item Static Web Server 特點：速度快、資源消耗少、容易擴展或部署到 CDN 上。
+    \item Dynamic Web Server 特點：速度較慢、可以和資料庫或是 API 進行互動、可以根據使用者的請求來產生不同的內容。
+  \end{itemize}
+\end{problem}
+
+\begin{problem}{1.1 (b)} 　
+\begin{itemize}
+  \item 正向代理（Forward Proxy）是指 Client 端向 Proxy Server 發送請求，然後由Proxy Server 將請求轉發到目標伺服器，並將目標伺服器的回應傳回給 Client。正向代理通常用於隱藏 Client 的 IP 位址、過濾內容、加速網頁載入等。
+  \item 反向代理（Reverse Proxy）是指有多台 Server 端，當 Client 發送請求時，Proxy Server 會根據請求的內容，將請求轉發到不同的 Server 上，並將 Server 的回應傳回給 Client。反向代理通常用於負載平衡、Caching 等。
+  \item 使用 Proxy 的好處在於可以透過 Caching 等技術，來加快網路存取，並且減少 Server 的負擔。Proxy 也可以用來隱藏 Client 或 Server 的 IP 位址，並且可以過濾不必要的內容。
+\end{itemize}
+\end{problem}
+
+\begin{problem}{1.1 (c)} 　
+  \begin{itemize}
+  \item 在現代的網路當中，伺服器的流量皆非常龐大，如果所有 Client 的請求都直接發送到 Server 上，會造成 Server 的負擔過重。因此，Load Balance 的概念就是將 Client 的請求分散到多台 Server 上，讓每台 Server 的負擔都能夠平均分配。這樣不僅可以提高 Server 的效能，還可以避免單一 Server 故障造成整個系統的癱瘓。
+  \item 常見的 Load Balance 方法包含 Round-robin、Least Connections、IP Hash 等等。
+  \end{itemize}
+\end{problem}
+
+\subsection{C10k}
+\begin{mycolorbox}[teal]
+  \textbf{References:}  
+  \footnotesize
+  \begin{itemize}
+    \item \href{https://www.site24x7.com/learn/web-server/apache-vs-nginx-web-server.html}{Apache vs. Nginx A Definitive Comparison}
+    \item \href{https://medium.com/@caophuc799/nginx-architecture-and-why-can-nginx-handle-thousands-of-requests-concurrently-b8686b558f86}{Nginx Architecture and Why Can Nginx Handle Thousands of Requests Concurrently}
+    \item \href{https://unix.stackexchange.com/questions/134301/why-does-nginx-starts-process-as-root}{Why does Nginx starts process as root? - Unix Stack Exchange}
+  \end{itemize}
+\end{mycolorbox}
+
+\begin{problem}{1.2 (a)} 　
+  \begin{itemize}
+    \item Apache 的 process-based architecture 使用的是一個多執行緒的方式，當收到一筆 Request 時，Apache 會為這個 Request 建立一個新的執行緒來處理，這樣的方式會造成每個 Request 都需要分配一個新的執行緒。因此，當同時有大量的 Request 時，會造成系統資源浪費。
+    \item 而 Nginx 的 event-driven architecture 則是使用非同步的方式來處理 Request，當收到一筆 Request 時，Nginx 會將這個 Request 加入到 Event Queue 中，然後使用幾個固定數量 worker processes 來非同步的處理所有的 Request。因此，Nginx 總共的執行緒數量是固定的，這樣可以減少系統資源的浪費並且保持高效率。
+  \end{itemize}
+\end{problem}
+
+\begin{problem}{1.2 (b)} 　
+  \begin{itemize}
+    \item Master Process 會負責 listen client 的 requests，並且透過監控各個 worker process 的狀態來決定要將連線分配給哪一個 worker process。同時， Master Process 也會負責處理設定檔、以及決定是否要新增、刪除或重啟 worker process。
+    \item Worker Process 會負責處理 client 的 requests，並且將處理的結果回傳給 client。每一個 worker process 都是獨立的一個執行緒，彼此之間不會互相影響。
+  \end{itemize}
+\end{problem}
+
+\begin{problem}{1.2 (c)}
+  為了要能在 1024 以下的 port 上監聽 client 的 requests， Nginx 的 Master Process 預設需要以 \texttt{root} 身份來啟動。而 worker process 則是以非 root 的使用者 \texttt{www-data} 來啟動。
+\end{problem}
+
+\subsection{憑證}
+\begin{mycolorbox}[teal]
+  \textbf{References:}
+  \footnotesize
+  \begin{itemize}
+    \item \url{https://www.dottedsign.com/zh-tw/blog/product/pki}
+    \item \href{https://zh.wikipedia.org/zh-tw/%E5%85%AC%E9%96%8B%E9%87%91%E9%91%B0%E5%9F%BA%E7%A4%8E%E5%BB%BA%E8%A8%AD}{公開金鑰基礎建設 - 維基百科}
+    \item \href{https://zh.wikipedia.org/wiki/%E5%82%B3%E8%BC%B8%E5%B1%A4%E5%AE%89%E5%85%A8%E6%80%A7%E5%8D%94%E5%AE%9A}{傳輸層安全性協定 - 維基百科}
+    \item \href{https://chenhao2020.github.io/%E7%A7%91%E5%AD%A6%E6%8A%80%E6%9C%AF/%E4%BB%80%E4%B9%88%E6%98%AF%20ACME%20%E5%8D%8F%E8%AE%AE/}{什麼是 ACME 協議，它是如何工作的？}
+    \item \url{https://docs.nginx.com/nginx/admin-guide/security-controls/terminating-ssl-http/}
+    \item \href{https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/#passing-request-headers}{Passing Request Headers - Nginx}
+    \item \href{https://www.f5.com/glossary/ssl-termination}{What is SSL Termination?}
+  \end{itemize}
+\end{mycolorbox}
+
+\begin{problem}{1.3 (a)}
+  PKI為公開金鑰基礎建設的簡稱，是一套完整的架構，用於建立與管理數位憑證。在此架構中，CA負責簽發數位憑證，將使用者與其公鑰憑證建立信任關係，並驗證憑證的有效性與真實性。而 TLS 則是一種專門用於加密網路傳輸的協定，其安全性依賴於由 PKI 簽發的數位憑證。在 TLS 握手過程中，伺服器會將經過 CA 認證的數位憑證發送給對端，用以進行身份驗證，進而協商出安全且加密的通訊通道。
+\end{problem}
+
+\begin{problem}{1.3 (b)}
+  ACME 是一種自動化的憑證管理協定，主要用於簡化數位憑證的申請、驗證、簽發和更新過程。ACME 協定的工作流程如下：
+  \begin{enumerate}
+    \item 客戶端向 CA 提出憑證簽發請求，並提供所需的域名資訊。
+    \item CA 會生成一個挑戰，要求客戶端證明其對該域名的控制權。常見的挑戰類型有許多種，以 \texttt{Let's Encrypt} 來說，挑戰的類型包含 \texttt{HTTP-01} 和 \texttt{DNS-01}。
+    \item 客戶端根據 CA 提供的挑戰資訊，進行相應的驗證操作，例如在指定的網址上放置特定的檔案，或是在 DNS 紀錄中加上指定的 TXT 紀錄。
+    \item CA 驗證客戶端的回應是否正確，若正確則簽發數位憑證。
+    \item 客戶端獲得數位憑證後，可以將其安裝到伺服器上，並開始使用 HTTPS 加密通訊。
+  \end{enumerate}
+  目前常見的 ACME 客戶端有 \texttt{Certbot}、\texttt{acme.sh} 等等。
+\end{problem}
+
+\begin{problem}{1.3 (c)}
+
+  若以 IP 位址簽發憑證，一旦伺服器的 IP 位址發生變更，就得要重新簽憑證，這將導致管理上的不便。再者，DHCP、反向代理等技術或是伺服器配指的調整均可能引起 IP 位址的變動，進一步影響憑證的有效性。相較之下，網域名稱具有相對穩定的特性，且可透過 DNS 將其解析至正確的 IP 位址，從而避免因 IP 位址變動而導致憑證失效的問題。此外，在購買網域的過程中，使用者通常需要提供姓名、地址、電話等個人資訊，這些資料會被註冊商記錄於 WHOIS 資料庫中，進一步增強使用者身份的可信度。同時，使用者在辨識網站時多以網域名稱作為身份標識。因此，整體來說，使用網域名稱簽發憑證比用 IP 位址更好。
+
+\end{problem}
+
+\begin{problem}{1.3 (d)}
+  SSL termination 指的是將 HTTPS 的連線在負載平衡器或反向代理伺服器解密，並且在內部改以 HTTP 的方式進行通訊。而在 Nginx 上，會透過反向代理時以以下指令新增標頭的方式來告訴內部的伺服器，原本的請求是 HTTPS 的連線：
+  \begin{minted}{nginx}
+    proxy_set_header X-Forwarded-Proto $scheme;
+  \end{minted}
+\end{problem}
 
 \clearpage
 % ------------------------------------------------------------
