@@ -117,7 +117,7 @@
 % Problem 1-1
 \subsection{Install Debian and PowerDNS}
 \begin{mycolorbox}[teal]
-  \textbf{Reference:} 
+  \textbf{Reference:}
   \footnotesize
   \begin{itemize}
     \item \url{https://wiki.debian.org/QEMU}
@@ -132,168 +132,167 @@
 \begin{enumerate}
   \item 我連線到工作站上，並且下載 Debian 12.10.0 的 \href{https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.10.0-amd64-netinst.iso}{netinst.iso} 安裝檔案。
   \item 使用 \texttt{qemu-img} 建立一個 16GB 的 qcow2 磁碟檔案。
-  \begin{minted}{bash}
-    qemu-img create -f qcow2 debian.qcow2 16G
-  \end{minted}
+\begin{minted}{bash}
+  qemu-img create -f qcow2 debian.qcow2 16G
+\end{minted}
   \item 使用 \texttt{qemu-system-x86\_64} 開啟虛擬機器。連線到 port 7000 後，安裝 Debian 12。
-  \begin{minted}{bash}
-    qemu-system-x86_64 \
-      -enable-kvm \
-      -m 2048 \
-      -smp 2 \
-      -cpu host \
-      -cdrom debian-12.10.0-amd64-netinst.iso \
-      -drive file=debian.qcow2 \
-      -boot d \
-      -net nic -net user \
-      -vnc :1100
-  \end{minted}
+\begin{minted}{bash}
+  qemu-system-x86_64 \
+    -enable-kvm \
+    -m 2048 \
+    -smp 2 \
+    -cpu host \
+    -cdrom debian-12.10.0-amd64-netinst.iso \
+    -drive file=debian.qcow2 \
+    -boot d \
+    -net nic -net user \
+    -vnc :1100
+\end{minted}
   \item 在安裝精靈當中，我設定 Hostname 為 \texttt{debian}，User name、Root password 以及 User password 為我的學號，Debian Archive Mirror 為 \texttt{debian.csie.ntu.edu.tw}，並且選擇安裝 gnome desktop、SSH server 和 Standard system utilities。其餘選項以及 Grub 設定我都使用預設值。
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\textwidth]{1-1-1.png}
-    \caption{Debian 安裝精靈}
-  \end{figure}
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\textwidth]{1-1-2.png}
-    \caption{完成 Debian 安裝}
-  \end{figure}
-
-  \item 安裝完成後，我關閉虛擬機器，並且參考 Homework 2，建立一份 \texttt{run\_vm.sh} 作為開啟虛擬機器的 Shell Script。這個腳本會開啟虛擬機器，並且將 VNC 連線的 port 設定為 7000，SSH 的 port 設定為 4321。在 \texttt{change vnc password} 之後，就可以透過 VNC 連線到虛擬機器，並且使用 SSH 連線到虛擬機器。
-  \begin{minted}{bash}
-    #!/bin/bash
-    qemu-system-x86_64 \
-      -enable-kvm \
-      -vnc :1100, password=on \
-      -monitor stdio \
-      -m 2048 \
-      -smp 2 \
-      -cpu host \
-      -drive file=debian.qcow2 \
-      -boot d \
-      -net nic -net user,hostfwd=tcp::4321-:22
-  \end{minted}
-  
-  \item 在工作站上，使用 \texttt{ssh b13901011@localhost -p 4321} 連線到虛擬機器，並且輸入 \texttt{su -} 進入 root 權限。
-  \item 執行以下指令安裝必要的套件。
-  \begin{minted}{bash}
-    apt update
-    apt upgrade -y
-    apt install -y sudo vim git curl wget net-tools libpq-dev neofetch
-  \end{minted}
-  \item 將我的使用者加入 sudo 群組。
-  \begin{minted}{bash}
-    usermod -aG sudo b13901011
-  \end{minted}
-  \item 安裝 MariaDB。
-  \begin{minted}{bash}
-    sudo apt install mariadb-server mariadb-client
-    sudo systemctl start mariadb
-    sudo systemctl enable mariadb
-  \end{minted}
-  \item 以 \texttt{sudo mysql -u root} 登入 MariaDB，並且執行以下指令：
-  \begin{minted}{sql}
-    CREATE DATABASE powerdns;
-    GRANT ALL ON powerdns.* TO 'powerdns_user'@'%' IDENTIFIED BY 'b13901011';
-    FLUSH PRIVILEGES;
-    EXIT;
-  \end{minted}
-  \item 停止 systemd-resolved 服務
-  \begin{minted}{bash}
-    sudo systemctl stop systemd-resolved
-    sudo systemctl disable systemd-resolved
-  \end{minted}
-  \item 修改 DNS 設定檔案 \texttt{/etc/resolv.conf} 的內容：
-  \begin{minted}{bash}
-    sudo unlink /etc/resolv.conf
-    sudo vim /etc/resolv.conf
-  \end{minted}
-  \vspace{-0.5cm}
-  \begin{minted}{bash}
-    # /etc/resolv.conf
-    nameserver 8.8.8.8
-    nameserver 8.8.4.4
-  \end{minted}
-  \item 加上指定版本的 Repository： \\
-  修改 \texttt{/etc/apt/sources.list.d/pdns.list} 的內容，新增如下：
-  \begin{minted}{bash}
-    deb [signed-by=/etc/apt/keyrings/auth-49-pub.asc] http://repo.powerdns.com/debian bookworm-auth-49 main
-  \end{minted}
-  修改 \texttt{/etc/apt/preferences.d/auth-49} 的內容，新增如下：
-  \begin{minted}{bash}
-    Package: auth*
-    Pin: origin repo.powerdns.com
-    Pin-Priority: 600
-  \end{minted}
-  
-  並且安裝 PowerDNS。
-  \begin{minted}{bash}
-    sudo install -d /etc/apt/keyrings; 
-    curl https://repo.powerdns.com/FD380FBB-pub.asc | sudo tee /etc/apt/keyrings/auth-49-pub.asc &&
-    sudo apt-get update &&
-    sudo apt-get install pdns-server pdns-backend-mysql 
-  \end{minted}
-  \item Import PowerDNS database schemas to MariaDB
-  \begin{minted}{bash}
-  mysql -u powerdns_user -p powerdns < /usr/share/pdns-backend-mysql/schema/schema.mysql.sql
-  \end{minted}
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\textwidth]{1-1-3.png}
-    \caption{powerdns database schemas}
-  \end{figure}
-  \item 修改 PowerDNS 設定檔案 \texttt{/etc/powerdns/pdns.conf} 的內容，新增如下：
-  \begin{minted}{bash}
-    #################################
-    # local-port    The port on which we listen
-    #
-    local-port=5301
-  \end{minted}
-  \item 新增一個檔案 \texttt{/etc/powerdns/pdns.d/pdns.local.gmysql.conf} 存放 powerdns 的 database 相關設定，內容如下：
-  \begin{minted}{bash}
-    # MySQL Configuration
-    # Launch gmysql backend
-    launch+=gmysql
-    # gmysql parameters
-    gmysql-host=127.0.0.1
-    gmysql-port=3306
-    gmysql-dbname=powerdns
-    gmysql-user=powerdns_user
-    gmysql-password=b13901011
-    gmysql-dnssec=yes
-    # gmysql-socket=
-  \end{minted}
-  \item 修改設定檔案的權限：
-  \begin{minted}{bash}
-    sudo chown pdns: /etc/powerdns/pdns.d/pdns.local.gmysql.conf
-    sudo chmod 640 /etc/powerdns/pdns.d/pdns.local.gmysql.conf
-  \end{minted}
-  \item 測試 PowerDNS 是否能正常運作：
-  \begin{minted}{bash}
-    sudo systemctl stop pdns.service
-    sudo pdns_server --daemon=no --guardian=no --loglevel=9
-  \end{minted}
-  \vspace{-0.3cm}
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{1-1-4.png}
-    \caption{PowerDNS 測試}
-  \end{figure}
-  \item 確認沒問題後，重新啟動 PowerDNS 服務，並且截圖題目要求的畫面。
-  \begin{minted}{bash}
-    sudo systemctl restart pdns
-    sudo systemctl enable pdns
-  \end{minted}
-  \begin{mycolorbox}[green]
-    \textbf{Answer:} \\
-    \vspace{-1cm}
     \begin{figure}[H]
       \centering
-      \includegraphics[width=0.69\textwidth]{1-1-5.png}
-      \caption{\texttt{dig @localhost -p 5301} 以及 \texttt{pdns\_control version} 結果}
+      \includegraphics[width=0.7\textwidth]{1-1-1.png}
+      \caption{Debian 安裝精靈}
     \end{figure}
-  \end{mycolorbox}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.7\textwidth]{1-1-2.png}
+      \caption{完成 Debian 安裝}
+    \end{figure}
+
+  \item 安裝完成後，我關閉虛擬機器，並且參考 Homework 2，建立一份 \texttt{run\_vm.sh} 作為開啟虛擬機器的 Shell Script。這個腳本會開啟虛擬機器，並且將 VNC 連線的 port 設定為 7000，SSH 的 port 設定為 4321。在 \texttt{change vnc password} 之後，就可以透過 VNC 連線到虛擬機器，並且使用 SSH 連線到虛擬機器。
+\begin{minted}{bash}
+  #!/bin/bash
+  qemu-system-x86_64 \
+    -enable-kvm \
+    -vnc :1100, password=on \
+    -monitor stdio \
+    -m 2048 \
+    -smp 2 \
+    -cpu host \
+    -drive file=debian.qcow2 \
+    -boot d \
+    -net nic -net user,hostfwd=tcp::4321-:22
+\end{minted}
+
+  \item 在工作站上，使用 \texttt{ssh b13901011@localhost -p 4321} 連線到虛擬機器，並且輸入 \texttt{su -} 進入 root 權限。
+  \item 執行以下指令安裝必要的套件。
+\begin{minted}{bash}
+  apt update
+  apt upgrade -y
+  apt install -y sudo vim git curl wget net-tools libpq-dev neofetch
+\end{minted}
+  \item 將我的使用者加入 sudo 群組。
+\begin{minted}{bash}
+  usermod -aG sudo b13901011
+\end{minted}
+  \item 安裝 MariaDB。
+\begin{minted}{bash}
+  sudo apt install mariadb-server mariadb-client
+  sudo systemctl start mariadb
+  sudo systemctl enable mariadb
+\end{minted}
+  \item 以 \texttt{sudo mysql -u root} 登入 MariaDB，並且執行以下指令：
+\begin{minted}{sql}
+  CREATE DATABASE powerdns;
+  GRANT ALL ON powerdns.* TO 'powerdns_user'@'%' IDENTIFIED BY 'b13901011';
+  FLUSH PRIVILEGES;
+  EXIT;
+\end{minted}
+  \item 停止 systemd-resolved 服務
+\begin{minted}{bash}
+  sudo systemctl stop systemd-resolved
+  sudo systemctl disable systemd-resolved
+\end{minted}
+  \item 修改 DNS 設定檔案 \texttt{/etc/resolv.conf} 的內容：
+\begin{minted}{bash}
+  sudo unlink /etc/resolv.conf
+  sudo vim /etc/resolv.conf
+\end{minted}
+    \vspace{-0.5cm}
+\begin{minted}{bash}
+  # /etc/resolv.conf
+  nameserver 8.8.8.8
+  nameserver 8.8.4.4
+\end{minted}
+  \item 加上指定版本的 Repository： \\
+    修改 \texttt{/etc/apt/sources.list.d/pdns.list} 的內容，新增如下：
+\begin{minted}{bash}
+  deb [signed-by=/etc/apt/keyrings/auth-49-pub.asc] http://repo.powerdns.com/debian bookworm-auth-49 main
+\end{minted}
+    修改 \texttt{/etc/apt/preferences.d/auth-49} 的內容，新增如下：
+\begin{minted}{bash}
+  Package: auth*
+  Pin: origin repo.powerdns.com
+  Pin-Priority: 600
+\end{minted}
+    並且安裝 PowerDNS。
+\begin{minted}{bash}
+  sudo install -d /etc/apt/keyrings;
+  curl https://repo.powerdns.com/FD380FBB-pub.asc | sudo tee /etc/apt/keyrings/auth-49-pub.asc &&
+  sudo apt-get update &&
+  sudo apt-get install pdns-server pdns-backend-mysql
+\end{minted}
+  \item Import PowerDNS database schemas to MariaDB
+\begin{minted}{bash}
+mysql -u powerdns_user -p powerdns < /usr/share/pdns-backend-mysql/schema/schema.mysql.sql
+\end{minted}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.5\textwidth]{1-1-3.png}
+      \caption{powerdns database schemas}
+    \end{figure}
+  \item 修改 PowerDNS 設定檔案 \texttt{/etc/powerdns/pdns.conf} 的內容，新增如下：
+\begin{minted}{bash}
+  #################################
+  # local-port    The port on which we listen
+  #
+  local-port=5301
+\end{minted}
+  \item 新增一個檔案 \texttt{/etc/powerdns/pdns.d/pdns.local.gmysql.conf} 存放 powerdns 的 database 相關設定，內容如下：
+\begin{minted}{bash}
+  # MySQL Configuration
+  # Launch gmysql backend
+  launch+=gmysql
+  # gmysql parameters
+  gmysql-host=127.0.0.1
+  gmysql-port=3306
+  gmysql-dbname=powerdns
+  gmysql-user=powerdns_user
+  gmysql-password=b13901011
+  gmysql-dnssec=yes
+  # gmysql-socket=
+\end{minted}
+  \item 修改設定檔案的權限：
+\begin{minted}{bash}
+  sudo chown pdns: /etc/powerdns/pdns.d/pdns.local.gmysql.conf
+  sudo chmod 640 /etc/powerdns/pdns.d/pdns.local.gmysql.conf
+\end{minted}
+  \item 測試 PowerDNS 是否能正常運作：
+\begin{minted}{bash}
+  sudo systemctl stop pdns.service
+  sudo pdns_server --daemon=no --guardian=no --loglevel=9
+\end{minted}
+    \vspace{-0.3cm}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=\textwidth]{1-1-4.png}
+      \caption{PowerDNS 測試}
+    \end{figure}
+  \item 確認沒問題後，重新啟動 PowerDNS 服務，並且截圖題目要求的畫面。
+\begin{minted}{bash}
+  sudo systemctl restart pdns
+  sudo systemctl enable pdns
+\end{minted}
+    \begin{mycolorbox}[green]
+      \textbf{Answer:} \\
+      \vspace{-1cm}
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.69\textwidth]{1-1-5.png}
+        \caption{\texttt{dig @localhost -p 5301} 以及 \texttt{pdns\_control version} 結果}
+      \end{figure}
+    \end{mycolorbox}
 \end{enumerate}
 
 % Problem 1-2
@@ -367,7 +366,7 @@
   \item 我使用 vnc 連線到虛擬機器，並且使用瀏覽器開啟 \texttt{http://localhost:9191}，然後註冊一組帳號密碼，並且登入 PowerDNS Admin。
   \item 登入 PowerDNS Admin 之後，會進入 Server Settings 頁面，在左側 Settings Editor 當中， PowerDNS Server 填寫 \texttt{http://10.0.2.15:8081/}，API Key 填寫 \texttt{b13901011}，PowerDNS Version 填寫 \texttt{4.9.4}，然後按下 Save 按鈕。之後，我進到 Profile 頁面，並截圖。
   \begin{mycolorbox}[green]
-    \textbf{Answer:} 
+    \textbf{Answer:}
     \vspace{-0.5cm}
     \begin{figure}[H]
       \centering
@@ -390,58 +389,58 @@
 \end{mycolorbox}
 \begin{enumerate}
   \item 在虛擬機器上安裝 Nginx。
-  \begin{minted}{bash}
-    sudo apt install nginx
-    sudo systemctl start nginx
-    sudo systemctl enable nginx
-  \end{minted}
+\begin{minted}{bash}
+  sudo apt install nginx
+  sudo systemctl start nginx
+  sudo systemctl enable nginx
+\end{minted}
   \item 移除預設的 Nginx 設定檔案。
-  \begin{minted}{bash}
-    sudo unlink /etc/nginx/sites-enabled/default
-  \end{minted}
+\begin{minted}{bash}
+  sudo unlink /etc/nginx/sites-enabled/default
+\end{minted}
   \item 新增一個 Nginx 設定檔案 \texttt{/etc/nginx/conf.d/powerdnsadmin.conf}，內容如下：
-  \begin{minted}{nginx}
-    upstream powerdnsadmin {
-        server 0.0.0.0:9191;
-        keepalive 16;
-    }
-    server {
-        listen 80 default_server;
-        listen [::]:80 default_server;
-        server_name b13901011.com;
-        location / {
-            proxy_pass http://powerdnsadmin/;
-            proxy_http_version 1.1;
-            proxy_set_header Host $http_host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto https;
-        }
-    }
-  \end{minted}
+\begin{minted}{nginx}
+  upstream powerdnsadmin {
+      server 0.0.0.0:9191;
+      keepalive 16;
+  }
+  server {
+      listen 80 default_server;
+      listen [::]:80 default_server;
+      server_name b13901011.com;
+      location / {
+          proxy_pass http://powerdnsadmin/;
+          proxy_http_version 1.1;
+          proxy_set_header Host $http_host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto https;
+      }
+  }
+\end{minted}
   \item 修改 Nginx 的設定檔案權限：
-  \begin{minted}{bash}
-    sudo chown root: /etc/nginx/conf.d/powerdnsadmin.conf
-    sudo chmod 644 /etc/nginx/conf.d/powerdnsadmin.conf
-  \end{minted}
+\begin{minted}{bash}
+  sudo chown root: /etc/nginx/conf.d/powerdnsadmin.conf
+  sudo chmod 644 /etc/nginx/conf.d/powerdnsadmin.conf
+\end{minted}
   \item 重新啟動 Nginx 服務：
-  \begin{minted}{bash}
-    sudo systemctl restart nginx
-  \end{minted}
+\begin{minted}{bash}
+  sudo systemctl restart nginx
+\end{minted}
   \item 修改 \texttt{/etc/hosts} ，新增以下的內容，使得 \texttt{b13901011.com} 能夠暫時被解析到 localhost。
-  \begin{minted}{bash}
-    127.0.1.1       b13901011.com
-  \end{minted}
+\begin{minted}{bash}
+  127.0.1.1       b13901011.com
+\end{minted}
   \item 以 vnc 連線到虛擬機器，並且使用瀏覽器開啟 \texttt{http://b13901011.com}，然後截圖。
 
-  \begin{mycolorbox}[green]
-    \textbf{Answer:} 
-    \begin{figure}[H]
-      \centering
-      \includegraphics[width=\textwidth]{1-3-1.png}
-      \caption{以瀏覽器開啟 \texttt{http://b13901011.com} 的畫面}
-    \end{figure}
-  \end{mycolorbox}
+    \begin{mycolorbox}[green]
+      \textbf{Answer:}
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=\textwidth]{1-3-1.png}
+        \caption{以瀏覽器開啟 \texttt{http://b13901011.com} 的畫面}
+      \end{figure}
+    \end{mycolorbox}
 \end{enumerate}
 
 % Problem 1-4
@@ -459,7 +458,7 @@
   \item 新增題目所要求的紀錄，並且截圖。
 \end{enumerate}
 \begin{mycolorbox}[green]
-  \textbf{Answer:} 
+  \textbf{Answer:}
   \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{1-4-1.png}
@@ -508,7 +507,7 @@
   \end{figure}
 \end{mycolorbox}
 
-\subsection{DNSSEC} 
+\subsection{DNSSEC}
 \begin{mycolorbox}[teal]
   \textbf{Reference:}
   \footnotesize
@@ -519,16 +518,16 @@
 \begin{enumerate}
   \item DNSSEC 是一種透過信任以及數位簽章來驗證 DNS 資料的完整性和真實性的技術。他的核心目的在於確保使用者取得的 DNS 資料來自合法來源且未遭篡改。首先，每一個 Zone 都會有一個公鑰和私鑰的組合。當 DNS 紀錄被簽署時，會產生一個數位簽章，這個簽章會附加在 DNS 回應中。當使用者查詢 DNS 紀錄時，DNS 伺服器會提供這個簽章以及對應的公鑰。使用者的 DNS 客戶端可以使用這個公鑰來驗證簽章的有效性，從而確保回應的完整性和真實性。另外，DNSSEC 建立了一個由 Root Domain 開始的信任鏈，因此當使用者查詢一個子域名時，DNS 客戶端可以驗證這個子域名的簽章是否由上層域名簽署。
   \item 在 PowerDns Admin 當中，進入 Dashboard 頁面，點擊 \texttt{cscat.tw} 這個 Zone 的\texttt{DNSSEC} 按鈕，即可完成 DNSSEC 的設定。
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.88\textwidth]{1-5-1.png}
-    \caption{PowerDNS Admin DNSSEC 設定}
-  \end{figure}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.88\textwidth]{1-5-1.png}
+      \caption{PowerDNS Admin DNSSEC 設定}
+    \end{figure}
 \end{enumerate}
 \vspace{-0.5cm}
 
 \begin{mycolorbox}[green]
-  \textbf{Answer:} 
+  \textbf{Answer:}
   \begin{figure}[H]
     \centering
     \includegraphics[width=0.95\textwidth]{1-5-2.png}
@@ -539,8 +538,221 @@
 \clearpage
 \section{PowerDNS Recursor}
 
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item \url{https://www.cloudns.net/blog/authoritative-dns-server/}
+    \item \url{https://www.cloudflare.com/zh-tw/learning/dns/what-is-recursive-dns/}
+    \item \url{https://repo.powerdns.com/}
+    \item \url{https://doc.powerdns.com/recursor/getting-started.html}
+    \item \url{https://doc.powerdns.com/recursor/settings.html}
+    \item \url{https://www.cloudflare.com/zh-tw/learning/dns/common-dns-issues/}
+    \item \url{https://www.cloudflare.com/zh-tw/learning/dns/dns-cache-poisoning/}
+    \item \url{https://www.cloudflare.com/zh-tw/learning/ddos/dns-amplification-ddos-attack/}
+  \end{itemize}
+\end{mycolorbox}
+
+\setcounter{subsection}{-1}
+\subsection{Basic}
+\begin{problem}{2.0.1}
+  Authoritive server 指的是實際儲存一條 DNS 紀錄的最終伺服器。在 DNS 查詢過程中，會透過 root 伺服器、TLD 伺服器一路遞迴到最終的 Authoritive server 來獲取最終的 DNS 紀錄。
+\end{problem}
+
+\begin{problem}{2.0.2}
+  Recursive DNS query 指的是當使用者請求時，DNS server 若不是該網址的 Authoritive server，則 DNS server 會向其他 DNS server 遞迴查詢該網址的 Authoritive server，直到獲取最終的 DNS 紀錄為止。而 Iterative DNS query 則是當使用者請求時，DNS server 會直接回傳該網址的 Authoritive server 的 IP 位址給使用者自己再去查詢，並不會遞迴查詢該網址的 Authoritive server。 Recursive DNS query 在長期來說，因為可以快取 DNS 紀錄，所以會比 Iterative DNS query 更有效率。
+\end{problem}
+
+\subsection{Setting up PowerDNS Recursor}
+\begin{problem}{2.1.1} 以下為我在虛擬機器上安裝 PowerDNS Recursor 的步驟：
+  \begin{enumerate}
+    \item 根據 PowerDNS Recursor 的官方說明，更新 \texttt{PowerDNS Recursor 5.2.X} 的 Repository，並且安裝 PowerDNS Recursor:
+      \begin{enumerate}
+        \item 修改 \texttt{/etc/apt/sources.list.d/pdns.list} 的內容，新增如下：
+    \begin{minted}{bash}
+      deb [signed-by=/etc/apt/keyrings/rec-52-pub.asc] http://repo.powerdns.com/debian bookworm-rec-52 main
+    \end{minted}
+        \item 修改 \texttt{/etc/apt/preferences.d/rec-52} 的內容，新增如下：
+    \begin{minted}{bash}
+      Package: rec*
+      Pin: origin repo.powerdns.com
+      Pin-Priority: 600
+    \end{minted}
+        \item 執行以下指令安裝 PowerDNS Recursor：
+    \begin{minted}{bash}
+      sudo install -d /etc/apt/keyrings;
+      curl https://repo.powerdns.com/FD380FBB-pub.asc |
+        sudo tee /etc/apt/keyrings/rec-52-pub.asc &&
+        sudo apt-get update &&
+        sudo apt-get install pdns-recursor
+    \end{minted}
+      \end{enumerate}
+    \item 修改 \texttt{/etc/powerdns/recursor.conf} 的內容成以下：
+  \begin{minted}{yaml}
+    incoming:
+      port: 10053
+      listen:
+        - 127.0.0.1
+
+    packetcache:
+      ttl: 300
+
+    dnssec:
+      validation: validate
+
+    recursor:
+      forward_zones_file: /etc/powerdns/forward
+  \end{minted}
+    \item 新增一個檔案 \texttt{/etc/powerdns/forward}，內容如下：
+  \begin{minted}{yaml}
+    cscat.tw=127.0.0.1:5301
+    +.=8.8.8.8
+  \end{minted}
+    \item 啟動 PowerDNS Recursor 服務：
+  \begin{minted}{bash}
+    sudo systemctl start pdns-recursor
+    sudo systemctl enable pdns-recursor
+  \end{minted}
+  \end{enumerate}
+\end{problem}
+
+\clearpage
+\begin{problem}{2.1.2} 以下為結果截圖：
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{2-1-2.png}
+    \caption{\texttt{dig @localhost -p 10053 google.com} 的結果}
+  \end{figure}
+\end{problem}
+
+\begin{problem}{2.1.3} 以下為結果截圖：
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{2-1-3.png}
+    \caption{\texttt{dig @localhost -p 10053 cscat.tw} 的結果}
+  \end{figure}
+  其中，會顯示 SERVFAIL 的原因推測是因為我在 \texttt{recursor.conf} 的設定檔當中，將 \texttt{dnssec} \texttt{validation} 設定為 \texttt{validate}，但我現在尚未設定任何 DNSSEC 簽章，所以會顯示 SERVFAIL 的錯誤訊息。
+\end{problem}
+
+\begin{problem}{2.1.4} 　
+  \begin{enumerate}
+    \item 使用 \texttt{pdnsutil show-zone cscat.tw} 指令，顯示 cscat.tw 的 DS 紀錄。
+    \item 修改 \texttt{/etc/powerdns/recursor.conf} 的 \texttt{dnssec} 段落內容，加入回傳的結果：
+    \begin{minted}{yaml}
+      dnssec:
+        validation: validate
+        trustanchors:
+          - name: "cscat.tw"
+            dsrecords:
+              - "46887 13 2 dc86d09ec16e171163529129efaf365d9d7a35e98c0ad5a7254b3aa2874d66c2"
+              - "46887 13 4 bd65374dacead19f448f4ca0c310709c2e5a05d5b5f3fe5484c29d9f1d3e59fa6602efe771e5627b0ab5b4671e88d493"
+    \end{minted}
+
+    \item 重啟 PowerDNS Recursor 服務，並重新查詢 cscat.tw 的 DNS 紀錄。
+    \begin{minted}{bash}
+      sudo systemctl restart pdns-recursor
+    \end{minted}
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.64\textwidth]{2-1-4.png}
+        \caption{\texttt{dig @localhost -p 10053 cscat.tw} 的結果}
+      \end{figure}
+  \end{enumerate}
+\end{problem}
+
+\begin{problem}{2.1.5} 
+  若 TTL 設定過高，則可能會導致伺服器將等待太久才會檢查 DNS 記錄的更新。如此一來將會導致當一個 DNS 記錄被更新時，使用者仍然會獲取舊的 DNS 記錄，使得使用者無法正確地連線到新的伺服器上。若 TTL 設定過低，則可能會導致伺服器頻繁地查詢 DNS 記錄，這樣會增加伺服器的負擔，並且可能會導致 DNS 查詢的延遲。
+\end{problem}
+
+\begin{problem}{2.1.6} 　
+  \begin{enumerate}
+    \item 攻擊者先對一台 DNS Server 發送一個查詢請求，而 Server 無這項紀錄，因此遞迴詢問。
+    \item 攻擊者在 DNS Server 等待回應時，利用 UDP 容易被偽造的特性，發送一個偽造的回應給 DNS Server，裡面可能包含更多的 fake records，進而污染整個 Zone 的紀錄。
+    \item DNS Server 收到偽造的回應後，會將這些假的 DNS 紀錄快取起來，並且在未來的查詢中回傳這些錯誤的 ip。
+    \item 當使用者查詢這些 fake records 時，DNS Server 會回傳這些 fake records，而不是正確的 DNS 紀錄。使用者因此連線到假的 ip 位址。
+  \end{enumerate}
+\end{problem}
+
+\subsection{Security}
+\begin{problem}{2.2.1}
+  倘若將 DNS recursive server 設定為 open，則將十分容易被攻擊者用來實施 DNS 放大攻擊 （一種 DDOS 攻擊）。因為攻擊者可以對我們的伺服器發送大量偽造是被攻擊目標發出的 DNS query 請求，接下來伺服器會將這些請求轉發到其他 DNS server 上，並且將回應的結果發送到被攻擊目標的伺服器上。如此一來，攻擊者就可以利用我們的伺服器來對被攻擊目標進行 DDOS 攻擊。
+  另外，允許非信任裝置查詢 DNS 紀錄，也會增加 DNS cache poisoning 的風險，導致資安事件的發生。
+\end{problem}
+
+\begin{problem}{2.2.2} 　
+  \begin{enumerate}
+    \item 首先，我在虛擬機當中，使用 ip a 查看目前的 ip 位址有哪些。可以看到內網網段包含 localhost 的 \texttt{127.0.0.0/8}、與 debian VM 相同內網的 \texttt{10.0.2.0/24}、以及 docker 的 \texttt{172.17.0.0/16} 和 \texttt{172.18.0.0/16}。
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.85\textwidth]{2-2-2.png}
+      \caption{ip a}
+    \end{figure}
+    \item 因此，我在 \texttt{/etc/powerdns/recursor.conf} 的 \texttt{incoming} 段落當中，加入以下的內容，並重啟 powerdns recursor 服務。
+    \begin{minted}{yaml}
+      allow_from:
+        - 127.0.0.0/8
+        - 10.0.2.0/24
+        - 172.17.0.0/16
+        - 172.18.0.0/16
+    \end{minted}
+  \end{enumerate}
+\end{problem}
+
 \clearpage
 \section{dnsdist}
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item \url{https://www.dnsdist.org/install.html}
+    \item \url{https://www.dnsdist.org/quickstart.html}
+    \item \url{https://www.dnsdist.org/reference/config.html}
+  \end{itemize}
+\end{mycolorbox}
+
+\subsection{Setting up dnsdist}
+\begin{problem}{3.1.1} 　
+  \begin{enumerate}
+    \item 安裝 dnsdist：
+    \begin{minted}{bash}
+      sudo apt install dnsdist
+    \end{minted}
+    \item 修改 \texttt{/etc/dnsdist/dnsdist.conf} 的內容，新增如下：
+    \begin{minted}{lua}
+      setLocal("0.0.0.0:53")
+      newServer({address="127.0.0.1:10053", qps=20})
+      newServer({address="8.8.8.8", qps=20})
+      setServerPolicy(firstAvailable)
+    \end{minted}
+    \item 重新啟動 dnsdist 服務：
+    \begin{minted}{bash}
+      sudo systemctl restart dnsdist
+      sudo systemctl enable dnsdist
+    \end{minted}
+    \item 使用 dig 指令測試，得到以下結果：
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.6\textwidth]{3-1-1.png}
+      \caption{\texttt{dig @localhost -p 53 google.com} 的結果}
+    \end{figure}
+  \end{enumerate}
+\end{problem}
+
+\begin{problem}{3.1.2} 　
+\end{problem}
+
+\subsection{DNS-over-TLS}
+
+
+\begin{problem}{3.2.1} 　
+\end{problem}
+
+\begin{problem}{3.2.2} 　
+\end{problem}
+
+
+\begin{problem}{3.2.3} 　
+\end{problem}
 
 \clearpage
 \section{Master and Slave}

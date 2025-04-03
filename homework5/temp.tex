@@ -1,5 +1,5 @@
 \item 我打算根據官網 README 的指示，使用 Docker 安裝 PowerDNS Admin。首先，我在虛擬機器上安裝 Docker 和 Docker Compose。
-  \item 根據 Docker 的官方說明，我使用以下指令安裝 Docker：
+\item 根據 Docker 的官方說明，我使用以下指令安裝 Docker：
   \begin{minted}{bash}
     # Add Docker's official GPG key:
     sudo apt-get update
@@ -16,25 +16,22 @@
     sudo apt-get update
     sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
   \end{minted}
-  \item 將我的使用者加入 Docker 群組。
+\item 將我的使用者加入 Docker 群組。
   \begin{minted}{bash}
     sudo usermod -aG docker $USER
     newgrp docker
   \end{minted}
-  \item Clone PowerDNS Admin 的 GitHub repository。
+\item Clone PowerDNS Admin 的 GitHub repository。
   \begin{minted}{bash}
     git clone https://github.com/PowerDNS-Admin/PowerDNS-Admin.git
     cd PowerDNS-Admin
   \end{minted}
-  \item 使用 Docker Compose 啟動 PowerDNS Admin。
+\item 使用 Docker Compose 啟動 PowerDNS Admin。
   \begin{minted}{bash}
     docker-compose up -d
   \end{minted}
 
-
-
-
-  \item 建立一個 systemd 服務檔案 \texttt{/etc/systemd/system/pdnsadmin.service}，內容如下：
+\item 建立一個 systemd 服務檔案 \texttt{/etc/systemd/system/pdnsadmin.service}，內容如下：
   \begin{minted}{bash}
     [Unit]
     Description=PowerDNS-Admin
@@ -54,8 +51,8 @@
     [Install]
     WantedBy=multi-user.target
   \end{minted}
-  \item 建立一個 socket 檔案 \texttt{/etc/systemd/system/pdnsadmin.socket
-  }，內容如下：
+\item 建立一個 socket 檔案 \texttt{/etc/systemd/system/pdnsadmin.socket
+}，內容如下：
   \begin{minted}{bash}
     [Unit]
     Description=PowerDNS-Admin socket
@@ -66,21 +63,17 @@
     [Install]
     WantedBy=sockets.target
   \end{minted}
-  \item 建立環境檔案，並且設定權限：
+\item 建立環境檔案，並且設定權限：
   \begin{minted}{bash}
     mkdir /run/pdnsadmin/
     echo "d /run/pdnsadmin 0755 pdns pdns -" >> /etc/tmpfiles.d/pdnsadmin.conf
     chown -R pdns: /run/pdnsadmin/
     chown -R pdns: /var/www/html/pdns/powerdnsadmin/
     \end{minted}
-  \item 啟用並且啟動服務：
+\item 啟用並且啟動服務：
   \begin{minted}{bash}
     systemctl enable --now pdnsadmin.service pdnsadmin.socket
   \end{minted}
-
-
-
-
 
 \begin{enumerate}
   \item 安裝必要套件、Node.js、NPM 以及 Yarn。
@@ -98,17 +91,17 @@
     api-key=b13901011
     webserver=yes
   \end{minted}
-  然後使用 \texttt{sudo systemctl restart pdns} 重新啟動 PowerDNS。
+    然後使用 \texttt{sudo systemctl restart pdns} 重新啟動 PowerDNS。
   \item 建立 PowerDNS-Admin 的資料庫：先以 \texttt{sudo mysql -u root} 登入 MariaDB，然後執行以下指令：
-  {
-  \small
+    {
+      \small
   \begin{minted}{sql}
     CREATE DATABASE powerdnsadmin CHARACTER SET utf8 COLLATE utf8_general_ci;
     GRANT ALL PRIVILEGES ON powerdnsadmin.* TO 'pdnsadminuser'@'%' IDENTIFIED BY 'b13901011';
     FLUSH PRIVILEGES;
     EXIT;
   \end{minted}
-  }
+    }
 
   \item Clone PowerDNS Admin 的 GitHub Repository。
   \begin{minted}{bash}
@@ -152,7 +145,7 @@
     SQLA_DB_NAME = 'powerdnsadmin'
     SQLALCHEMY_DATABASE_URI = f"mysql://{SQLA_DB_USER}:{SQLA_DB_PASSWORD}@{SQLA_DB_HOST}/{SQLA_DB_NAME}"
   \end{minted}
-  
+
 
   \item 建立 database schema。
   \begin{minted}{bash}
