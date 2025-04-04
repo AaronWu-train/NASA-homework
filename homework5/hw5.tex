@@ -713,9 +713,8 @@ mysql -u powerdns_user -p powerdns < /usr/share/pdns-backend-mysql/schema/schema
     \item \url{https://www.dnsdist.org/advanced/luaaction.html}
     \item \url{https://www.dnsdist.org/reference/dnsparser.html}
     \item \url{https://www.cloudflare.com/zh-tw/learning/dns/dns-over-tls/}
-    \item 
-    \item 
-    \item 
+    \item \url{https://www.dnsdist.org/guides/dns-over-tls.html}
+    \item \href{https://stackoverflow.com/questions/10175812/how-can-i-generate-a-self-signed-ssl-certificate-using-openssl}{How can I generate a self-signed SSL certificate using OpenSSL? - Stack Overflow}
   \end{itemize}
 \end{mycolorbox}
 
@@ -841,7 +840,25 @@ mysql -u powerdns_user -p powerdns < /usr/share/pdns-backend-mysql/schema/schema
 
 \clearpage
 \section{Master and Slave}
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item \url{https://developers.cloudflare.com/dns/zone-setups/zone-transfers/}
+  \end{itemize}
+\end{mycolorbox}
 
+\subsection{系統架構}
+在眾多服務當中，我認為要將每一項服務單獨容器化進行部署，以減輕重新部署的技術成本。同時，可以將 PowerDNS Authoritativ和MariaDB 放置在同一台伺服器上，並且將 PowerDNS Recursor 、dnsdist 和 PowerDNS Admin 前端各自放在不同的伺服器上。這樣可以確保當某一台伺服器發生故障或受到攻擊時，其他伺服器仍然可以正常運作，並且不會影響到整體系統的可用性。
+
+另外，我認為至少要有三份備份，其中，兩份實體系統要放在不同位置，可以一個放在系館作為 Master，一個放在計算中心作為 Slave，另一份備份則是將 MariaDB 的資料備份到雲端上。這樣可以在一個伺服器故障或著是系館停電時，確保服務不會中斷，並且可以快速地恢復服務。
+
+最後，因為我們有使用雲端備份資料庫，所以當伺服器上的 DNS records 不見時，可以透過雲端備份的資料庫來恢復 DNS records。這樣可以確保當伺服器上的資料損毀或丟失時，仍然可以快速地恢復服務。
+
+\subsection{AXFR v.s. IXFR}
+AXFR 和 IXFR 都是同步多台 DNS server 時使用的方式。當使用 AXFR 時，每一次修改 DNS 紀錄時，主伺服器會將整個 Zone 的所有紀錄從 Master server 傳送到 Slave server 上。而當使用 IXFR 時，主伺服器只會將修改過的紀錄傳送到 Slave server 上。
+
+在前面架構當中，我會選擇使用 IXFR 的方式來同步 DNS 紀錄，這樣可以減少網路流量和伺服器的負擔，並且可以加快同步的速度。但當 DNS 紀錄需要大規模復原，或是需要初始同步新的資料庫時，再使用 AXFR 的方式來同步 DNS 紀錄。
 % -----------------------------------------------------------
 %    You don't have to mess with anything below this line.
 % -----------------------------------------------------------
