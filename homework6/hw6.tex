@@ -327,9 +327,9 @@
       -boot d \
       -monitor stdio \
       -nic user,hostfwd=tcp::8890-:80,hostfwd=tcp::1102-:22,hostfwd=tcp::8000-:8000 \
-      -vnc :2100,password=on
+      -vnc :2150,password=on
   \end{minted}
-  其中，VM 的 port 22 映射到我的工作站 port 1102， port 80 映射到我的工作站 port 8890 的 port 8000 映射到我的工作站 port 8000。
+  其中，VM 的 port 22 映射到我的工作站 port 1102， port 80 映射到我的工作站 port 8890 的 port 8000 映射到我的工作站 port 8000，並且改掉 vnc 的 port 為 2150 以避開衝突。
   \item 我使用 \texttt{ssh localhost -p 1102} 成功的連線到 VM 上，代表 port 22 防火牆有設定好。
   \item 在 VM 中使用以下指令，在 port 8000 架設一個簡單的 HTTP Server。
   \begin{minted}{bash}
@@ -338,8 +338,8 @@
   \end{minted}
   \item 回到工作站，使用以下指令，確認 port 80 和 port 8000 的防火牆有設定好。
   \begin{minted}{bash}
-    curl localhost:8890 # port 80 of VM is 8890 of workstation
-    curl localhost:8000
+    curl --max-time 5 localhost:8890 # port 80 of VM is 8890 of workstation
+    curl --max-time 5 localhost:8000
   \end{minted}
   \begin{figure}[H]
     \centering

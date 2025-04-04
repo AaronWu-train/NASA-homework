@@ -638,6 +638,7 @@ mysql -u powerdns_user -p powerdns < /usr/share/pdns-backend-mysql/schema/schema
   \begin{enumerate}
     \item 使用 \texttt{pdnsutil show-zone cscat.tw} 指令，顯示 cscat.tw 的 DS 紀錄。
     \item 修改 \texttt{/etc/powerdns/recursor.conf} 的 \texttt{dnssec} 段落內容，加入回傳的結果：
+    \begin{footnotesize}
     \begin{minted}{yaml}
       dnssec:
         validation: validate
@@ -647,6 +648,8 @@ mysql -u powerdns_user -p powerdns < /usr/share/pdns-backend-mysql/schema/schema
               - "46887 13 2 dc86d09ec16e171163529129efaf365d9d7a35e98c0ad5a7254b3aa2874d66c2"
               - "46887 13 4 bd65374dacead19f448f4ca0c310709c2e5a05d5b5f3fe5484c29d9f1d3e59fa6602efe771e5627b0ab5b4671e88d493"
     \end{minted}
+    \end{footnotesize}
+
 
     \item 重啟 PowerDNS Recursor 服務，並重新查詢 cscat.tw 的 DNS 紀錄。
     \begin{minted}{bash}
@@ -707,6 +710,12 @@ mysql -u powerdns_user -p powerdns < /usr/share/pdns-backend-mysql/schema/schema
     \item \url{https://www.dnsdist.org/install.html}
     \item \url{https://www.dnsdist.org/quickstart.html}
     \item \url{https://www.dnsdist.org/reference/config.html}
+    \item \url{https://www.dnsdist.org/advanced/luaaction.html}
+    \item \url{https://www.dnsdist.org/reference/dnsparser.html}
+    \item \url{https://www.cloudflare.com/zh-tw/learning/dns/dns-over-tls/}
+    \item 
+    \item 
+    \item 
   \end{itemize}
 \end{mycolorbox}
 
@@ -732,26 +741,102 @@ mysql -u powerdns_user -p powerdns < /usr/share/pdns-backend-mysql/schema/schema
     \item 使用 dig 指令測試，得到以下結果：
     \begin{figure}[H]
       \centering
-      \includegraphics[width=0.6\textwidth]{3-1-1.png}
+      \includegraphics[width=0.7\textwidth]{3-1-1.png}
       \caption{\texttt{dig @localhost -p 53 google.com} 的結果}
     \end{figure}
   \end{enumerate}
 \end{problem}
 
 \begin{problem}{3.1.2} 　
+  \begin{enumerate}
+    \item 我在 \texttt{/etc/dnsdist/dnsdist.conf} 當中，加入以下的內容：
+    \begin{minted}{lua}
+      function filterLongTXT(dq)
+        local packet = dq:getContent()
+        local overlay = newDNSPacketOverlay(packet)
+        local count = overlay:getRecordsCountInSection(DNSSection.Answer)
+
+        if overlay.qtype == DNSQueryType.TXT then
+          local totalLen = 0
+          for idx=0, count-1 do
+            local record = overlay:getRecord(idx)
+            if record.type == DNSQueryType.TXT then
+              totalLen = totalLen + record.contentLength
+            end
+          end
+
+          if totalLen > 70 then
+            return DNSResponseAction.Drop
+          end
+        end
+        return DNSResponseAction.Allow
+      end
+
+      addResponseAction(AllRule(), LuaResponseAction(filterLongTXT))
+      addAction(MaxQPSIPRule(20), DropAction())
+      addAction(RegexRule(".*\\.csdog\\.tw$"), DropAction())
+    \end{minted}
+  \item 以 \texttt{sudo systemctl restart dnsdist} 重啟 dnsdist 服務。
+\end{enumerate}
+
 \end{problem}
 
 \subsection{DNS-over-TLS}
 
 
 \begin{problem}{3.2.1} 　
+  \begin{enumerate}[label=(\alph*)]
+    \item DNS-over-TLS 是在 DNS 查詢時使用的 UDP 基礎上，多包了一層 TLS 加密的協定，這樣可以確保 DNS 查詢的內容不會被第三方竊聽或篡改。如此一來可以確保 DNS 請求不容易受到中間人攻擊的影響。
+    \item  DNS-over-HTTPS (DoH) 與 DNS-over-TLS (DoT) 的比較如下：
+    \begin{table}[H]
+      \centering
+      \begin{tabular}{lllll}
+        \toprule
+        & \textbf{Port} & \textbf{加密機制} & \texttt{效能} & \texttt{安全性}\\
+        \midrule
+        \textbf{DoT} & 853 & TLS 加密並透過 UDP 傳送 & 較快 & 有特定連接阜供管理員監控與封鎖 \\
+        \textbf{DoH} & 443 & HTTPS 加密後透過 HTTP 傳送 & 較慢 & 封包隱藏在 https 當中，隱蔽性較高\\
+        \bottomrule
+      \end{tabular}
+    \end{table}
+  \end{enumerate}
 \end{problem}
 
 \begin{problem}{3.2.2} 　
+  \begin{enumerate}
+    \item 安裝 openssl：
+    \begin{minted}{bash}
+      sudo apt install openssl
+    \end{minted}
+    \item 使用以下指令產生憑證，其中互動式選項隨意填寫即可：
+    \begin{small}
+      \begin{minted}{bash}
+        cd /etc/dnsdist
+        sudo openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 365 -nodes
+      \end{minted}
+    \end{small}
+    \item 更改金鑰的所有者：
+    \begin{minted}{bash}
+      sudo ps aux | grep dnsdist # 查看 dnsdist 的使用者
+      sudo chown _dnsdist:_dnsdist /etc/dnsdist/cert.pem /etc/dnsdist/key.pem
+    \end{minted}
+    \item 修改 \texttt{/etc/dnsdist/dnsdist.conf} 的內容，新增如下：
+    \begin{small}
+      \begin{minted}{lua}
+        addTLSLocal('127.0.0.1:853', '/etc/dnsdist/cert.pem', '/etc/dnsdist/key.key')
+      \end{minted}
+    \end{small}
+    \item 重新啟動 dnsdist 服務。
+  \end{enumerate}
 \end{problem}
 
 
-\begin{problem}{3.2.3} 　
+\begin{problem}{3.2.3} 我分別測試了有加上 \texttt{+tls} 和沒加上的 dig 結果，如下：
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.67\textwidth]{3-2-3.png}
+    \caption{\texttt{dig} 的結果}
+  \end{figure}
 \end{problem}
 
 \clearpage
