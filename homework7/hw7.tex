@@ -385,30 +385,138 @@
   \textbf{Reference:}
   \footnotesize
   \begin{itemize}
-    \item 
+    \item \href{https://forum.proxmox.com/threads/unable-to-start-or-migrate-vms-storage-is-not-available-on-node-500.126303}{Unable to Start or Migrate VMs - Storage is not available on node (500)}
+    \item \href{http://blog.jason.tools/2019/02/pve-replication.html}{深入 Proxmox VE 複寫功能}
+    \item \href{https://ithelp.ithome.com.tw/articles/10280770}{Proxmox VE 設定客體機高可用性}
   \end{itemize}
 \end{mycolorbox}
 
-% Problem 3.1
-\subsection{}
-
 % Problem 3.2
+\setcounter{subsection}{1}
 \subsection{}
+我使用與前兩大題相同的步驟，透過以下指令建立 \texttt{pve2}：
+\begin{minted}{bash}
+  qemu-img create -f qcow2 /tmp2/b13901011/hw7/pve2.qcow2 10G
+  qemu-img create -f qcow2 /tmp2/b13901011/hw7/pve2_2.qcow2 20G
+
+  virt-install --virt-type kvm \
+      --name b13901011-2 \
+      --vcpu 2 \
+      --memory 8192 \
+      --os-variant generic \
+      --cdrom /tmp2/rabhunter/hw7/proxmox.iso \
+      --disk path=/tmp2/b13901011/hw7/pve2.qcow2,format=qcow2 \
+      --network bridge=br0,mac=52:54:90:10:11:03 \
+      --graphics vnc,port=8000,listen=0.0.0.0,password=nasa2025 \
+      --noautoconsole
+      
+  virsh attach-disk b13901011-2 /tmp2/b13901011/hw7/pve2_2.qcow2 vda --subdriver qcow2 --persistent
+  virsh reboot b13901011-2
+\end{minted}
+我以 \texttt{ssh -L 8016:192.168.128.227:8006 b13901011@nasaws1.csie.ntu.edu.tw} 建立 tunnel, 並且在本地端的瀏覽器上輸入 \texttt{localhost:8016}，登入設定 zfs 和 網路設定，如下所示：
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{3-2-2.png}
+  \caption{pve2 網路設定}
+  \label{fig:3-2-2}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{3-2-3.png}
+  \caption{pve2 硬碟設定}
+  \label{fig:3-2-3}
+\end{figure}
 
 % Problem 3.3
 \subsection{}
+\begin{enumerate}
+  \item 首先，在 \texttt{pve1} 上的 Web UI 中，點選 \texttt{Datacenter} > \texttt{Cluster} > \texttt{Create Cluster}，命名為 \texttt{cluster-011}，並且選擇一開始建立的橋接網路卡 ip，如下所示：
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{3-3-1.png}
+    \caption{Create Cluster}
+    \label{fig:3-3-1}
+  \end{figure}
+  \item 完成後，點選 \texttt{Join Information}，並點 \texttt{Copy Information}。
+  \item 接著，回到 \texttt{pve2} 的 Web UI 中，點選 \texttt{Datacenter} > \texttt{Cluster} > \texttt{Join Cluster}，並且將剛剛複製的資訊貼上。貼上後，輸入 \texttt{pve1} 的 root 密碼，並且點選 \texttt{Join}。
+  \item 完成後，即可看到 \texttt{pve2} 已經加入 \texttt{pve1} 的 Cluster 中，如下所示：
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{3-3-3.png}
+    \caption{Cluster 設定完成}
+    \label{fig:3-3-3}
+  \end{figure}
+\end{enumerate}
+
 
 % Problem 3.4
 \subsection{}
+\begin{enumerate}
+  \item 在 Web UI 上，點選 \texttt{Datacenter} > \texttt{Storage} > \texttt{ZFS} > \texttt{Edit}，並且將 \texttt{Nodes} 欄位加上 \texttt{b13901011-1} (pve2)，如下所示：
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{3-4-1.png}
+    \caption{ZFS Pool 設定}
+    \label{fig:3-4-1}
+  \end{figure}
+  \item 右鍵點擊虛擬機，選 \texttt{migrate}，Target Node 選擇 \texttt{b13901011-2} (pve2)，Storage 選擇 \texttt{zfs}。
+  \item Migration 完成後，如下圖所示：
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{3-4-2.png}
+    \caption{Migration 完成}
+    \label{fig:3-4-2}
+    \end{figure}
+\end{enumerate}
 
 % Problem 3.5
 \subsection{}
+點擊 \texttt{Datacenter} > \texttt{b13901011-2} > \texttt{100 (alpine-b13901011)} > \texttt{Replication} > \texttt{Add}，並且設定如下：
+\begin{figure}[H]
+  \centering
+  \includegraphics[height=5cm]{3-5-1.png}
+  \caption{新增 Replication}
+  \label{fig:3-5-1}
+\end{figure}
+\vspace{-0.65cm}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{3-5-2.png}
+  \caption{Replication 設定完成}
+  \label{fig:3-5-2}
+\end{figure}
 
 % Problem 3.6
 \subsection{}
+我點選 \texttt{Datacenter} > \texttt{HA} > \texttt{Group} > \texttt{Create}，並且設定如下：
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.55\textwidth]{3-6-1.png}
+  \caption{HA Group 設定}
+  \label{fig:3-6-1}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{3-6-2.png}
+  \caption{HA Group 設定完成}
+  \label{fig:3-6-2}
+\end{figure}
 
 % Problem 3.7
 \subsection{}
+點選 \texttt{Datacenter} > \texttt{HA} > \texttt{Resources} > \texttt{Add}，並且設定如下：
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{3-7-1.png}
+  \caption{HA Resources 設定}
+  \label{fig:3-7-1}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{3-7-2.png}
+  \caption{HA Resources 設定完成}
+  \label{fig:3-7-2}
+\end{figure}
 
 
 % -----------------------------------------------------------
