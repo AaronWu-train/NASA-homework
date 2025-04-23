@@ -1,0 +1,298 @@
+% !TeX program = xelatex
+% !TeX options = -shell-escape
+% !TEX encoding = UTF-8
+
+% --------------------------------------------------------------
+% This is all preamble stuff that you don't have to worry about.
+% Head down to where it says "Start here"
+% --------------------------------------------------------------
+
+\documentclass[12pt]{article}
+\usepackage[margin=2cm]{geometry} % 頁面邊距設置
+\usepackage{amsmath,amssymb,amsthm} % 數學相關套件
+\usepackage{graphicx} % 圖形插入
+\usepackage{booktabs} % 表格線條
+\usepackage[AutoFakeBold,AutoFakeSlant]{xeCJK} % 中文支援
+\usepackage{fancyhdr} % 頁首頁尾設置
+\usepackage{xcolor,changepage,mdframed} % 顏色與框線相關
+\usepackage{titlesec} % 標題格式
+\usepackage{setspace} % 行距
+\usepackage{minted} % 程式碼高亮（需安裝 Python 套件 pygments）
+\usepackage[shortlabels]{enumitem} % 列表格式
+\usepackage[colorlinks=true,linkcolor=black,urlcolor=blue,citecolor=blue]{hyperref}
+% 超連結
+\graphicspath{{images}}
+
+% 字體設定 (xeCJK)
+\setCJKmainfont{黑體-繁}
+\setCJKmonofont{Noto Sans Mono CJK TC}
+
+% 頁首/頁尾設定 (fancyhdr)
+\pagestyle{fancy}
+\fancyhead[L]{NASA Homework 8} % 可以用 \leftmark 取代
+\fancyhead[R]{B13901011 吳亞倫}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\setlength{\headheight}{15pt}
+
+% tex-fmt: off
+\newtheorem*{theorem}{Theorem}
+\newenvironment{lemma}[2][Lemma]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{exercise}[2][Exercise]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{problem}[2][Problem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2}]}{\end{trivlist}}
+\newenvironment{question}[2][Question]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{corollary}[2][Corollary]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{solution}{\begin{proof}[Solution]}{\end{proof}}
+\newenvironment{answer}{\begin{proof}[Ans]}{\end{proof}}
+\renewcommand{\thesubsubsection}{\thesubsection. (\alph{subsubsection})}
+
+% 樣式設定
+
+\setminted{frame=lines, linenos, framesep=2mm, breaklines=true, breakanywhere=true, autogobble=true}
+
+% 自訂框線環境
+\newmdenv[
+  linewidth=2pt, linecolor=gray, backgroundcolor=gray!10,
+  topline=false, bottomline=false, rightline=false,
+  skipabove=10pt, skipbelow=10pt, innerleftmargin=10pt,
+  innerrightmargin=0pt, innertopmargin=5pt, innerbottommargin=5pt
+]{myquote}
+
+\newenvironment{mycolorbox}[1][gray]{
+  \renewmdenv[
+    linewidth=2pt, linecolor=#1, backgroundcolor=#1!10,
+    topline=false, bottomline=false, rightline=false,
+    skipabove=10pt, skipbelow=10pt, innerleftmargin=10pt,
+    innerrightmargin=0pt, innertopmargin=5pt, innerbottommargin=5pt
+  ]{myquote}
+  \begin{myquote}
+}{\end{myquote}}
+
+\linespread{1.1}
+% \usemintedstyle{xcode}
+\AtBeginEnvironment{minted}{\vspace{-10pt}} % 可根據需求調整間距數值
+\setminted{breaklines=true, breakanywhere=true, autogobble=true}
+
+% tex-fmt: on
+\begin{document}
+\thispagestyle{fancy}
+
+%------------------------------------------------------------
+%                         Start here
+% -----------------------------------------------------------
+
+\begin{center}
+  {\large \bfseries Network Administration / System Administration} \\
+  \vspace{1em}
+  {\Large \bfseries Homework 8} \\
+\end{center}
+
+\vspace{2em}
+
+\begin{tabular}{@{}l l}
+  \textbf{Student:} & 吳亞倫 \\
+  \textbf{ID:} & B13901011  \\
+  \textbf{Department:} & 電機工程學系
+\end{tabular}
+\bigskip
+
+\begin{mycolorbox}[cyan]
+  \textbf{Discussion Partners:}
+  \begin{itemize}
+    \item Classmates：賴泓安、鄭竣陽、喻慈恩
+      \vspace{0.5em}
+  \end{itemize}
+\end{mycolorbox}
+
+% -----------------------------------------------------------
+% Problem 1
+% -----------------------------------------------------------
+\section{前置作業}
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item \url{https://www.openldap.org/software//man.cgi?query=LDIF}
+    \item \href{https://www.digitalocean.com/community/tutorials/how-to-manage-and-use-ldap-servers-with-openldap-utilities}{How To Manage and Use LDAP Servers with OpenLDAP Utilities}
+    \item \href{https://hackmd.io/@chenhsu/rJmf1je6u}{LDAP 架設筆記}
+    \item \href{https://linux.vbird.org/somepaper/20050817-ldap-1.pdf}{LDAP 入門}
+    \item \url{https://wiki.archlinux.org/title/OpenLDAP}
+  \end{itemize}
+\end{mycolorbox}
+
+% Problem 1-1
+\subsection{Server}
+\begin{enumerate}
+  \item 首先，我以 apt 安裝 OpenLDAP 伺服器，並且安裝了相關的套件。
+  \begin{minted}{bash}
+    apt update
+    apt install -y slapd ldap-utils ldapvi
+  \end{minted}
+  \item 安裝時，會要求輸入 LDAP 的管理者密碼。
+  \item 安裝完成後，我分別撰寫了兩個 ldif 檔案：
+  \begin{itemize}
+    \item \texttt{suffix.ldif}：設定 LDAP 的 \texttt{olcSuffix} 為  \texttt{dc=nasa,dc=csie,dc=ntu}。
+    \item \texttt{rootdn.ldif}：設定 LDAP 的 \texttt{olcRootDN}為 \texttt{cn=admin,dc=nasa,dc=csie,dc=ntu}。
+  \end{itemize}
+  \item 使用指令 \texttt{slappasswd} 產生密碼雜湊值，並將其寫入 \texttt{rootpw.ldif} 檔案中。
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{1-1-1.png}
+    \caption{使用 slappasswd 產生密碼雜湊值}
+    \label{fig:slappasswd}
+  \end{figure}
+  \item 透過以下指令，將這三個 ldif 檔案載入 LDAP 伺服器中：
+  \begin{minted}{bash}
+    ldapmodify -Y EXTERNAL -H ldapi:/// -f suffix.ldif
+    ldapmodify -Y EXTERNAL -H ldapi:/// -f rootdn.ldif
+    ldapmodify -Y EXTERNAL -H ldapi:/// -f rootpw.ldif
+  \end{minted}
+  \item 按照 Lab 9 的指示，我在 \texttt{base.ldif} 檔案中，設定了 \texttt{dc=nasa,dc=csie,dc=ntu} 的節點，以及兩個 ou，並且透過以下指令套用：
+  \begin{minted}{bash}
+    ldapadd -D cn=admin,dc=nasa,dc=csie,dc=ntu -W	 -H ldapi:/// -f base.ldif
+  \end{minted}
+  \item 以下為在 Server 執行 \texttt{ldapsearch -x -b dc=nasa,dc=csie,dc=ntu} 的結果。
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{1-1-2.png}
+    \caption{\texttt{ldapsearch} in server}
+    \label{fig:ldapsearch}
+  \end{figure}
+\end{enumerate}
+
+
+% Problem 1-2
+\subsection{Client}
+\begin{enumerate}
+  \item 首先，我用以下指令在 arch (client) 上安裝了 openldap 套件：
+  \begin{minted}{bash}
+    pacman -Syu
+    pacman -S openldap
+  \end{minted}
+  以上指令會同時安裝 openldap 的 server 和 client 套件，但我們只會用到 client 套件。
+  \item 接著，回到 debian (server) 當中，我查詢 \texttt{ip a} 得知 server 的 IP 為 \texttt{192.168.128.225}
+  \item 回到 arch (client)，我在 \texttt{/etc/openldap/ldap.conf} 檔案中，修改 \texttt{URI}的值，將其改為 \texttt{ldap://192.168.128.225}
+  \item 以下為在 client 執行 \texttt{ldapsearch -x -b dc=nasa,dc=csie,dc=ntu} 的結果。
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.58\textwidth]{1-2-1.png}
+    \caption{\texttt{ldapsearch} in client}
+    \label{fig:ldapsearch-client}
+  \end{figure}
+\end{enumerate}
+
+% -----------------------------------------------------------
+% Problem 2
+% -----------------------------------------------------------
+\section{Task}
+
+% Problem 2-1
+\subsection{LDAPS (LDAP over SSL)}
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item \url{https://www.weithenn.org/2009/06/openldap-ssl-tls.html}
+    \item \href{https://www.digitalocean.com/community/tutorials/how-to-encrypt-openldap-connections-using-starttls}{How To Encrypt OpenLDAP Connections Using STARTTLS (DigitalOcean)}
+    \item 
+    \item 
+    \item 
+  \end{itemize}
+\end{mycolorbox}
+以下爲我配置 LDAPS 的步驟：
+\begin{enumerate}
+  \item 以 root 身份登入 server。
+  \item 首先，我們要先修改 server 的 hostname：
+  \begin{minted}{bash}
+    hostnamectl set-hostname ldap-server
+  \end{minted}
+  \item 接著，我們要修改 /etc/hosts 檔案，加入以下這一行：
+  \begin{minted}{bash}
+    127.0.1.1    ldap-server.nasa.csie.ntu    ldap-server
+  \end{minted}
+  \item 安裝 gnutls-bin 和 ssl-cert 套件：
+  \begin{minted}{bash}
+    apt-get install gnutls-bin ssl-cert
+  \end{minted}
+  \item 建立憑證 template，在 \texttt{/etc/ssl/templates} 目錄下創建兩個新的檔案，\texttt{ca\_server.conf} 和 \texttt{ldap\_server.conf}，並將以下內容複製到這兩個檔案中：
+  \begin{minted}{bash}
+    # ca_server.conf
+    cn = LDAP Server CA
+    ca
+    cert_signing_key
+  \end{minted}
+  \vspace{-0.5cm}
+  \begin{minted}{bash}
+    # ldap_server.conf
+    organization = "NTUCSIE NASA 2025"
+    cn = ldap-server.nasa.csie.ntu
+    tls_www_server
+    encryption_key
+    signing_key
+    expiration_days = 3652
+  \end{minted}
+
+  \item 接下來，我們要創立 CA 的公私鑰對：
+  \begin{minted}{bash}
+    certtool -p --outfile /etc/ssl/private/ca_server.key
+    certtool -s --load-privkey /etc/ssl/private/ca_server.key --template /etc/ssl/templates/ca_server.conf --outfile /etc/ssl/certs/ca_server.pem
+  \end{minted}
+  \item 利用 CA 簽署 LDAP Server 的憑證：
+  \begin{minted}{bash}
+    certtool -p --sec-param high --outfile /etc/ssl/private/ldap_server.key
+    certtool -c --load-privkey /etc/ssl/private/ldap_server.key --load-ca-certificate /etc/ssl/certs/ca_server.pem --load-ca-privkey /etc/ssl/private/ca_server.key --template /etc/ssl/templates/ldap_server.conf --outfile /etc/ssl/certs/ldap_server.pem
+  \end{minted}
+  \item 修改檔案權限，使 openldap 可以讀取憑證：
+  \begin{minted}{bash}
+    usermod -aG ssl-cert openldap
+    chown :ssl-cert /etc/ssl/private/ldap_server.key
+    chmod 640 /etc/ssl/private/ldap_server.key
+  \end{minted}
+\end{enumerate}
+
+
+% Problem 2-2
+\subsection{SSSD}
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item 
+  \end{itemize}
+\end{mycolorbox}
+
+
+% Problem 2-3
+\subsection{ACL (Access Control Lists)}
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item 
+  \end{itemize}
+\end{mycolorbox}
+
+
+
+% Problem 2-4
+\subsection{LDAP Schema Extension}
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item 
+  \end{itemize}
+\end{mycolorbox}
+
+
+% -----------------------------------------------------------
+%    You don't have to mess with anything below this line.
+% -----------------------------------------------------------
+
+\end{document}
