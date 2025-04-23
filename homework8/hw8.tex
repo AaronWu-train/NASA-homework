@@ -155,7 +155,7 @@
   \end{minted}
   \item 按照 Lab 9 的指示，我在 \texttt{base.ldif} 檔案中，設定了 \texttt{dc=nasa,dc=csie,dc=ntu} 的節點，以及兩個 ou，並且透過以下指令套用：
   \begin{minted}{bash}
-    ldapadd -D cn=admin,dc=nasa,dc=csie,dc=ntu -W	 -H ldapi:/// -f base.ldif
+    ldapadd -D cn=admin,dc=nasa,dc=csie,dc=ntu -W -H ldapi:/// -f base.ldif
   \end{minted}
   \item 以下為在 Server 執行 \texttt{ldapsearch -x -b dc=nasa,dc=csie,dc=ntu} 的結果。
   \begin{figure}[H]
@@ -198,11 +198,10 @@
   \textbf{Reference:}
   \footnotesize
   \begin{itemize}
-    \item \url{https://www.weithenn.org/2009/06/openldap-ssl-tls.html}
     \item \href{https://www.digitalocean.com/community/tutorials/how-to-encrypt-openldap-connections-using-starttls}{How To Encrypt OpenLDAP Connections Using STARTTLS (DigitalOcean)}
-    \item 
-    \item 
-    \item 
+    \item \url{https://www.weithenn.org/2009/06/openldap-ssl-tls.html}
+    \item \url{https://www.openldap.org/doc/admin24/tls.html}
+    \item \url{https://wiki.archlinux.org/title/OpenLDAP#The_client}
   \end{itemize}
 \end{mycolorbox}
 以下爲我配置 LDAPS 的步驟：
@@ -254,6 +253,102 @@
     chown :ssl-cert /etc/ssl/private/ldap_server.key
     chmod 640 /etc/ssl/private/ldap_server.key
   \end{minted}
+
+  \item 建立 \texttt{addcerts.ldif} 檔案，新增以下內容：
+  \begin{minted}{ldif}
+    # addcerts.ldif
+    dn: cn=config
+    changetype: modify
+    add: olcTLSCACertificateFile
+    olcTLSCACertificateFile: /etc/ssl/certs/ca_server.pem
+    -
+    add: olcTLSCertificateFile
+    olcTLSCertificateFile: /etc/ssl/certs/ldap_server.pem
+    -
+    add: olcTLSCertificateKeyFile
+    olcTLSCertificateKeyFile: /etc/ssl/private/ldap_server.key
+  \end{minted}
+  \item 以 \texttt{ldapmodify -H ldapi:// -Y EXTERNAL -f addcerts.ldif} 指令將憑證載入 LDAP Server。
+
+  \item 修改 \texttt{/etc/default/slapd} 檔案，將 \texttt{SLAPD\_SERVICES} 的改為：
+  \begin{minted}{bash}
+    SLAPD_SERVICES="ldap:/// ldapi:/// ldaps:///"
+  \end{minted}
+
+  \item 複製一份公鑰：\texttt{cp /etc/ssl/certs/ca\_server.pem /etc/ldap/ca\_certs.pem}
+  \item 修改 \texttt{/etc/ldap/ldap.conf} 檔案，修改 \texttt{TLS\_CACERT}：
+  \begin{minted}{bash}
+    TLS_CACERT /etc/ldap/ca_certs.pem
+  \end{minted}
+
+  \item 以 \texttt{systemctl restart slapd} 指令重啟 LDAP Server。
+  \item 以 \texttt{reboot} 重新開機 server。
+  \item 使用以下指令測試憑證，發現可以成功連線，顯示憑證鏈：
+  \begin{minted}{bash}
+    openssl s_client -starttls ldap -connect ldap-server.nasa.csie.ntu:389 -showcerts
+  \end{minted}
+  \item 使用題目給予的指令，我發現我可以成功以 StartTLS 或 SSL 連線到 Server。
+  \begin{mycolorbox}[green]
+    \textbf{Answer:}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.75\textwidth]{2-1-1.png}
+      \caption{使用 StartTLS 連線 (\texttt{ldapsearch -x -ZZ -b dc=nasa,dc=csie,dc=ntu})}
+      \label{fig:starttls}
+    \end{figure}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.75\textwidth]{2-1-2.png}
+      \caption{使用 SSL 連線 (\texttt{ldapsearch -x -H ldaps:/// -b dc=nasa,dc=csie,dc=ntu})}
+      \label{fig:sssl}
+    \end{figure}
+  \end{mycolorbox}
+  \item 為了只允許 SSL 連線，我建立了 \texttt{onlyssl.ldif}：
+  \begin{minted}{ldif}
+    # onlyssl.ldif
+    dn: cn=config
+    changetype: modify
+    replace: olcSecurity
+    olcSecurity: ssf=128 update_ssf=128 minssf=128 tls=1
+  \end{minted}
+  並且以 \texttt{ldapmodify -H ldapi:// -Y EXTERNAL -f onlyssl.ldif} 指令載入。
+  \item 接下來，將 server 上的 \texttt{/etc/ssl/certs/ca\_server.pem} 公鑰檔案複製到 client 上，放置到 \texttt{/etc/ca-certificates/trust-source/anchors/ca-nasa-ldap.crt} 中。
+  \item 執行以下指令更新憑證，此指令會將憑證複製到\texttt{/etc/ssl/certs/LDAP\_Server\_CA.pem} 中，並加入系統的信任列表：
+  \begin{minted}{bash}
+    update-ca-trust extract
+  \end{minted}
+  \item 修改 client 的 \texttt{/etc/hosts} 檔案，加入以下這一行：
+  \begin{minted}{bash}
+    192.168.128.225 ldap-server.nasa.csie.ntu
+  \end{minted}
+  \item 修改 client 上的 \texttt{/etc/openldap/ldap.conf} 檔案為以下：
+  \begin{minted}{bash}
+    URI     ldaps://ldap-server.nasa.csie.ntu
+  \end{minted}
+  \item 執行 \texttt{ldapsearch -x -H -b dc=nasa,dc=csie,dc=ntu} 指令，發現可以用 ssl 成功連線，如下圖所示：
+  \begin{mycolorbox}[green]
+    \textbf{Answer:}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.8\textwidth]{2-1-3.png}
+      \caption{使用 SSL 連線 (\texttt{ldapsearch -x -H ldaps:/// -b dc=nasa,dc=csie,dc=ntu})}
+      \label{fig:sssl-client}
+    \end{figure}  
+  \end{mycolorbox}
+
+  \item 以非 ssl 的方式連線會失敗：
+  \begin{minted}{bash}
+    ldapsearch -x -H ldap://192.168.128.225 -b dc=nasa,dc=csie,dc=ntu
+  \end{minted}
+  \begin{mycolorbox}[green]
+    \textbf{Answer:}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=\textwidth]{2-1-4.png}
+      \caption{使用非 SSL 連線被阻擋}
+      \label{fig:sssl-client-fail}
+    \end{figure}
+  \end{mycolorbox}
 \end{enumerate}
 
 
