@@ -358,10 +358,93 @@
   \textbf{Reference:}
   \footnotesize
   \begin{itemize}
-    \item 
+    \item \href{https://documentation.ubuntu.com/server/how-to/sssd/with-ldap/index.html}{How to set up SSSD with LDAP}
+    \item \url{https://wiki.archlinux.org/title/SSSD}
+    \item \url{https://man.archlinux.org/man/sssd-ldap.5.en}
+    \item \href{https://superuser.com/questions/1239818/difference-between-sudo-group-and-sudoers-file}{Difference between sudo group and sudoers file}
+    \item \url{https://wiki.archlinux.org/title/LDAP_authentication}
   \end{itemize}
 \end{mycolorbox}
 
+\begin{enumerate}
+  \item 首先，我在 client 上安裝 SSSD 和 sudo 套件：
+  \begin{minted}{bash}
+    pacman -S sssd sudo
+  \end{minted}
+  \item 接著，編輯 \texttt{/etc/sssd/sssd.conf} 檔案，加入以下內容：
+  \begin{minted}{bash}
+    [sssd]
+    domains = nasa.csie.ntu
+    services = nss, pam
+
+    [domain/nasa.csie.ntu]
+    id_provider        = ldap
+    auth_provider      = ldap
+    chpass_provider    = ldap
+    ldap_uri           = ldaps://ldap-server.nasa.csie.ntu
+    ldap_tls_reqcert   = demand
+    ldap_search_base   = dc=nasa,dc=csie,dc=ntu
+    cache_credentials  = true
+    fallback_homedir   = /home/%u
+  \end{minted}
+  \item 完成後，將檔案的權限設為 600：
+  \begin{minted}{bash}
+    chmod 600 /etc/sssd/sssd.conf
+  \end{minted}
+  \item 接著，設定 PAM，允許自動新增使用者資料夾。編輯 \texttt{/etc/pam.d/system-auth} 檔案，加入以下內容：
+  \begin{minted}{bash}
+    auth sufficient pam_sss.so forward_pass # 加在最前面
+    account [default=bad success=ok user_unknown=ignore authinfo_unavail=ignore] pam_sss.so # 加在 account 區段最前面
+    password sufficient pam_sss.so # 加在 password 區段最前面
+    session required pam_mkhomedir.so skel=/etc/skel umask=0022
+    session optional pam_sss.so
+  \end{minted}
+  \item 接著，啟用 SSSD 服務：
+  \begin{minted}{bash}
+    systemctl enable sssd
+    systemctl start sssd
+  \end{minted}
+  \item 編輯 Client 的 \texttt{/etc/sudoers.d/ta} 檔案，加入以下內容：
+  \begin{minted}{bash}
+    %ta ALL=(ALL) ALL
+  \end{minted}
+  然後以指令 \texttt{chmod 440 /etc/sudoers.d/ta} 設定權限。
+  \item 編輯 \texttt{/etc/nsswitch.conf} 檔案，將 \texttt{passwd}、\texttt{group} 和 \texttt{shadow} 的值加上 \texttt{sss}：
+  \begin{minted}{bash}
+    passwd: files sss systemd
+    group: files sss [SUCCESS=merge] systemd
+    shadow: files sss systemd
+  \end{minted}
+  \item 修改 \texttt{/etc/sshd/sshd\_config} 檔案，將 \texttt{UsePAM} 的值改為 \texttt{yes}。
+  \item 接著，以 \texttt{systemctl restart sshd} 和 \texttt{systemctl restart sssd}重啟 sshd 和 sssd 服務：
+
+  \item 回到 server 上，新增一個檔案 \texttt{addgroup.ldif} 用來加入兩個群組，並且用以下指令套用：
+  \begin{minted}{bash}
+    ldapadd -x -H ldaps:/// -D "cn=admin,dc=nasa,dc=csie,dc=ntu" -W -f addgroup.ldif
+  \end{minted}
+  \item 使用指令 \texttt{slappasswd} 產生兩個密碼雜湊值，作為新增使用者的密碼。
+  \item 接著，新增一個檔案 \texttt{adduser.ldif} 用來新增兩個使用者，分別為 \texttt{ta-1} 和 \texttt{student-1} 並且用以下指令套用：
+  \begin{minted}{bash}
+    ldapadd -x -H ldaps:/// -D "cn=admin,dc=nasa,dc=csie,dc=ntu" -W -f adduser.ldif
+  \end{minted}
+  \item 分別以 ssh 連線到 client 上，如以下結果所示：
+  \begin{mycolorbox}[green]
+    \textbf{Answer:}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.75\textwidth]{2-2-1.png}
+      \caption{使用者 ta-1 登入 client}
+      \label{fig:sssd-ta1}
+    \end{figure}
+    \vspace{-0.5cm}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.75\textwidth]{2-2-2.png}
+      \caption{使用者 student-1 登入 client}
+      \label{fig:sssd-student1}
+    \end{figure}
+  \end{mycolorbox}
+\end{enumerate}
 
 % Problem 2-3
 \subsection{ACL (Access Control Lists)}
