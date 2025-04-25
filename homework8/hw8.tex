@@ -18,6 +18,7 @@
 \usepackage{titlesec} % 標題格式
 \usepackage{setspace} % 行距
 \usepackage{minted} % 程式碼高亮（需安裝 Python 套件 pygments）
+\usepackage{ulem}
 \usepackage[shortlabels]{enumitem} % 列表格式
 \usepackage[colorlinks=true,linkcolor=black,urlcolor=blue,citecolor=blue]{hyperref}
 % 超連結
@@ -452,11 +453,89 @@
   \textbf{Reference:}
   \footnotesize
   \begin{itemize}
-    \item 
+    \item \url{https://www.weithenn.org/2009/06/openldap-server-install.html}
+    \item \url{https://www.openldap.org/doc/admin24/access-control.html}
+    \item \url{https://uit.stanford.edu/service/directory/aclexamples}
   \end{itemize}
 \end{mycolorbox}
+首先，我建立了一個 \texttt{acl.ldif} 檔案，並且加入以下內容：
+\begin{minted}{ldif}
+  dn: olcDatabase={1}mdb,cn=config
+  changetype: modify
+  replace: olcAccess
+  olcAccess: {0}to attrs=userPassword by self write by anonymous auth by * none
+  olcAccess: {1}to attrs=cn,uid,gidNumber,homeDirectory by self read by users read by anonymous read
+  olcAccess: {2}to dn.subtree=ou=people,dc=nasa,dc=csie,dc=ntu by self write by users read by anonymous read
+  olcAccess: {3}to * by self write by users read by anonymous read
+\end{minted}
+然後我利用以下指令將 ACL 套用到 LDAP Server：
+\begin{minted}{bash}
+  ldapmodify -Y EXTERNAL -H ldapi:/// -f acl.ldif
+\end{minted}
+以下為我驗證 ACL 的步驟與結果：
+\begin{enumerate}[label=(\alph*)]
+  \item 確認使用者不可以修改其他使用者的資料：
+  \begin{itemize}
+    \item 建立\texttt{change-student-pass.ldif}，並且以以下指令套用，來嘗試使用 \texttt{ta-1} 來修改 \texttt{student-1} 的密碼：
+    \begin{minted}{bash}
+      ldapmodify -x -H ldaps:/// \
+        -D "uid=ta-1,ou=people,dc=nasa,dc=csie,dc=ntu" -W \
+        -f change-student-pass.ldif
+    \end{minted}
+    \item 得到以下錯誤訊息，成功阻擋：
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.8\textwidth]{2-3-1.png}
+      \caption{使用者 ta-1 嘗試修改 student-1 的密碼}
+      \label{fig:ta1-change-student1}
+    \end{figure}
+  \end{itemize}
 
+  \clearpage
+  \item 確認使用者只可以更改除了 \texttt{cn}、\texttt{uid}、\texttt{gid} 和家目錄以外的資訊，如 \texttt{loginShell}：
+  \begin{itemize}
+    \item 嘗試讓使用者修改自己的 \texttt{loginShell}。建立 \texttt{change-loginshell.ldif}，並用以下指令套用，：
+    \begin{minted}{bash}
+      ldapmodify -x -H ldaps:/// \
+        -D "uid=ta-1,ou=people,dc=nasa,dc=csie,dc=ntu" -W \
+        -f change-loginshell.ldif
+    \end{minted}
+    \item 成功修改：
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.8\textwidth]{2-3-2.png}
+      \caption{使用者 ta-1 可以修改自己的 loginShell}
+      \label{fig:ta1-change-loginshell}
+    \end{figure}
+    \item 嘗試讓使用者修改自己的 \texttt{cn}。建立 \texttt{change-cn.ldif}，並用以下指令套用：
+    \begin{minted}{bash}
+      ldapmodify -x -H ldaps:/// \
+        -D "uid=ta-1,ou=people,dc=nasa,dc=csie,dc=ntu" -W \
+        -f change-cn.ldif
+    \end{minted}
+    \item 得到以下錯誤訊息，成功阻擋：
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.8\textwidth]{2-3-3.png}
+      \caption{使用者 ta-1 嘗試修改自己的 cn}
+      \label{fig:ta1-change-cn}
+    \end{figure}
+  \end{itemize}
 
+  \item 確認使用者（包含 anonymous）可以存取其他使用者密碼以外的資訊：
+  \begin{itemize}
+      \item 我使用以下指令來查詢 \texttt{student-1} 的資訊，可以看到除了 \texttt{userPassword} 其他資訊都可以顯示：
+    \begin{minted}{bash}
+      ldapsearch -x -H ldaps:/// -b "ou=people,dc=nasa,dc=csie,dc=ntu" "(uid=student-1)"
+    \end{minted}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=\textwidth]{2-3-4.png}
+      \caption{anonymous 查詢 student-1 的資訊}
+      \label{fig:anonymous-query-student1}
+    \end{figure}
+  \end{itemize}
+\end{enumerate}
 
 % Problem 2-4
 \subsection{LDAP Schema Extension}
@@ -464,9 +543,46 @@
   \textbf{Reference:}
   \footnotesize
   \begin{itemize}
-    \item 
+    \item \href{https://blog.csdn.net/liukuan73/article/details/78684710}{LDAP的相关概念与objectClass介绍}
+    \item \url{https://www.openldap.org/doc/admin20/schema.html}
+    \item \url{https://www.iana.org/assignments/enterprise-numbers/}
+    \item \href{https://www.cnblogs.com/eagle6688/p/16996460.html}{OpenLDAP 系列8 --- Backup}
+    \item \url{How to Extend the Native LDAP Schema, and User and Group Entries}
+    \item \href{https://www.openldap.org/doc/admin26/slapdconf2.html}{slapd.conf(5) - OpenLDAP }(得知需要使用 olcAttributeTypes 而不是 attributeType)
   \end{itemize}
 \end{mycolorbox}
+\begin{enumerate}
+  \item 首先，我用以下指令備份 LDAP Server 的資料：
+  \begin{minted}{bash}
+    sudo slapcat -n 0 -l /var/backups/ldap-config-$(date +%F).ldif
+    sudo slapcat -n 1 -l /var/backups/ldap-data-$(date +%F).ldif
+  \end{minted}
+  \item 我到 iana 網站上查詢 OID，找到了一組 \texttt{1.3.6.1.4.1.19089} 的 OID，看起來註冊單位是建中資訊社。\sout{雖然我是電研的，但用這組顯然很讚。}
+  \item 接著，我在 server 上建立一個 \texttt{schema.ldif} 檔案，當中包含兩個 attributeType 和一個 objectClass，並且用以下指令套用：
+  \begin{minted}{bash}
+    ldapmodify -Y EXTERNAL -H ldapi:/// -f schema.ldif    
+  \end{minted}
+  \begin{mycolorbox}[gray]
+    \textbf{p.s.} 其實 \texttt{schema.ldif} 的 dn 應該要是 \texttt{cn=schema,cn=config}比較好，但我不小心在 \texttt{cn=config} 下套用，而在結果上似乎沒有影響。
+  \end{mycolorbox}
+  \item 接著，我在 server 上建立一個 \texttt{addstudent2.ldif} 檔案，當中包含一個新的學生，並且用以下指令套用：
+  \begin{minted}{bash}
+    ldapadd -x -H ldaps:/// -D "cn=admin,dc=nasa,dc=csie,dc=ntu" -W -f addstudent2.ldif
+  \end{minted}
+  \item 用以下指令查詢 \texttt{student-2} 的資訊，發現可以成功查詢到 \texttt{student-2} 的資訊：
+  \begin{minted}{bash}
+    ldapsearch -ZZ -x -b "uid=student-1,ou=people,dc=nasa,dc=csie,dc=ntu"
+  \end{minted}
+  \begin{mycolorbox}[green]
+    \textbf{Answer:}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=\textwidth]{2-4-1.png}
+      \caption{查詢 student-2 的資訊}
+      \label{fig:student2-query}
+    \end{figure}
+  \end{mycolorbox}
+\end{enumerate}
 
 
 % -----------------------------------------------------------
