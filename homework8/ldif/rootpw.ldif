@@ -1,0 +1,3 @@
+# rootpw.ldif
+replace: olcRootPW
+olcRootPW: {SSHA}ac40uQNstl8aq2yD4GFFNQ3oP13cTKe3

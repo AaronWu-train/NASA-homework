@@ -1,0 +1,27 @@
+# TA 群組使用者
+dn: uid=ta-1,ou=people,dc=nasa,dc=csie,dc=ntu
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: ta-1
+cn: TA-1
+sn: TA
+uidNumber: 3015
+gidNumber: 2000
+homeDirectory: /home/ta-1
+loginShell: /bin/bash
+userPassword: {SSHA}QyOjTCXxHzjJ5cf38J1DaWvGmGPRsAO4
+
+# Student 群組使用者
+dn: uid=student-1,ou=people,dc=nasa,dc=csie,dc=ntu
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: student-1
+cn: Student-1
+sn: Student
+uidNumber: 3020
+gidNumber: 2001
+homeDirectory: /home/student-1
+loginShell: /bin/bash
+userPassword: {SSHA}QyOjTCXxHzjJ5cf38J1DaWvGmGPRsAO4

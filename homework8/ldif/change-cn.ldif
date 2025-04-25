@@ -1,0 +1,5 @@
+# change-cn.ldif
+dn: uid=ta-1,ou=people,dc=nasa,dc=csie,dc=ntu
+changetype: modify
+replace: cn
+cn: TA HAHAHA NEW NAME

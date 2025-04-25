@@ -1,0 +1,4 @@
+dn: uid=ta-1,ou=people,dc=nasa,dc=csie,dc=ntu
+changetype: modify
+replace: loginShell
+loginShell: /bin/sh

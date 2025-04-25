@@ -1,0 +1,6 @@
+# rootdn.ldif
+dn: olcDatabase={1}mdb,cn=config
+changetype: modify
+replace: olcRootDN
+olcRootDN: cn=admin,dc=nasa,dc=csie,dc=ntu
+

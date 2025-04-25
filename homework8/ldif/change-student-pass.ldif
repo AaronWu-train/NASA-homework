@@ -1,0 +1,4 @@
+dn: uid=student-1,ou=people,dc=nasa,dc=csie,dc=ntu
+changetype: modify
+replace: userPassword
+userPassword: superIdleDeSmile

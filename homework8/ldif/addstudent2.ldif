@@ -1,0 +1,14 @@
+dn: uid=student-2,ou=people,dc=nasa,dc=csie,dc=ntu
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: StudentInformation
+uid: student
+cn: student-2
+sn: student-2
+uidNumber: 10000
+gidNumber: 2001
+homeDirectory: /home/student-2
+loginShell: /bin/bash
+studentName: student-2
+examGroupID: 48763
+userPassword: {SSHA}OhZq2sVaaRbA1Rpgh/tPlQnOSIHlT9qY

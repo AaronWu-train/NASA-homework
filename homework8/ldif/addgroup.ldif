@@ -1,0 +1,11 @@
+dn: cn=ta,ou=group,dc=nasa,dc=csie,dc=ntu
+objectClass: top
+objectClass: posixGroup
+cn: ta
+gidNumber: 2000
+
+dn: cn=student,ou=group,dc=nasa,dc=csie,dc=ntu
+objectClass: top
+objectClass: posixGroup
+cn: student
+gidNumber: 2001

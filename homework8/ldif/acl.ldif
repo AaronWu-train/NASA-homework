@@ -1,0 +1,7 @@
+dn: olcDatabase={1}mdb,cn=config
+changetype: modify
+replace: olcAccess
+olcAccess: {0}to attrs=userPassword by self write by anonymous auth by * none
+olcAccess: {1}to attrs=cn,uid,gidNumber,homeDirectory by self read by users read by anonymous read
+olcAccess: {2}to dn.subtree=ou=people,dc=nasa,dc=csie,dc=ntu by self write by users read by anonymous read
+olcAccess: {3}to * by self write by users read by anonymous read

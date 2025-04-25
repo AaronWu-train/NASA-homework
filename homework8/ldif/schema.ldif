@@ -1,0 +1,10 @@
+dn: cn=config
+changetype: modify
+add: olcAttributeTypes
+olcAttributeTypes: ( 1.3.6.1.4.1.19089.1.1 NAME 'studentName' DESC 'Full name of a student' EQUALITY caseIgnoreMatch SUBSTR  caseIgnoreSubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE )
+-
+add: olcAttributeTypes
+olcAttributeTypes: ( 1.3.6.1.4.1.19089.1.2 NAME 'examGroupID' DESC 'Identifier of examination group' EQUALITY integerMatch SYNTAX  1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+-
+add: olcObjectClasses
+olcObjectClasses: ( 1.3.6.1.4.1.19089.2.1 NAME 'StudentInformation' DESC 'Supplementary data for student accounts' SUP top AUXILIARY MUST ( studentName $ examGroupID ) )

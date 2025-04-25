@@ -1,0 +1,19 @@
+# base.ldif
+dn: dc=nasa,dc=csie,dc=ntu
+dc: nasa
+objectClass: top
+objectClass: domain
+
+dn: cn=admin,dc=nasa,dc=csie,dc=ntu
+cn: admin
+objectClass: organizationalRole
+description: admin account
+
+dn: ou=people,dc=nasa,dc=csie,dc=ntu
+ou: people
+objectClass: organizationalUnit
+
+dn: ou=group,dc=nasa,dc=csie,dc=ntu
+ou: group
+objectClass: organizationalUnit
+
