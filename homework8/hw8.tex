@@ -416,15 +416,19 @@
     group: files sss [SUCCESS=merge] systemd
     shadow: files sss systemd
   \end{minted}
-  \item 修改 \texttt{/etc/sshd/sshd\_config} 檔案，將 \texttt{UsePAM} 的值改為 \texttt{yes}。
-  \item 接著，以 \texttt{systemctl restart sshd} 和 \texttt{systemctl restart sssd}重啟 sshd 和 sssd 服務：
-
-  \item 回到 server 上，新增一個檔案 \texttt{addgroup.ldif} 用來加入兩個群組，並且用以下指令套用：
+  \item 修改 \texttt{/etc/sshd/sshd\_config} 檔案，加入以下修改：
+  \begin{minted}{bash}
+    UsePAM yes
+    PasswordAuthentication yes
+    ChallengeResponseAuthentication no    
+  \end{minted}
+  \item 接著，以 \texttt{systemctl restart sshd} 和 \texttt{systemctl restart sssd}重啟 sshd 和 sssd 服務。
+  \item 回到 server 上，新增檔案 \texttt{addgroup.ldif} 用來加入兩個群組，並且用以下指令套用：
   \begin{minted}{bash}
     ldapadd -x -H ldaps:/// -D "cn=admin,dc=nasa,dc=csie,dc=ntu" -W -f addgroup.ldif
   \end{minted}
   \item 使用指令 \texttt{slappasswd} 產生兩個密碼雜湊值，作為新增使用者的密碼。
-  \item 接著，新增一個檔案 \texttt{adduser.ldif} 用來新增兩個使用者，分別為 \texttt{ta-1} 和 \texttt{student-1} 並且用以下指令套用：
+  \item 接著，新增檔案 \texttt{adduser.ldif} 用來新增兩個使用者，分別為 \texttt{ta-1} 和 \texttt{student-1}，並用以下指令套用：
   \begin{minted}{bash}
     ldapadd -x -H ldaps:/// -D "cn=admin,dc=nasa,dc=csie,dc=ntu" -W -f adduser.ldif
   \end{minted}
@@ -433,14 +437,14 @@
     \textbf{Answer:}
     \begin{figure}[H]
       \centering
-      \includegraphics[width=0.75\textwidth]{2-2-1.png}
+      \includegraphics[width=0.66\textwidth]{2-2-1.png}
       \caption{使用者 ta-1 登入 client}
       \label{fig:sssd-ta1}
     \end{figure}
     \vspace{-0.5cm}
     \begin{figure}[H]
       \centering
-      \includegraphics[width=0.75\textwidth]{2-2-2.png}
+      \includegraphics[width=0.66\textwidth]{2-2-2.png}
       \caption{使用者 student-1 登入 client}
       \label{fig:sssd-student1}
     \end{figure}
