@@ -111,6 +111,137 @@
   \end{itemize}
 \end{mycolorbox}
 
+% Problem 1
+\section{系統環境與 NFS 基礎安裝}
+
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item \href{https://caloskao.org/using-netplan-to-configure-ubuntu-nic/}{使用 Netplan 進行 Ubuntu 的網路卡設定}
+    \item \href{https://documentation.ubuntu.com/server/how-to/networking/install-nfs/index.html}{Network File System (NFS)}
+    \item 
+    \item 
+    \item 
+  \end{itemize}
+\end{mycolorbox}
+\setcounter{subsection}{-1}
+\subsection{Setup}
+\begin{enumerate}
+  \item 首先，我啟動三台虛擬機之後，以 VNC 連線上去，並且以 lab 的方法啟動 \texttt{ens3} 與 \texttt{ens4} 兩個網路介面卡。
+  \item 虛擬機中沒有 \texttt{dhclient}，所以我建立 \texttt{/etc/netplan/nasa.yaml} 來手動設定 IP 位址。
+  \begin{minted}{yaml}
+    network:
+      ethernets:
+          ens3:
+              addresses: [10.0.2.15/24]
+              nameservers:
+                  addresses: [8.8.8.8]
+              routes:
+              -   to: default
+                  via: 10.0.2.2
+          ens4:
+              addresses: [192.168.128.73/24]
+      version: 2
+  \end{minted}
+  \item 將其他的 yaml 檔案移除，並且執行 \texttt{sudo netplan apply} 來套用設定。
+  \item 設定完成後，三台虛擬機的 IP 位址分別為：
+  \begin{itemize}
+    \item \texttt{hpc1}: \texttt{192.168.128.71}
+    \item \texttt{hpc2}: \texttt{192.168.128.72}
+    \item \texttt{nfs-server}: \texttt{192.168.128.73}
+  \end{itemize}
+\end{enumerate}
+
+\subsection{NFS Server 端設定}
+\begin{enumerate}
+  \item 我按照 lab 的指示，安裝 NFS Server，並編輯 \texttt{/etc/exports} 檔案，加入以下內容：
+  \begin{minted}{bash}
+    /srv/nfs-share 192.168.128.0/24(rw,sync,fsid=0,crossmnt,no_subtree_check) 
+  \end{minted}
+  \item 更改資料夾權限：
+  \begin{minted}{bash}
+    sudo mkdir -p /srv/nfs-share
+    sudo chown 1000:1000 /srv/nfs-share/
+    sudo chmod 755 /srv/nfs-share
+  \end{minted}
+  \item 套用設定並且啟動 NFS Server：
+  \begin{minted}{bash}
+    sudo exportfs -arv 
+    sudo systemctl enable --now nfs-server
+  \end{minted}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{1-1.png}
+    \caption{nfs-server 的 NFS 服務確認 }
+    \label{fig:1-1}
+  \end{figure}
+\end{enumerate}
+
+\subsection{Client 端掛載}
+\begin{enumerate}
+  \item 在 \texttt{hpc1} 與 \texttt{hpc2} 上安裝 NFS Client
+  \item 用 lab 的方法掛載 NFS Server 的資料夾：
+  \begin{minted}{bash}
+    sudo mkdir -p /mnt/nfs-share
+    sudo mount -t nfs 192.168.128.73:/srv/nfs-share /mnt/nfs-share
+  \end{minted}
+  \item 確認掛載成功：
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{1-2-1.png}
+    \includegraphics[width=0.9\textwidth]{1-2-2.png}
+    \caption{hpc1 與 hpc2 的 NFS 掛載確認 }
+    \label{fig:1-2}
+  \end{figure}
+  \item 完成後，我依序建立了 \texttt{from\_hpc1.txt} 與 \texttt{from\_hpc2.txt} 兩個檔案，並且成功從兩台 Client 端和 NFS Server 端互相讀、寫檔案。
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{1-2-3.png}
+    \includegraphics[height=3.19cm]{1-2-4.png}
+    \includegraphics[height=3.19cm]{1-2-5.png}
+    \caption{server、hpc1 與 hpc2 的檔案互相讀寫}
+    \label{fig:1-3}
+  \end{figure}
+\end{enumerate}
+
+
+% Problem 2
+\section{多使用者帳號與權限控管}
+
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item 
+    \item 
+    \item 
+    \item 
+    \item 
+    \item 
+    \item 
+  \end{itemize}
+\end{mycolorbox}
+
+
+% Problem 3
+\section{效能與大規模檔案測試}
+
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item 
+    \item 
+    \item 
+    \item 
+    \item 
+    \item 
+    \item 
+  \end{itemize}
+\end{mycolorbox}
+
+
 % -----------------------------------------------------------
 %    You don't have to mess with anything below this line.
 % -----------------------------------------------------------
