@@ -120,16 +120,13 @@
   \begin{itemize}
     \item \href{https://caloskao.org/using-netplan-to-configure-ubuntu-nic/}{使用 Netplan 進行 Ubuntu 的網路卡設定}
     \item \href{https://documentation.ubuntu.com/server/how-to/networking/install-nfs/index.html}{Network File System (NFS)}
-    \item 
-    \item 
-    \item 
   \end{itemize}
 \end{mycolorbox}
 \setcounter{subsection}{-1}
 \subsection{Setup}
 \begin{enumerate}
   \item 首先，我啟動三台虛擬機之後，以 VNC 連線上去，並且以 lab 的方法啟動 \texttt{ens3} 與 \texttt{ens4} 兩個網路介面卡。
-  \item 虛擬機中沒有 \texttt{dhclient}，所以我建立 \texttt{/etc/netplan/nasa.yaml} 來手動設定 IP 位址。
+  \item 虛擬機中沒有 \texttt{dhclient}，所以我建立 \texttt{/etc/netplan/nasa.yaml} 來手動設定 \texttt{ens3} 和 \texttt{ens4} 的IP 位址。
   \begin{minted}{yaml}
     network:
       ethernets:
@@ -189,8 +186,8 @@
   \item 確認掛載成功：
   \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{1-2-1.png}
-    \includegraphics[width=0.9\textwidth]{1-2-2.png}
+    \includegraphics[width=\textwidth]{1-2-1.png}
+    \includegraphics[width=\textwidth]{1-2-2.png}
     \caption{hpc1 與 hpc2 的 NFS 掛載確認 }
     \label{fig:1-2}
   \end{figure}
@@ -206,6 +203,7 @@
 \end{enumerate}
 
 
+\clearpage
 % Problem 2
 \section{多使用者帳號與權限控管}
 
