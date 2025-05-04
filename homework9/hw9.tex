@@ -166,6 +166,7 @@
   \begin{minted}{bash}
     sudo exportfs -arv 
     sudo systemctl enable --now nfs-server
+    sudo systemctl restart nfs-server
   \end{minted}
   \begin{figure}[H]
     \centering
@@ -211,16 +212,215 @@
   \textbf{Reference:}
   \footnotesize
   \begin{itemize}
-    \item 
-    \item 
-    \item 
-    \item 
-    \item 
-    \item 
-    \item 
+    \item \href{https://docs.google.com/presentation/d/1QOBSuBnh2F55daXRpcfpHbN-fNiUS3Hz2edsyFqzFQQ/edit?usp=sharing}{Lab 9 簡報}
+    \item Homework 8
+    \item \href{https://linux.vbird.org/somepaper/20050817-ldap-1.pdf}{LDAP 入門}
+    \item \href{https://www.baeldung.com/linux/ubuntu-ldap-client}{Configuring Ubuntu as an LDAP Client}
   \end{itemize}
 \end{mycolorbox}
 
+\subsection{LDAP 與 NFS}
+\begin{enumerate}
+  \item 建立 \texttt{astro} 的資料夾：
+  \begin{minted}{bash}
+    sudo mkdir /srv/nfs-share/astro1_dir
+    sudo mkdir /srv/nfs-share/astro2_dir
+    sudo mkdir /srv/nfs-share/astro3_dir
+  \end{minted}
+  \item 我在 \texttt{nfs-server} 上安裝 ldap 伺服器套件：
+  \begin{minted}{bash}
+    sudo apt install slapd ldap-utils
+  \end{minted}
+  \item 用 \texttt{slappasswd} 產生密碼。
+  \item 參考 lab9，我創立 \texttt{setup.ldif} 檔案，並且加入以下內容：
+  \begin{minted}{ldif}
+    dn: olcDatabase={1}mdb,cn=config
+    changetype: modify
+    replace: olcSuffix
+    olcSuffix: dc=nasa,dc=csie,dc=ntu
+
+    dn: olcDatabase={1}mdb,cn=config
+    changetype: modify
+    replace: olcRootDN
+    olcRootDN: cn=admin,dc=nasa,dc=csie,dc=ntu
+
+    dn: olcDatabase={1}mdb,cn=config
+    changetype: modify
+    replace: olcRootPW
+    olcRootPW:{SSHA}LZBdH0PETNbAcD6P0cGxVjS9XR2pVNfy
+  \end{minted}
+  並用 \texttt{ldapmodify -Y EXTERNAL -H ldapi:/// -f rootdn.ldif} 套用設定。
+  \clearpage
+  \item 建立 \texttt{base.ldif} 檔案，並加入以下內容：
+  \begin{minted}{ldif}
+    dn: dc=nasa,dc=csie,dc=ntu
+    dc: nasa
+    objectClass: top
+    objectClass: domain
+
+    dn: cn=admin,dc=nasa,dc=csie,dc=ntu
+    cn: admin
+    objectClass: organizationalRole
+    description: admin account
+
+    dn: ou=people,dc=nasa,dc=csie,dc=ntu
+    ou: people
+    objectClass: organizationalUnit
+
+    dn: ou=group,dc=nasa,dc=csie,dc=ntu
+    ou: group
+    objectClass: organizationalUnit
+  \end{minted}
+  並用 \texttt{ldapadd -x -D cn=admin,dc=nasa,dc=csie,dc=ntu -W -f base.ldif} 套用設定。
+  \item 建立 \texttt{user.ldif} 檔案，並加入以下內容：
+  \begin{minted}{ldif}
+    dn: cn=astro1,ou=group,dc=nasa,dc=csie,dc=ntu
+    objectClass: posixGroup
+    cn: astro1
+    gidNumber: 1001
+
+    dn: cn=astro2,ou=group,dc=nasa,dc=csie,dc=ntu
+    objectClass: posixGroup
+    cn: astro2
+    gidNumber: 1002
+
+    dn: cn=astro3,ou=group,dc=nasa,dc=csie,dc=ntu
+    objectClass: posixGroup
+    cn: astro3
+    gidNumber: 1003
+
+    dn: uid=astro1,ou=people,dc=nasa,dc=csie,dc=ntu
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    cn: astro1
+    sn: astro1
+    uid: astro1
+    uidNumber: 1001
+    gidNumber: 1001
+    homeDirectory: /mnt/nfs-share/astro1_dir
+    loginShell: /bin/bash
+
+    dn: uid=astro2,ou=people,dc=nasa,dc=csie,dc=ntu
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    cn: astro2
+    sn: astro2
+    uid: astro2
+    uidNumber: 1002
+    gidNumber: 1002
+    homeDirectory: /mnt/nfs-share/astro2_dir
+    loginShell: /bin/bash
+
+    dn: uid=astro3,ou=people,dc=nasa,dc=csie,dc=ntu
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    cn: astro3
+    sn: astro3
+    uid: astro3
+    uidNumber: 1003
+    gidNumber: 1003
+    homeDirectory: /mnt/nfs-share/astro3_dir
+    loginShell: /bin/bash
+  \end{minted}
+  並用 \texttt{ldapadd -x -D cn=admin,dc=nasa,dc=csie,dc=ntu -W -f user.ldif} 套用設定。
+  \item 使用以下指令為 \texttt{astro1}、\texttt{astro2} 與 \texttt{astro3} 三個使用者設定密碼：
+  \begin{minted}{bash}
+    ldappasswd -x -D "cn=admin,dc=nasa,dc=csie,dc=ntu" -W \
+      -S "uid=astro1,ou=people,dc=nasa,dc=csie,dc=ntu"
+    ldappasswd -x -D "cn=admin,dc=nasa,dc=csie,dc=ntu" -W \
+      -S "uid=astro2,ou=people,dc=nasa,dc=csie,dc=ntu"
+    ldappasswd -x -D "cn=admin,dc=nasa,dc=csie,dc=ntu" -W \
+      -S "uid=astro3,ou=people,dc=nasa,dc=csie,dc=ntu"
+  \end{minted}
+  \item 在 \texttt{hpc1} 與 \texttt{hpc2} 上安裝 ldap client 套件：
+  \begin{minted}{bash}
+    sudo apt update && sudo apt install libnss-ldap libpam-ldap ldap-utils nscd
+  \end{minted}
+  \item 安裝時，會需要填寫以下設定：
+  \begin{itemize}
+    \item \texttt{ldap server: ldap://192.168.128.73}
+    \item \texttt{base: dc=nasa,dc=csie,dc=ntu}
+    \item \texttt{ldap version: 3}
+    \item \texttt{Make local root Database admin: No}
+    \item \texttt{Does the LDAP database require login: No}
+  \end{itemize}
+  \item 編輯 \texttt{/etc/nsswitch.conf}，加入以下內容：
+  \begin{minted}{bash}
+    passwd: files systemd ldap
+    group: files systemd ldap
+    shadow: files systemd ldap
+  \end{minted}
+  \item 編輯 \texttt{/etc/ldap/ldap.conf}，加入以下內容：
+  \begin{minted}{bash}
+    BASE    dc=nasa,dc=csie,dc=ntu
+    URI     ldap://192.168.128.73
+  \end{minted}
+  \item 重啟 \texttt{nscd} 和 \texttt{nslcd} 服務：
+  \begin{minted}{bash}
+    sudo systemctl restart nscd
+    sudo systemctl restart nslcd
+  \end{minted}
+  \item 以下為結果確認：
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.49\textwidth]{2-1-1.png}
+  \includegraphics[width=0.49\textwidth]{2-1-2.png}
+  \includegraphics[width=0.49\textwidth]{2-1-3.png}
+  \includegraphics[width=0.49\textwidth]{2-1-6.png}
+  \includegraphics[width=0.49\textwidth]{2-1-4.png}
+  \includegraphics[width=0.49\textwidth]{2-1-7.png}
+  \includegraphics[width=0.49\textwidth]{2-1-5.png}
+  \includegraphics[width=0.49\textwidth]{2-1-8.png}
+  \caption{hpc1 與 hpc2 的使用者確認 }
+  \label{fig:2-1}
+\end{figure}
+\end{enumerate}
+
+\subsection{就算是 root 又怎樣？！}
+\begin{enumerate}
+  \item 在 server 上，我使用以下指令修改資料夾權限：
+  \begin{minted}{bash}
+    sudo chown 1001:1001 /srv/nfs-share/astro1_dir
+    sudo chown 1002:1002 /srv/nfs-share/astro2_dir
+    sudo chown 1003:1003 /srv/nfs-share/astro3_dir
+
+    sudo chmod 700 /srv/nfs-share/astro1_dir
+    sudo chmod 700 /srv/nfs-share/astro2_dir
+    sudo chmod 700 /srv/nfs-share/astro3_dir
+  \end{minted}
+  \item 修改 \texttt{/etc/exports} 檔案，修改以下內容：
+  \begin{minted}{bash}
+    /srv/nfs-share      192.168.128.0/24(rw,sync,fsid=0,crossmnt,no_subtree_check,root_squash)
+  \end{minted}
+  \item 套用設定並且重啟 NFS Server：
+  \begin{minted}{bash}
+    sudo exportfs -arv 
+    sudo systemctl restart nfs-server
+  \end{minted}
+  \item 我使用以下指令確認權限：
+  \begin{minted}{bash}
+    ls -l /srv/nfs-share
+  \end{minted}
+  以下為結果確認：
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{2-2.png}
+    \caption{server 的權限確認}
+    \label{fig:2-2}
+  \end{figure}
+  \item 以下為我在 \texttt{hpc1} 上，分別以 \texttt{astro1}、\texttt{astro2} 與 \texttt{root} 帳號嘗試進入 \texttt{astro1\_dir} 的結果：
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{2-3-1.png}
+    \includegraphics[width=0.7\textwidth]{2-3-2.png}
+    \includegraphics[width=\textwidth]{2-3-3.png}
+    \caption{\texttt{astro1\_dir} 的權限確認}
+    \label{fig:2-3}
+  \end{figure}
+\end{enumerate}
 
 % Problem 3
 \section{效能與大規模檔案測試}
