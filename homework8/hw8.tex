@@ -237,7 +237,7 @@
     signing_key
     expiration_days = 3652
   \end{minted}
-
+  \clearpage
   \item 接下來，我們要創立 CA 的公私鑰對：
   \begin{minted}{bash}
     certtool -p --outfile /etc/ssl/private/ca_server.key
@@ -269,7 +269,7 @@
     add: olcTLSCertificateKeyFile
     olcTLSCertificateKeyFile: /etc/ssl/private/ldap_server.key
   \end{minted}
-  \item 以 \texttt{ldapmodify -H ldapi:// -Y EXTERNAL -f addcerts.ldif} 指令將憑證載入 LDAP Server。
+  \item 以 \texttt{ldapmodify -H ldapi:/// -Y EXTERNAL -f addcerts.ldif} 指令將憑證載入 LDAP Server。
 
   \item 修改 \texttt{/etc/default/slapd} 檔案，將 \texttt{SLAPD\_SERVICES} 的改為：
   \begin{minted}{bash}
@@ -293,26 +293,19 @@
     \textbf{Answer:}
     \begin{figure}[H]
       \centering
-      \includegraphics[width=0.75\textwidth]{2-1-1.png}
+      \includegraphics[width=0.73\textwidth]{2-1-1.png}
       \caption{使用 StartTLS 連線 (\texttt{ldapsearch -x -ZZ -b dc=nasa,dc=csie,dc=ntu})}
       \label{fig:starttls}
     \end{figure}
     \begin{figure}[H]
       \centering
-      \includegraphics[width=0.75\textwidth]{2-1-2.png}
+      \includegraphics[width=0.73\textwidth]{2-1-2.png}
       \caption{使用 SSL 連線 (\texttt{ldapsearch -x -H ldaps:/// -b dc=nasa,dc=csie,dc=ntu})}
       \label{fig:sssl}
     \end{figure}
   \end{mycolorbox}
-  \item 為了只允許 SSL 連線，我建立了 \texttt{onlyssl.ldif}：
-  \begin{minted}{ldif}
-    # onlyssl.ldif
-    dn: cn=config
-    changetype: modify
-    replace: olcSecurity
-    olcSecurity: ssf=128 update_ssf=128 minssf=128 tls=1
-  \end{minted}
-  並且以 \texttt{ldapmodify -H ldapi:// -Y EXTERNAL -f onlyssl.ldif} 指令載入。
+  \item 為了只允許 SSL 連線，我建立了 \texttt{onlyssl.ldif}，
+  並且以 \texttt{ldapmodify -H ldapi:/// -Y EXTERNAL -f onlyssl.ldif} 指令載入。
   \item 接下來，將 server 上的 \texttt{/etc/ssl/certs/ca\_server.pem} 公鑰檔案複製到 client 上，放置到 \texttt{/etc/ca-certificates/trust-source/anchors/ca-nasa-ldap.crt} 中。
   \item 執行以下指令更新憑證，此指令會將憑證複製到\texttt{/etc/ssl/certs/LDAP\_Server\_CA.pem} 中，並加入系統的信任列表：
   \begin{minted}{bash}
@@ -326,13 +319,14 @@
   \begin{minted}{bash}
     URI     ldaps://ldap-server.nasa.csie.ntu
   \end{minted}
-  \item 執行 \texttt{ldapsearch -x -H -b dc=nasa,dc=csie,dc=ntu} 指令，發現可以用 ssl 成功連線，如下圖所示：
+  \item 執行 \texttt{ldapsearch -x -b dc=nasa,dc=csie,dc=ntu} 指令，發現可以用 ssl 成功連線，如下圖所示：
   \begin{mycolorbox}[green]
     \textbf{Answer:}
+    \vspace{-0.8cm}
     \begin{figure}[H]
       \centering
-      \includegraphics[width=0.8\textwidth]{2-1-3.png}
-      \caption{使用 SSL 連線 (\texttt{ldapsearch -x -H ldaps:/// -b dc=nasa,dc=csie,dc=ntu})}
+      \includegraphics[width=0.56\textwidth]{2-1-3.png}
+      \caption{使用 SSL 連線 (\texttt{ldapsearch -x -b dc=nasa,dc=csie,dc=ntu})}
       \label{fig:sssl-client}
     \end{figure}  
   \end{mycolorbox}
@@ -343,9 +337,10 @@
   \end{minted}
   \begin{mycolorbox}[green]
     \textbf{Answer:}
+    \vspace{-0.3cm}
     \begin{figure}[H]
       \centering
-      \includegraphics[width=\textwidth]{2-1-4.png}
+      \includegraphics[width=0.85\textwidth]{2-1-4.png}
       \caption{使用非 SSL 連線被阻擋}
       \label{fig:sssl-client-fail}
     \end{figure}
@@ -437,14 +432,14 @@
     \textbf{Answer:}
     \begin{figure}[H]
       \centering
-      \includegraphics[width=0.66\textwidth]{2-2-1.png}
+      \includegraphics[width=0.62\textwidth]{2-2-1.png}
       \caption{使用者 ta-1 登入 client}
       \label{fig:sssd-ta1}
     \end{figure}
     \vspace{-0.5cm}
     \begin{figure}[H]
       \centering
-      \includegraphics[width=0.66\textwidth]{2-2-2.png}
+      \includegraphics[width=0.62\textwidth]{2-2-2.png}
       \caption{使用者 student-1 登入 client}
       \label{fig:sssd-student1}
     \end{figure}
@@ -495,7 +490,6 @@
     \end{figure}
   \end{itemize}
 
-  \clearpage
   \item 確認使用者只可以更改除了 \texttt{cn}、\texttt{uid}、\texttt{gid} 和家目錄以外的資訊，如 \texttt{loginShell}：
   \begin{itemize}
     \item 嘗試讓使用者修改自己的 \texttt{loginShell}。建立 \texttt{change-loginshell.ldif}，並用以下指令套用，：
@@ -567,7 +561,7 @@
     ldapmodify -Y EXTERNAL -H ldapi:/// -f schema.ldif    
   \end{minted}
   \begin{mycolorbox}[gray]
-    \textbf{p.s.} 其實 \texttt{schema.ldif} 的 dn 應該要是 \texttt{cn=schema,cn=config}比較好，但我不小心在 \texttt{cn=config} 下套用，而在結果上似乎沒有影響。
+    \textbf{p.s.}\par 其實 \texttt{schema.ldif} 的 dn 應該要是 \texttt{cn=schema,cn=config}比較好，但我不小心在 \texttt{cn=config} 下套用，而在結果上似乎沒有影響。
   \end{mycolorbox}
   \item 接著，我在 server 上建立一個 \texttt{addstudent2.ldif} 檔案，當中包含一個新的學生，並且用以下指令套用：
   \begin{minted}{bash}
@@ -575,7 +569,7 @@
   \end{minted}
   \item 用以下指令查詢 \texttt{student-2} 的資訊，發現可以成功查詢到 \texttt{student-2} 的資訊：
   \begin{minted}{bash}
-    ldapsearch -ZZ -x -b "uid=student-1,ou=people,dc=nasa,dc=csie,dc=ntu"
+    ldapsearch -ZZ -x -b "uid=student-2,ou=people,dc=nasa,dc=csie,dc=ntu"
   \end{minted}
   \begin{mycolorbox}[green]
     \textbf{Answer:}
