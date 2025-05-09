@@ -425,6 +425,7 @@
   \end{figure}
 \end{enumerate}
 
+\clearpage
 % Problem 3
 \section{效能與大規模檔案測試}
 
@@ -442,6 +443,11 @@
   \item 首先，為了同步化測試，我在 server 上安裝 \texttt{parallel-ssh} 和 \texttt{sshpass} 套件。
   \begin{minted}{bash}
     sudo apt install pssh sshpass
+  \end{minted}
+  \item 由於 server 空間不夠，因此我用以下指令擴充 lvm 的空間：
+  \begin{minted}{bash}
+    sudo lvextend -l +100%FREE ubuntu-vg/ubuntu-lv
+    sudo resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
   \end{minted}
   \item 我可以透過編輯 server 的 \texttt{/etc/exports} 從 \texttt{sync} 模式切換到 \texttt{async} 模式：
   \begin{minted}{bash}
@@ -471,9 +477,10 @@
 
   \item 我撰寫的 shell script \texttt{nfs\_test.sh} 會依序做以下事情：
   \begin{enumerate}
-    \item 根據不同參數，決定使用 \texttt{single} 或 \texttt{parallel} 的方式來執行測試。若要測試 \texttt{single}，可以直接在 \texttt{hpc1} 或 \texttt{hpc2} 上執行 \texttt{nfs\_test.sh}。若要測試 \texttt{parallel}，則需在 server 上執行，並給予 host 清單以及密碼，使得我的 shell script 可以透過 \texttt{parallel-ssh} 和 \texttt{sshpass} 自動登入 \texttt{hpc1} 和 \texttt{hpc2}。
-    \item 我使用 \texttt{dd} 指令來將一個大檔案寫入 NFS Server 的資料夾中，並且使用 \texttt{sync} 指令來確保所有的寫入操作都已經完成。
-    \item 我使用 \texttt{/usr/bin/time -v} 指令來獲得測試的時間與效能資訊，並將結果寫入檔案。
+    \item 根據不同參數，決定使用 \texttt{single} 或 \texttt{parallel} 的方式來執行測試。若要測試 \texttt{single}，可以直接在 \texttt{hpc1} 或 \texttt{hpc2} 上執行 \texttt{nfs\_test.sh}。若要測試 \texttt{parallel}，則需在 server 上執行，並給予 host 清單以及輸入密碼，使得我的 shell script 可以透過 \texttt{parallel-ssh} 自動登入 \texttt{hpc1} 和 \texttt{hpc2}。
+    \item 我使用 \texttt{dd} 指令來將一個大檔案寫入 NFS Server 的資料夾中。其中，\texttt{iflag=direct} 和 \texttt{oflag=direct} 參數可以讓 \texttt{dd} 指令直接寫入磁碟，而不經過快取，這樣可以更真實地測試 NFS 的效能。
+    同時，\texttt{dd} 指令會將寫入的時間和傳輸速率等資訊輸出。
+    \item 我使用 \texttt{/usr/bin/time -v} 指令來獲得測試的 CPU 效能資訊，並將結果寫入檔案。
   \end{enumerate}
   \item 以下爲我實測的結果。其中， 6 users 的量測值為每個 user 結果的平均：
   \begin{table}[H]
