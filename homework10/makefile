@@ -21,6 +21,9 @@ archive: prepare_dist
 prepare_dist:
 	@mkdir -p $(DIST_DIR)/$(ARCHIVE_DIR)
 	cp $(FILES_TO_ARCHIVE) $(DIST_DIR)/$(ARCHIVE_DIR)/$(STUDENT_ID).pdf
+	cp hostapd.conf $(DIST_DIR)/$(ARCHIVE_DIR)/$(STUDENT_ID).conf
+	cp images/c-5.png $(DIST_DIR)/$(ARCHIVE_DIR)/$(STUDENT_ID).png
+	
 
 clean:
 	rm -f ./*.aux ./*.log ./*.bbl ./*.blg ./*.toc ./*.out ./*.lof ./*.lot ./*fls ./*.fdb_latexmk ./*.synctex.gz
