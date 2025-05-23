@@ -114,6 +114,71 @@
   \item Enter the score board page and got the score.
 \end{enumerate}
 
+\subsection*{Bully Chatbot $\bigstar$}
+\textit{Steps:}
+\begin{enumerate}
+  \item After logined by admin, visit \texttt{http://localhost:3000/\#/chatbot} in browser.
+  \item Constantly send the message with a lot of \texttt{COUPON} to the chatbot. After lots of tries, the chatbot will reply a coupon.
+\end{enumerate}
+
+\subsection*{Empty User Registration $\bigstar\bigstar$}
+\textit{Steps:}
+\begin{enumerate}
+  \item Visit \texttt{http://localhost:3000/\#/register} in browser.
+  \item Fill in the registration form with random email and password.
+  \item Open Brup to intercept the request. Change the \texttt{email} and \texttt{password} to empty string. Then forward the request.
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{empty-user.png}
+    \caption{Use Burp to intercept the request}
+    \label{fig:empty_user_registration}
+  \end{figure}
+\end{enumerate}
+
+\subsection*{Login Bender $\bigstar\bigstar\bigstar$}
+\textit{Steps:}
+\begin{enumerate}
+  \item Visit Juice Shop product lists, and view every product's comment to find bender's email. 
+  \item I found out that bender's email is \texttt{bender@juice-sh.op}, at "Banana Juice (1000ml)"
+  \item Login with bender's email and use SQL injection to bypass the password:
+  \begin{itemize}
+    \item email: \texttt{bender@juice-sh.op' --}
+    \item password: \texttt{123456}
+  \end{itemize}
+\end{enumerate}
+
+\subsection*{Login Jim $\bigstar\bigstar\bigstar$}
+\textit{Steps:}
+\begin{enumerate}
+  \item Using the same method as "Login Bender", I found out that Jim's email is \texttt{jim@juice-sh.op}, at "Green Smoothie".
+  \item Login with Jim's email and use SQL injection to bypass the password:
+  \begin{itemize}
+    \item email: \texttt{jim@juice-sh.op' --}
+    \item password: \texttt{123456}
+  \end{itemize}
+\end{enumerate}
+
+\subsection*{Forged Review $\bigstar\bigstar\bigstar$}
+\textit{Steps:}
+\begin{enumerate}
+  \item After logined as jim, I visit the product list page and click one of the product to leave a review.
+  \item I use burp to intercept the submin request. I changed the \texttt{author} field from \texttt{jim@juice-sh.op} to \texttt{bender@juice-sh.op}.
+  \item After I forward the request, the task is completed.
+\end{enumerate}
+
+\subsection*{Error Handling $\bigstar$}
+\textit{Steps:}
+\begin{enumerate}
+  \item I typed \texttt{jim', 1 or 1; --} in the login email field, and create an error.
+\end{enumerate}
+
+\subsection*{Upload Type $\bigstar\bigstar\bigstar$}
+\textit{Steps:}
+\begin{enumerate}
+  \item I go to the \texttt{/ftp/quarantine} page and download the \texttt{juicy\_malware\_macos\_64.url} file.
+  \item Visit the complain page.
+  \item Select invoice file. I have to click "view options" in MacOS finder dialog box and change the format to \texttt{All Files} to upload the file. After that, I upload the "juicy malware" file.
+\end{enumerate}
 
 \section{Scoreboard}
 
