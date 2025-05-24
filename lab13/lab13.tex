@@ -180,7 +180,44 @@
   \item Select invoice file. I have to click "view options" in MacOS finder dialog box and change the format to \texttt{All Files} to upload the file. After that, I upload the "juicy malware" file.
 \end{enumerate}
 
+\subsection*{Forged Feedback $\bigstar\bigstar\bigstar$}
+\textit{Steps:}
+\begin{enumerate}
+  \item I login as jim and go to the Customer Feedback page and write a feedback.
+  \item I use burp to intercept the request and change the \texttt{UserId} field into another number, which is not jim's user id.
+  \item After I forward the request, the task is completed.
+\end{enumerate}
+
+\subsection*{Forgotten Developer Backup $\bigstar\bigstar\bigstar\bigstar$}
+\textit{Steps:}
+\begin{enumerate}
+  \item I tried to access the \texttt{http://localhost:3000/ftp/package.json.bak} file, but it was forbidden since Only .md and .pdf files are allowed to be downloaded.
+  \item I found the method of Poison Null Byte Injection, which I can use the url of \\
+  \texttt{http://localhost:3000/ftp/package.json.bak\%00.pdf} to try to access the file. But I got a 400 error.
+  \item I use Burp's Decoder page to encode \texttt{\%00} in to url-encoded format, which is \texttt{\%25\%30\%30}. 
+  \item I use the url of \texttt{http://localhost:3000/ftp/package.json.bak\%25\%30\%30.pdf} to access the file.
+\end{enumerate}
+
+\subsection*{Poison Null Byte $\bigstar\bigstar\bigstar\bigstar$}
+\textit{Steps:}
+\begin{enumerate}
+  \item I wasn't meant to solve this task. But after I solved the "Forgotten Developer Backup" task, I accidentally use the method of this task and got the score. 笑死
+ \end{enumerate}
+
+\subsection*{Web3 Sandbox $\bigstar$}
+\textit{Steps:}
+\begin{enumerate}
+  \item I go to the page \texttt{http://localhost:3000/\#/score-board} and then find the Web3 Sandbox. 
+\end{enumerate}
+
 \section{Scoreboard}
+\includegraphics[width=\textwidth]{scoreboard-1.png}
+
+\noindent
+\includegraphics[width=0.5\textwidth]{scoreboard-2.png}
+\includegraphics[width=0.5\textwidth]{scoreboard-3.png}
+\includegraphics[width=0.5\textwidth]{scoreboard-4.png}
+
 
 % -----------------------------------------------------------
 %    You don't have to mess with anything below this line.
