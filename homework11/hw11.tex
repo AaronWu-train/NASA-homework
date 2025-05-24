@@ -126,6 +126,7 @@
 % Problem 2 (26 points)
 % ------------------------------------------------------------
 \clearpage
+\setcounter{section}{1}
 \section{果汁店也有洞!}
 \begin{mycolorbox}[teal]
   \textbf{Reference:}
@@ -246,6 +247,7 @@
 % ------------------------------------------------------------
 % Problem 3 (30 points)
 % ------------------------------------------------------------
+\setcounter{section}{2}
 \section{R-SA！破密部}
 
 
@@ -254,21 +256,103 @@
 % Problem 4 (41 points)
 % ------------------------------------------------------------
 \clearpage
+\setcounter{section}{3}
 \section{TESTING in the FUZZ}
 
 % ------------------------------------------------------------
 % Problem 5 (28 points)
 % ------------------------------------------------------------
 \clearpage
+\setcounter{section}{4}
 \section{敗北協定太多了！}
 
 % ------------------------------------------------------------
 % Problem 6 (34 points)
 % ------------------------------------------------------------
 \clearpage
+\setcounter{section}{5}
 \section{猫物語（赤）}
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item \href{https://en.wikipedia.org/wiki/Linear_congruential_generator}{Linear congruential generator (LCG) - Wikipedia} 
+    \item \href{https://blog.csdn.net/weixin_44159598/article/details/109562837}{LCG 隨機數破解}
+    \item \href{https://stackoverflow.com/questions/4798654/modular-multiplicative-inverse-function-in-python}{Modular multiplicative inverse function in Python - Stack Overflow}
+    \item \url{https://blog.csdn.net/PlutoZuo/article/details/134697641}
+    \item 
+    \item 
+    \item 
+    \item 
+    \item 
+  \end{itemize}
+\end{mycolorbox}
+\subsection{猜數字}
+\textit{Steps:}
+\begin{enumerate}
+  \item 首先，我觀察了 \texttt{fatcat.py} 的程式碼，發現它使用了一個線性同餘生成器（LCG）來產生隨機數。這個生成器的公式為：
+  \begin{equation*}
+    X_{n+1} = (a \cdot X_n + c) \pmod m
+  \end{equation*}
+  \item 在程式碼當中我們已知 m ，但是並不知道 a 和 c 的值。然而，根據我搜尋的結果，LCG 演算法的 a 和 c 的值可以透過測量三次隨機數的差值來計算出來。過程如下：
+  \begin{equation*}
+    \begin{aligned}
+      X_1 &\equiv a\,X_0 + c \pmod{m},\\
+      X_2 &\equiv a\,X_1 + c \pmod{m},\\
+      X_2 - X_1 &\equiv a\,(X_1 - X_0) \pmod{m}
+    \end{aligned}
+    \quad\Longrightarrow\quad
+    \begin{aligned}
+      a &\equiv \frac{X_2 - X_1}{X_1 - X_0} \pmod{m},\\
+      c &\equiv X_1 - a\,X_0 \pmod{m}.
+    \end{aligned}
+  \end{equation*}
+  \item 我根據和伺服器互動三次，取得了 $X_0$、$X_1$ 和 $X_2$ 的值。接著，我透過 \texttt{solve\_lcg.py} 程式碼計算出 a 和 c 的值。
+  \item 我撰寫了 \texttt{predict\_lcg.py} 程式碼，並且在裡面透過 \texttt{pwntools} 套件來和伺服器互動，並且使用計算出來的 a 和 c 的值來預測下一個隨機數。猜中答案 100 次後，我取得足夠多信任值，並且成功獲得了 flag。
+\end{enumerate}
+
+\begin{mycolorbox}[green]
+  \textbf{Flag:} 
+  \begin{minted}[frame=none, linenos=false]{text}
+    NASA_HW11{pseudorandomness_does_not_guarantee_unpredictability}
+  \end{minted}
+\end{mycolorbox}
 
 
+\subsection{考試答案卷}
+\textit{Steps:}
+\begin{enumerate}
+  \item 觀察程式，可以看到產生 flag 2 加密的程式如下：
+  \begin{minted}{python3}
+    def OTPEncrypt(msg: bytes) -> bytes:
+        key_len = 10
+        key = secrets.token_bytes(key_len)
+        enc = bytes(msg[i] ^ key[i % key_len] for i in range(len(msg)))
+        return enc
+
+    def send_exam_result():
+        hexlify(OTPEncrypt(FLAG2.encode())).decode()
+  \end{minted}
+  這個加密方式將一組長度為 10 的 bytes 陣列，去和密鑰做 XOR 運算。因為我們知道原本文字當中一定含有 \texttt{NASA\_HW11\{} 開頭的字串，且密文 XOR 明文會得到密鑰，所以我們可以透過這個已知的字串來破解密鑰。
+  \item 在我的 \texttt{decrept\_otp.py} 當中，我首先先用 \texttt{unhexlify} 將密文轉換成 bytes，然後再窮舉 flag 開始的位置，接下來找出每一個開始位置如果明文是 \texttt{NASA\_HW11\{} 時，key 要是多少。
+  \item 接著，我在嘗試用這些 key 去解密密文，直到找到一個，解密出的文字包含整個 flag 字串的 regex 的 key。雖然有兩個開始位置算出的 key 都符合 regex，但是其中一個 key 解密出的文字明顯是亂碼，而另一個則是正常的文字。
+  \item 我解密出的文字是：
+  \begin{minted}{text}
+    LinearAlgebraMidterm Name:Fatcat Score:86 Flag:NASA_HW11{07p_k3y_mu57_b3_47_l3457_45_l0n6_45_pl41n73x7}
+  \end{minted}
+  因此可以得到 flag。
+\end{enumerate}
+\begin{mycolorbox}[green]
+  \textbf{Flag:} 
+  \begin{minted}[frame=none, linenos=false]{text}
+    NASA_HW11{07p_k3y_mu57_b3_47_l3457_45_l0n6_45_pl41n73x7}
+  \end{minted}
+\end{mycolorbox}
+
+\subsection{PoW}
+
+
+\subsection{Shared Key}
 
 % -----------------------------------------------------------
 %    You don't have to mess with anything below this line.
