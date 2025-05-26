@@ -280,11 +280,6 @@
     \item \href{https://blog.csdn.net/weixin_44159598/article/details/109562837}{LCG 隨機數破解}
     \item \href{https://stackoverflow.com/questions/4798654/modular-multiplicative-inverse-function-in-python}{Modular multiplicative inverse function in Python - Stack Overflow}
     \item \url{https://blog.csdn.net/PlutoZuo/article/details/134697641}
-    \item 
-    \item 
-    \item 
-    \item 
-    \item 
   \end{itemize}
 \end{mycolorbox}
 \subsection{猜數字}
@@ -333,9 +328,9 @@
     def send_exam_result():
         hexlify(OTPEncrypt(FLAG2.encode())).decode()
   \end{minted}
-  這個加密方式將一組長度為 10 的 bytes 陣列，去和密鑰做 XOR 運算。因為我們知道原本文字當中一定含有 \texttt{NASA\_HW11\{} 開頭的字串，且密文 XOR 明文會得到密鑰，所以我們可以透過這個已知的字串來破解密鑰。
-  \item 在我的 \texttt{decrept\_otp.py} 當中，我首先先用 \texttt{unhexlify} 將密文轉換成 bytes，然後再窮舉 flag 開始的位置，接下來找出每一個開始位置如果明文是 \texttt{NASA\_HW11\{} 時，key 要是多少。
-  \item 接著，我在嘗試用這些 key 去解密密文，直到找到一個，解密出的文字包含整個 flag 字串的 regex 的 key。雖然有兩個開始位置算出的 key 都符合 regex，但是其中一個 key 解密出的文字明顯是亂碼，而另一個則是正常的文字。
+  這個加密方式是將一組長度為 10 的位元組陣列作為金鑰，重複循環的與明文逐位做 XOR 運算來加密。由於明文中一定包含前綴 \texttt{NASA\_HW11\{}，而密文 XOR 明文正好會還原出金鑰，因此可利用這段已知字串來破解整個金鑰。
+  \item 在我的 \texttt{decrypt\_otp.py} 中，首先使用 \texttt{unhexlify} 將十六進位表示的密文還原為位元組，接著對所有可能的 flag 起始位置進行窮舉。對於每一個可能的起點，我們都假設明文是 \texttt{NASA\_HW11\{}，並且計算出對應的金鑰，加入候選金鑰列表中。
+  \item 隨後，我使用這些候選金鑰來解密整個密文，並透過正規表示式檢查解出的文字是否包含完整的 flag。雖然有兩組起始位置算出的明文都具有符合 flag regex 的片段，但其中一組明顯為雜亂亂碼，而另一組則是完整的 flag 格式。
   \item 我解密出的文字是：
   \begin{minted}{text}
     LinearAlgebraMidterm Name:Fatcat Score:86 Flag:NASA_HW11{07p_k3y_mu57_b3_47_l3457_45_l0n6_45_pl41n73x7}
@@ -350,10 +345,43 @@
 \end{mycolorbox}
 
 \subsection{PoW}
-
+\textit{Steps:}
+\begin{enumerate}
+  \item 根據伺服器程式碼當中建立 proof-of-work 的方式，我需要找到一個數字 $x$，使得 md5 的 0-8 位與給定的數字相同。
+  \item 然而可以發現，這個數字的範圍是 $[0, 2^{24})$ 的整數，因此我可以使用暴力建表的方式，預先計算出所有可能的 md5 前 8 位數字對應的數字 $x$。這樣在伺服器要求我提供 proof-of-work 時，我只需要查表即可。
+  \item 我撰寫了 \texttt{solve\_pow.py} 程式碼，首先用 python 的字典功能建立 md5 的對應表。當伺服器要求我提供 proof-of-work 時，我只需要查詢這個字典，找到對應的 $x$ 即可。最後，我以足夠快的速度回應伺服器，得到每秒鐘 220 次回應的速度，並且成功獲得了 flag。
+\end{enumerate}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{6-3.png}
+  \caption{獲得 flag}
+  \label{fig:2-6}
+\end{figure}
+\begin{mycolorbox}[green]
+  \textbf{Flag:} 
+  \begin{minted}[frame=none, linenos=false]{text}
+    NASA_HW11{https://youtu.be/1GxwDuV5JMc}
+  \end{minted}
+\end{mycolorbox}
 
 \subsection{Shared Key}
-
+\textit{Steps:}
+\begin{enumerate}
+  \item 因為所有人共用一組 shared key，因此我可以用 option 4 先取得 nonce，在開另一個視窗連線上之後，以 option 5 取得 \texttt{SHA256(nonce||shared\_key)} 的值，在貼回上一個視窗即可得到 flag。
+\end{enumerate}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{6-4-1.png}
+  \includegraphics[width=\textwidth]{6-4-2.png}
+  \caption{取得 nonce 和 shared key}
+  \label{fig:2-7}
+\end{figure}
+\begin{mycolorbox}[green]
+  \textbf{Flag:} 
+  \begin{minted}[frame=none, linenos=false]{text}
+  NASA_HW11{y0u_KN0w_r3F13C710n_4774cK}
+  \end{minted}
+\end{mycolorbox}
 % -----------------------------------------------------------
 %    You don't have to mess with anything below this line.
 % -----------------------------------------------------------
