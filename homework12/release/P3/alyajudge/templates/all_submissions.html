@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submissions</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>All Submissions</h1>
+        <p class="admin-note">Notice: Submissions for "Unfinish Problem" are not displayed in this list.</p>
+        {% if submissions %}
+        <ul class="submissions-list">
+            {% for sub_id, submission in submissions.items() %}
+            {% if submission is mapping and 'problem_title' in submission and 'language' in submission and 'result' in submission and 'code' in submission %}
+            <li>
+                <strong>Author:</strong> {{ submission.user }}<br>
+                <strong>Problem:</strong> <a href="{{ url_for('view_problem', problem_id=submission.problem_id) }}" style="color: darkblue;">{{ submission.problem_title }}</a><br>
+                <strong>Language:</strong> {{ submission.language }}<br>
+                <strong>Result:</strong> <span class="{{ submission.result.lower().replace(' ', '-') }}">{{ submission.result }}</span><br>
+                <strong>Score:</strong> {{ submission.score }}<br>
+                <strong>Code:</strong>
+                <pre><code class="{{ submission.language.lower() }}">{{ submission.code }}</code></pre>
+            </li>
+            {% else %}
+            <li class="debug-output">
+                <strong>Invalid Submission Object:</strong>
+                <pre>{{ sub_id, submission }}</pre>
+            </li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>No submissions yet.</p>
+        {% endif %}
+        <p><a href="{{ url_for('index') }}">Back to Problems</a></p>
+    </div>
+    <footer>
+        <p>&copy; 2025 Alya Judge</p>
+    </footer>
+</body>
+</html>

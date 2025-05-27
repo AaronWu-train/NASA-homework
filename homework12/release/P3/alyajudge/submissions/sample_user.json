@@ -1,0 +1,20 @@
+{
+    "114": {
+        "problem_id": 1,
+        "code": "a, b, a + b",
+        "language": "python",
+        "result": "Wrong Answer",
+        "score": 25,
+        "user": "sample_user",
+        "problem_title": "Sum of Two Numbers"
+    },
+    "514": {
+        "problem_id": 1,
+        "code": "a, b = int(input())\r\nprint(a + b)",
+        "language": "python",
+        "result": "Accepted",
+        "score": 100,
+        "user": "sample_user",
+        "problem_title": "Sum of Two Numbers"
+    }
+}

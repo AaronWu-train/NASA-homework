@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ problem.title }} - Online Judge</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>{{ problem.title }}</h1>
+        <p>{{ problem.description }}</p>
+        <p><strong>Time Limit:</strong> {{ problem.time_limit }} seconds</p>
+        <p><strong>Memory Limit:</strong> {{ problem.memory_limit }} MB</p>
+        <a href="{{ url_for('submit_code', problem_id=problem.id) }}">Submit Solution</a>
+        <p><a href="{{ url_for('index') }}">Back to Problems</a></p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+    <footer>
+        <p>&copy; 2025 Alya Judge</p>
+    </footer>
+</body>
+</html>

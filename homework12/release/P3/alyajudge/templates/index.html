@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alya Judge</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1><a href="https://www.amazon.co.jp/dp/4041148324">Alya Judge</a></h1>
+        <ul>
+            {% for id, problem in problems.items() %}
+            <li><a href="{{ url_for('view_problem', problem_id=id) }}">{{ problem.title }}</a></li>
+            {% endfor %}
+        </ul>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        {% if current_user %}
+            <p style="text-align:center">Welcome, {{ current_user }}!<br />
+            <a href="{{ url_for('view_my_submissions') }}">My Submissions</a> | <a href="{{ url_for('view_all_submissions')}}">All Submissions</a> | <a href="{{ url_for('logout') }}">Logout</a></p>
+        {% else %}
+            <p style="text-align:center"><a href="{{ url_for('login') }}">Login</a></p>
+        {% endif %}
+    </div>
+    <footer>
+        <p>&copy; 2025 Alya Judge</p>
+    </footer>
+</body>
+</html>

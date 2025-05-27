@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Code - {{ problem.title }}</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Submit Solution for {{ problem.title }}</h1>
+        <form method="POST">
+            <div>
+                <label for="language">Language:</label>
+                <select name="language" id="language">
+                    <option value="python">Python</option>
+                    <option value="c">C</option>
+                    <option value="cpp">C++</option>
+                </select>
+            </div>
+            <div>
+                <label for="code">Code:</label><br>
+                <textarea name="code" id="code" rows="15" cols="80"></textarea>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+        <p><a href="{{ url_for('view_problem', problem_id=problem.id) }}">Back to Problem</a></p>
+    </div>
+    <footer>
+        <p>&copy; 2025 Alya Judge</p>
+    </footer>
+</body>
+</html>
