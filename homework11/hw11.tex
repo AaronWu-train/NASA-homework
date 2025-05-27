@@ -120,12 +120,12 @@
 % ------------------------------------------------------------
 % Problem 1 (16 points)
 % ------------------------------------------------------------
-\section{三角準則的侵略者!?}
+% \section{三角準則的侵略者!?}
 
 % ------------------------------------------------------------
 % Problem 2 (26 points)
 % ------------------------------------------------------------
-\clearpage
+% \clearpage
 \setcounter{section}{1}
 \section{果汁店也有洞!}
 \begin{mycolorbox}[teal]
@@ -134,8 +134,6 @@
   \begin{itemize}
     \item Lab 13 Slide
     \item \href{https://medium.com/@Linuxlearners/understanding-ssrf-xss-and-csrf-the-triple-threat-in-web-security-7335d67dc780}{Understanding SSRF, XSS, and CSRF: The Triple Threat in Web Security}
-    \item 
-    \item 
   \end{itemize}
 \end{mycolorbox}
 \begin{mycolorbox}[orange]
@@ -201,12 +199,13 @@
     \label{fig:2-3}
   \end{figure}
 \end{enumerate}
-
+\vspace{-1cm}
 \subsubsection*{Scoreboard 截圖：}
+\vspace{-0.5cm}
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\textwidth]{images/2-4.png}
-  \includegraphics[width=\textwidth]{images/2-5.png}
+  \includegraphics[width=0.7\textwidth]{images/2-4.png}
+  \includegraphics[width=0.7\textwidth]{images/2-5.png}
   \caption{Juice Shop 的 Scoreboard}
   \label{fig:2-4}
 \end{figure}
@@ -249,27 +248,174 @@
 % ------------------------------------------------------------
 \setcounter{section}{2}
 \section{R-SA！破密部}
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item \url{https://docs.xanhacks.xyz/crypto/rsa/08-hastad-broadcast-attack/}
+    \item \url{https://ithelp.ithome.com.tw/m/articles/10204083}
+  \end{itemize}
+\end{mycolorbox}
 
+\subsection{Signing}
+\textit{Steps:}
+\begin{enumerate}
+  \item 首先，我發現 \texttt{soyo.py} 當中，判斷不能簽署 \texttt{name=soyo} 的方式是直接判斷字串開頭是否為 \texttt{name=}，而且 RSA 簽名的方式是將訊息轉為位元組後，直接算次方。因此，我如果在訊息最前端加上一個 null byte (\texttt{b'$\backslash$x00'})，就可以繞過開頭的檢查，並且產生出一樣的簽署訊息。
+  \item 我撰寫了 \texttt{sign.py} 程式碼，首先使用 \texttt{pwntools} 套件來和兩台伺服器互動，然後在訊息最前端加上 null byte，並且將訊息轉為位元組後，使用 RSA 簽名的方式計算出簽名。完成後，成功獲得了 flag，並且進入了下一題的互動區。
+\end{enumerate}
 
+\begin{mycolorbox}[green]
+  \textbf{Flag:} 
+  \begin{minted}[frame=none, linenos=false]{text}
+    NASA_HW11{blind_signing_is_dangerous}
+  \end{minted}
+\end{mycolorbox}
+
+\subsection{hacking RSA}
+\textit{Steps:}
+\begin{enumerate}
+  \item 觀察 \texttt{anon.py}，發現他 RSA 所使用的公鑰 $e$ 十分小，只有 7 而已。這意味著我們可以使用 Hastad's broadcast attack 來破解 RSA。只要我們先搜集七組不同的密文，然後將它們的模數 $n$ 和公鑰 $e$ 一起使用中國剩餘定理（CRT）來解出明文。
+  \item 我透過上一題的 \texttt{sign.py} 程式碼，和伺服器互動，取得七組密文和 $n$ 之後，然後使用 \texttt{solve\_rsa.py} 程式碼來計算出明文。完成後，我得到明文如下圖所示：
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{3-2.png}
+    \caption{解密後的明文}
+    \label{fig:3-2}
+  \end{figure}
+\end{enumerate}
+
+\begin{mycolorbox}[green]
+  \textbf{Flag:} 
+  \begin{minted}[frame=none, linenos=false]{text}
+    NASA_HW11{W0w_y0u_kNow_h@st@d'5_bro4dc@s7_47t@cK}
+  \end{minted}
+\end{mycolorbox}
 
 % ------------------------------------------------------------
 % Problem 4 (41 points)
 % ------------------------------------------------------------
-\clearpage
 \setcounter{section}{3}
 \section{TESTING in the FUZZ}
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item \href{https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/INSTALL.md}{AFL++ Installation Guide}
+    \item \url{https://ithelp.ithome.com.tw/m/articles/10288298}
+  \end{itemize}
+\end{mycolorbox}
+
+\setcounter{subsection}{2}
+\subsection{Setting up AFL++ environment}
+\textit{Steps:}
+\begin{enumerate}
+  \item 首先，為了安裝 AFL++，我在工作站上利用安裝了一台 debian 12 的虛擬機器，並且以 QEMU 啟動。（為了方便，我直接複製了 HW6 的虛擬機以及啟動腳本）
+  \item 接下來，我按照 AFL++ 的 github 說明，安裝了必要的前置套件：
+  \begin{minted}{bash}
+    sudo apt-get update
+    sudo apt-get install -y build-essential python3-dev automake cmake git flex bison libglib2.0-dev libpixman-1-dev python3-setuptools cargo libgtk-3-dev
+    # try to install llvm 14 and install the distro default if that fails
+    sudo apt-get install -y lld-14 llvm-14 llvm-14-dev clang-14 || sudo apt-get install -y lld llvm llvm-dev clang
+    sudo apt-get install -y gcc-$(gcc --version|head -n1|sed 's/\..*//'|sed 's/.* //')-plugin-dev libstdc++-$(gcc --version|head -n1|sed 's/\..*//'|sed 's/.* //')-dev
+    sudo apt-get install -y ninja-build # for QEMU mode
+    sudo apt-get install -y cpio libcapstone-dev # for Nyx mode
+    sudo apt-get install -y wget curl # for Frida mode
+    sudo apt-get install -y python3-pip # for Unicorn mode
+  \end{minted}
+  \item 然後，我從 github 上 clone 了 AFL++ 的程式碼，並且進行安裝：
+  \begin{minted}{bash}
+    git clone https://github.com/AFLplusplus/AFLplusplus
+    cd AFLplusplus
+    make all
+    sudo make install
+  \end{minted}
+  \item 如此一來，我就將 AFL++ 的常用工具，如 \texttt{afl-fuzz}、\texttt{afl-cc} 等，安裝到系統路徑中，並且可以在任何地方使用。
+  \item 我將程式複製進入虛擬機放在，\texttt{~/src/} 目錄下，並且在該目錄下建立種子目錄：
+  \begin{minted}{bash}
+    mkdir in && echo "seed" > in/seed
+  \end{minted}
+  \item 透過以下指令編譯 \texttt{fuzz-me.c} 程式碼：
+  \begin{minted}{bash}
+    afl-cc -g -O0 -fsanitize=address -o fuzz-me fuzz-me.c
+  \end{minted}
+  其中，\texttt{-g} 參數用於生成調試資訊，\texttt{-O0} 用於關閉優化，\texttt{-fsanitize=address} 用於啟用 AddressSanitizer ，以便在 fuzzing 過程中檢測記憶體錯誤。
+  \item 最後，我使用以下指令啟動 fuzzing：
+  \begin{minted}{bash}
+    afl-fuzz -i in/ -o out/ -- ./fuzz-me @@
+  \end{minted}
+  \item 完成上述指令之後，就會進入底下畫面。由於我沒有指定執行時間，因此我等到右上角 \texttt{cycles done} 顯示 2 ，代表已經至少掃描兩輪之後，就按下 Ctrl+C 停止了 fuzzing。(約略共跑了 5 分鐘）這時候，AFL++ 會將 fuzzing 的結果輸出到 \texttt{out/default/} 目錄下。
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/4-1.png}
+    \caption{AFL++ fuzzing 介面}
+    \label{fig:4-1}
+  \end{figure}
+  \item 在 \texttt{out/default/} 目錄下，\texttt{crashes/} 目錄下會存放所有導致程式崩潰的輸入檔案，而 \texttt{hangs/} 目錄下則會存放所有導致程式無限迴圈的輸入檔案。我可以透過 gdb 以以下指令來檢查崩潰的輸入檔案：
+  \begin{minted}{bash}
+    gdb --args ./fuzz-me out/default/crashes/<PoC filename>
+  \end{minted}
+\end{enumerate}
+
+
+\subsection{漏洞分析}
+\subsubsection*{Vulnerability 1: Double Free}
+PoC \texttt{crashes/id:000003,sig:06,src:000591,time:100031,execs:122095,op:havoc,rep:16}\\會導致程式觸發 double free 的漏洞。當我在 gdb 中配合 AddressSanitizer 執行該 PoC 時，會發現在 \texttt{fuzz-me.c:6655:5} 處觸發了 double free 的錯誤。
+
+根據 \texttt{gdb} 的分析結果，可以發現在函數 \texttt{mlxeotckigrz} 當中，陣列 \texttt{cghjfucyoytm} 的內容在 \texttt{fuzz-me.c:6641:51} 中被宣告，並且在 \texttt{fuzz-me.c:6652:9} 當中，在進入 if 區塊中被釋放了第一次。然而出來到第 6655 行時，程式又無條件釋放了同一個陣列，導致 double free 的錯誤。
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/4-2-1.png}
+  \caption{[Vulnerability 1] gdb 中的 double free 錯誤}
+  \label{fig:4-2-1}
+\end{figure}
+
+\subsubsection*{Vulnerability 2: Stack Buffer Overflow}
+PoC \texttt{crashes/id:000011,sig:06,src:000488,time:196159,execs:241438,op:havoc,rep:14}\\會導致程式 stack buffer overflow。當我在 gdb 中配合 AddressSanitizer 執行該 PoC 時，會發現 stack overflow 的觸發地點在 \texttt{fuzz-me.c:3040:9} 處。
+
+我檢查該處的程式，可以發現第 3040 行位於 \texttt{ngbaogfcgfjv} 函數當中，該行內容為透過 \texttt{memcpy} 進行記憶體複製，從 \texttt{rvmltrxnyedr} 將長度 \texttt{nhtdbsyeyipt} 的記憶體複製到 \texttt{qolxxudqisef}。
+\begin{minted}{c}
+  memcpy(qolxxudqisef, rvmltrxnyedr, nhtdbsyeyipt);
+\end{minted}
+然而，根據第 3039 行可以看到 \texttt{nhtdbsyeyipt} 的值為 $\le 510$ 的整數，而第 3029 行當中宣告 \texttt{qolxxudqisef} 的長度為 114 字元，因此當 \texttt{nhtdbsyeyipt} 的值大於 114 時，就會導致 stack buffer overflow。
+
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/4-2-2.png}
+  \caption{[Vulnerability 2] gdb 中的 stack buffer overflow 錯誤}
+  \label{fig:4-2-2}
+\end{figure}
+
+\subsubsection*{Vulnerability 3: Segmentation fault}
+PoC \texttt{crashes/id:000020,sig:11,src:000802,time:331908,execs:354578,op:havoc,rep:2}\\ 會導致程式觸發 segmentation fault。當我在 gdb 中執行該 PoC 時，會發現在 \texttt{fuzz-me.c:3022} 處，\texttt{if (*kfdujeztzdrf > 0)} 的條件判斷式中，因為指標\texttt{kfdujeztzdrf} 存取到沒被分配的記憶體位置，導致程式觸發 segmentation fault。
+
+我檢查該處的程式之前的程式，發現在第 3015 行當中，有一行 \texttt{kfdujeztzdrf = 0;}，這句可能是工程師筆誤，誤將指標直接指向 0 的位置，而不是改動他的數值。這導致在第 3022 行當中，\texttt{if (*kfdujeztzdrf > 0)} 的條件判斷式會存取到未被分配的記憶體位置，從而導致 segmentation fault。
+
+我使用 gdb 逐行檢查時，透過在 \texttt{fuzz-me.c:3015} 處斷點，發現的確此處的賦值的確是導致 segmentation fault 而崩潰的原因。
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/4-2-3.png}
+  \caption{[Vulnerability 3] gdb 中的 segmentation fault 錯誤}
+  \label{fig:4-2-3}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/4-2-4.png}
+  \caption{[Vulnerability 3] 使用 gdb 逐行檢查的結果}
+  \label{fig:4-2-4}
+\end{figure}
 
 % ------------------------------------------------------------
 % Problem 5 (28 points)
 % ------------------------------------------------------------
-\clearpage
-\setcounter{section}{4}
-\section{敗北協定太多了！}
+% \clearpage
+% \setcounter{section}{4}
+% \section{敗北協定太多了！}
 
 % ------------------------------------------------------------
 % Problem 6 (34 points)
 % ------------------------------------------------------------
-\clearpage
 \setcounter{section}{5}
 \section{猫物語（赤）}
 \begin{mycolorbox}[teal]
@@ -313,11 +459,11 @@
   \end{minted}
 \end{mycolorbox}
 
-
 \subsection{考試答案卷}
 \textit{Steps:}
 \begin{enumerate}
   \item 觀察程式，可以看到產生 flag 2 加密的程式如下：
+  \small
   \begin{minted}{python3}
     def OTPEncrypt(msg: bytes) -> bytes:
         key_len = 10
@@ -328,14 +474,16 @@
     def send_exam_result():
         hexlify(OTPEncrypt(FLAG2.encode())).decode()
   \end{minted}
+  \normalsize
   這個加密方式是將一組長度為 10 的位元組陣列作為金鑰，重複循環的與明文逐位做 XOR 運算來加密。由於明文中一定包含前綴 \texttt{NASA\_HW11\{}，而密文 XOR 明文正好會還原出金鑰，因此可利用這段已知字串來破解整個金鑰。
   \item 在我的 \texttt{decrypt\_otp.py} 中，首先使用 \texttt{unhexlify} 將十六進位表示的密文還原為位元組，接著對所有可能的 flag 起始位置進行窮舉。對於每一個可能的起點，我們都假設明文是 \texttt{NASA\_HW11\{}，並且計算出對應的金鑰，加入候選金鑰列表中。
   \item 隨後，我使用這些候選金鑰來解密整個密文，並透過正規表示式檢查解出的文字是否包含完整的 flag。雖然有兩組起始位置算出的明文都具有符合 flag regex 的片段，但其中一組明顯為雜亂亂碼，而另一組則是完整的 flag 格式。
   \item 我解密出的文字是：
+  \small
   \begin{minted}{text}
     LinearAlgebraMidterm Name:Fatcat Score:86 Flag:NASA_HW11{07p_k3y_mu57_b3_47_l3457_45_l0n6_45_pl41n73x7}
   \end{minted}
-  因此可以得到 flag。
+  \normalsize
 \end{enumerate}
 \begin{mycolorbox}[green]
   \textbf{Flag:} 
@@ -353,10 +501,11 @@
 \end{enumerate}
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.8\textwidth]{6-3.png}
+  \includegraphics[width=0.75\textwidth]{6-3.png}
   \caption{獲得 flag}
   \label{fig:2-6}
 \end{figure}
+\vspace{-0.7cm}
 \begin{mycolorbox}[green]
   \textbf{Flag:} 
   \begin{minted}[frame=none, linenos=false]{text}
@@ -365,17 +514,15 @@
 \end{mycolorbox}
 
 \subsection{Shared Key}
-\textit{Steps:}
-\begin{enumerate}
-  \item 因為所有人共用一組 shared key，因此我可以用 option 4 先取得 nonce，在開另一個視窗連線上之後，以 option 5 取得 \texttt{SHA256(nonce||shared\_key)} 的值，在貼回上一個視窗即可得到 flag。
-\end{enumerate}
+因為所有人共用一組 shared key，因此我可以用 option 4 先取得 nonce，在開另一個視窗連線上之後，以 option 5 取得 \texttt{SHA256(nonce||shared\_key)} 的值，在貼回上一個視窗即可得到 flag。
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.8\textwidth]{6-4-1.png}
-  \includegraphics[width=\textwidth]{6-4-2.png}
+  \includegraphics[width=0.7\textwidth]{6-4-1.png}
+  \includegraphics[width=0.9\textwidth]{6-4-2.png}
   \caption{取得 nonce 和 shared key}
   \label{fig:2-7}
 \end{figure}
+\vspace{-0.7cm}
 \begin{mycolorbox}[green]
   \textbf{Flag:} 
   \begin{minted}[frame=none, linenos=false]{text}
