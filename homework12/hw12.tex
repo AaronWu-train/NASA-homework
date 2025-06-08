@@ -288,6 +288,43 @@
   \end{figure}
 \end{enumerate}
 
+% Problem 4
+\section{Introduction to gnireenignE esreveR}
+\begin{mycolorbox}[teal]
+  \textbf{Reference:}
+  \footnotesize
+  \begin{itemize}
+    \item \url{https://dogbolt.org/faq}
+    \item \url{https://wangchujiang.com/linux-command/c/hexdump.html}
+  \end{itemize}
+\end{mycolorbox}
+\textit{Steps:}
+\begin{enumerate}
+  \item 我嘗試使用 \texttt{dogbolt} 這個網站來反編譯 \texttt{chal.exe}。在他 Reverse 出來的眾多檔案當中，我發現 \texttt{Hex-Rays} 解出來的 C 語言程式碼是最完整的，可以看到 \texttt{main} 函數的邏輯以及 \texttt{pattern}, \texttt{key}, \texttt{flag\_len}, \texttt{key\_len} 等變數的定義和數值。我將這段反組譯的結果存在 \texttt{reverse.c} 檔案當中。
+  \item 我們可以看到他的主要邏輯為以下段落：
+  \begin{minted}{c}
+    if (argc == 2) {
+        for (i = 0; i < flag_len; ++i) pattern[i] ^= key[i % key_len];
+        if (!strcmp(argv[1], pattern))
+            puts("Congratulations! You found the flag!");
+        else
+            puts("Haha! wrong >:)!!!!!!");
+        return 0;
+    } else {
+        puts("Usage: ./chal.exe <flag>");
+        return 1;
+    }
+  \end{minted}
+  因此，產生 Flag 的邏輯為：將 \texttt{pattern} 陣列中的每個字元與 \texttt{key} 陣列中的字元進行 XOR 運算。
+  \item 由於我們成功反組譯出 \texttt{flag\_len}, \texttt{pattern} 和 \texttt{key} 的值，因此我們可以直接撰寫一個程式來暴力破解出 Flag。我寫了 \texttt{decrept.cpp} 這個程式來完成這個任務。
+  \item 最後，我得到以下的 Flag：
+  \begin{mycolorbox}[green]
+    \textbf{Flag:}
+    \begin{minted}[frame=none, linenos=false]{text}
+      HW12{hW0_8UT_WiTH_r3V3Rse_eN91NE3rinG}
+    \end{minted}
+  \end{mycolorbox}
+\end{enumerate}
 
 % -----------------------------------------------------------
 %    You don't have to mess with anything below this line.
