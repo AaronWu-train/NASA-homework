@@ -143,7 +143,7 @@
 
 % Problem 1(b)
 \subsection{passwd 原理}
-\texttt{passwd} 這個指令有一個特殊的權限叫做 \texttt{SUID}（Set User ID）。透過查看 \texttt{/etc/bin/passwd} 的權限，可以發現它的權限是 \texttt{rwsr-xr-x}，其中的 \texttt{s} 表示這個檔案具有 SUID 權限。並且，這個檔案是被 root 所擁有。當使用者執行這個指令時，因為 SUID 的緣故，系統會暫時將使用者的權限提升到該檔案擁有者的權限，也就是 root，因此這樣就可以修改 \texttt{/etc/shadow} 檔案中的密碼。
+\texttt{passwd} 這個指令有一個特殊的權限叫做 \texttt{SUID}（Set User ID）。透過查看 \texttt{/usr/bin/passwd} 的權限，可以發現它的權限是 \texttt{rwsr-xr-x}，其中的 \texttt{s} 表示這個檔案具有 SUID 權限。並且，這個檔案是被 root 所擁有。當使用者執行這個指令時，因為 SUID 的緣故，系統會暫時將使用者的權限提升到該檔案擁有者的權限，也就是 root，因此這樣就可以修改 \texttt{/etc/shadow} 檔案中的密碼。
 
 % Problem 1(c)
 \subsection{登入 log}
